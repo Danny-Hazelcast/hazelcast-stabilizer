@@ -70,6 +70,8 @@ public class MapHeapHogTest {
                     long totalFree = getTotalFree();
                     long maxLocalEntries = (long) ((totalFree / approxEntryBytesSize) * approxHeapUsageFactor);
 
+                    maxLocalEntries = maxLocalEntries / threadCount;
+
                     long key = 0;
                     for (int i = 0; i < maxLocalEntries; i++) {
                         key = nextKeyOwnedBy(key, targetInstance);
