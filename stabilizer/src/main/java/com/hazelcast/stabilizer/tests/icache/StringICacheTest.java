@@ -15,7 +15,6 @@
  */
 package com.hazelcast.stabilizer.tests.icache;
 
-import com.hazelcast.cache.ICache;
 import com.hazelcast.cache.impl.HazelcastCacheManager;
 import com.hazelcast.cache.impl.HazelcastServerCacheManager;
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
@@ -32,11 +31,11 @@ import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Teardown;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
-import com.hazelcast.stabilizer.tests.map.helpers.StringUtils;
 import com.hazelcast.stabilizer.tests.utils.KeyLocality;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
+import javax.cache.Cache;
 import javax.cache.CacheException;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
@@ -44,7 +43,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import static com.hazelcast.stabilizer.tests.map.helpers.StringUtils.generateKeys;
 import static com.hazelcast.stabilizer.tests.map.helpers.StringUtils.generateStrings;
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.waitClusterSize;
-import static com.hazelcast.stabilizer.tests.utils.TestUtils.warmupPartitions;
 
 public class StringICacheTest {
 
@@ -65,7 +63,7 @@ public class StringICacheTest {
     public KeyLocality keyLocality = KeyLocality.Random;
     public int minNumberOfMembers = 0;
 
-    private ICache<String, String> cache;
+    private Cache<String, String> cache;
     private String[] keys;
     private String[] values;
     private final AtomicLong operations = new AtomicLong();

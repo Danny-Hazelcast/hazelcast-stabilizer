@@ -21,23 +21,22 @@ public class MapHeapHogTest {
 
     private final static ILogger log = Logger.getLogger(MapHeapHogTest.class);
 
-    // properties
-    public String basename = this.getClass().getName();
     public int threadCount = 3;
-    public int ttlHours = 24;
-    public double approxHeapUsageFactor = 0.9;
+    public int memberCount = 4;
+    public double approxHeapUsageFactor = 0.8;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
+    private String basename;
 
     private long approxEntryBytesSize = 238;
-
     private IMap map;
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
+        basename = testContext.getTestId();
 
         map = targetInstance.getMap(basename);
     }
@@ -45,10 +44,10 @@ public class MapHeapHogTest {
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
         if (isMemberNode(targetInstance)) {
-            while (targetInstance.getCluster().getMembers().size() != 3) {
-                log.info(basename + " waiting cluster == 3");
+            while (targetInstance.getCluster().getMembers().size() != memberCount) {
                 Thread.sleep(1000);
             }
+            log.info(basename + ": "+memberCount+" member cluster formed");
         }
     }
 
@@ -66,33 +65,47 @@ public class MapHeapHogTest {
         @Override
         public void run() {
             while (!testContext.isStopped()) {
-                long free = Runtime.getRuntime().freeMemory();
-                long total = Runtime.getRuntime().totalMemory();
-                long used = total - free;
-                long max = Runtime.getRuntime().maxMemory();
-                long totalFree = max - used;
 
-                long maxLocalEntries = (long) ((totalFree / approxEntryBytesSize) * approxHeapUsageFactor);
+                if (getHeapUsageFactor() < approxHeapUsageFactor ) {
+                    long totalFree = getTotalFree();
+                    long maxLocalEntries = (long) ((totalFree / approxEntryBytesSize) * approxHeapUsageFactor);
 
-                long key = 0;
-                for (int i = 0; i < maxLocalEntries; i++) {
-                    key = nextKeyOwnedBy(key, targetInstance);
-                    map.put(key, key, ttlHours, TimeUnit.HOURS);
-                    key++;
+                    long key = 0;
+                    for (int i = 0; i < maxLocalEntries; i++) {
+                        key = nextKeyOwnedBy(key, targetInstance);
+                        map.put(key, key);
+                        key++;
+                    }
+
+                    printMemStats();
+
+                    if( getHeapUsageFactor() >= approxHeapUsageFactor ) {
+                        log.info(basename +": Hit Target Usage Factor used = "+getHeapUsageFactor());
+                    }
                 }
-                log.info(basename + " after warmUp map size = " + map.size());
-                log.info(basename + " putCount = " + maxLocalEntries);
-                printMemStats();
-
-                log.info("added All");
             }
+        }
+
+        public double getHeapUsageFactor(){
+            long free = Runtime.getRuntime().freeMemory();
+            long total = Runtime.getRuntime().totalMemory();
+            long used = total - free;
+            long max = Runtime.getRuntime().maxMemory();
+            return (double) used / (double) max;
+        }
+
+        public long getTotalFree(){
+            long free = Runtime.getRuntime().freeMemory();
+            long total = Runtime.getRuntime().totalMemory();
+            long used = total - free;
+            long max = Runtime.getRuntime().maxMemory();
+            return  max - used;
         }
     }
 
     @Verify(global = false)
     public void localVerify() throws Exception {
         if (isMemberNode(targetInstance)) {
-            log.info(basename + " verify map size = " + map.size());
             printMemStats();
         }
     }
@@ -106,10 +119,10 @@ public class MapHeapHogTest {
 
         long totalFree = max - used;
 
-        log.info(basename + " free = " + TestUtils.humanReadableByteCount(free, true) + " = " + free);
-        log.info(basename + " total free = " + TestUtils.humanReadableByteCount(totalFree, true) + " = " + totalFree);
-        log.info(basename + " used = " + TestUtils.humanReadableByteCount(used, true) + " = " + used);
-        log.info(basename + " max = " + TestUtils.humanReadableByteCount(max, true) + " = " + max);
-        log.info(basename + " usedOfMax = " + usedOfMax + "%");
+        log.info(basename + ": free = " + TestUtils.humanReadableByteCount(free, true) + " = " + free);
+        log.info(basename + ": total free = " + TestUtils.humanReadableByteCount(totalFree, true) + " = " + totalFree);
+        log.info(basename + ": used = " + TestUtils.humanReadableByteCount(used, true) + " = " + used);
+        log.info(basename + ": max = " + TestUtils.humanReadableByteCount(max, true) + " = " + max);
+        log.info(basename + ": usedOfMax = " + usedOfMax + "%");
     }
 }
