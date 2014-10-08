@@ -126,5 +126,6 @@ public class MapHeapHogTest {
         log.info(basename + ": used = " + TestUtils.humanReadableByteCount(used, true) + " = " + used);
         log.info(basename + ": max = " + TestUtils.humanReadableByteCount(max, true) + " = " + max);
         log.info(basename + ": usedOfMax = " + usedOfMax + "%");
+        log.info(basename + ": ==============");
     }
 }
