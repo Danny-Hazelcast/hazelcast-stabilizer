@@ -5,8 +5,10 @@ import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
+import com.hazelcast.nio.serialization.DefaultSerializationServiceBuilder;
 import com.hazelcast.nio.serialization.SerializationService;
 import com.hazelcast.nio.serialization.SerializationServiceBuilder;
+import com.hazelcast.nio.serialization.SerializationServiceImpl;
 import com.hazelcast.query.EntryObject;
 import com.hazelcast.query.PagingPredicate;
 import com.hazelcast.query.Predicate;
@@ -77,8 +79,8 @@ public class MapPredicateTest {
     }
 
     private class Worker implements Runnable {
-        final private SerializationService ss = new SerializationServiceBuilder().build();
-
+        final private SerializationService ss = new DefaultSerializationServiceBuilder().build();
+        
         private final Random random = new Random();
         private OppCounterIdxTest counter = new OppCounterIdxTest();
 
