@@ -71,13 +71,14 @@ public class StringMapTest {
 
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
+        valueCount = keyCount;
+
         keys = KeyUtils.generateKeys(keyCount, keyLength, keyLocality, testContext.getTargetInstance());
         values = StringUtils.generateStrings(valueCount, valueLength);
 
-        Random random = new Random();
         for (int k = 0; k < keys.length; k++) {
-            String key = keys[random.nextInt(keyCount)];
-            String value = values[random.nextInt(valueCount)];
+            String key = keys[k];
+            String value = values[k];
             map.put(key, value);
         }
 
