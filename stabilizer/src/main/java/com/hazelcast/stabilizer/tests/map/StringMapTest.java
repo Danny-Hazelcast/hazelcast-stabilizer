@@ -15,6 +15,7 @@
  */
 package com.hazelcast.stabilizer.tests.map;
 
+import com.hazelcast.config.MapConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 import com.hazelcast.logging.ILogger;
@@ -81,6 +82,9 @@ public class StringMapTest {
         }
 
         log.info(basename+": map size = "+map.size());
+        MapConfig mapConfig = targetInstance.getConfig().getMapConfig(basename);
+
+        log.info(basename+":"+" "+mapConfig);
     }
 
     @Run
@@ -107,7 +111,7 @@ public class StringMapTest {
 
     @Verify(global = false)
     public void localVerify() throws Exception {
-        log.info(basename + " map size = " + map.size());
+        log.info(basename + "verify map size = " + map.size());
         printMemStats();
     }
 
