@@ -51,7 +51,7 @@ public class StringMapTest {
     public int keyCount = 100000;
     public int valueCount = 100000;
 
-    public String basename = "stringmap";
+    public String basename;
     public KeyLocality keyLocality = KeyLocality.Random;
 
     private IMap<String, String> map;
@@ -100,7 +100,7 @@ public class StringMapTest {
         public void run() {
             while (!testContext.isStopped()) {
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(10000);
                     printMemStats();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -111,8 +111,7 @@ public class StringMapTest {
 
     @Verify(global = false)
     public void localVerify() throws Exception {
-        log.info(basename + "verify map size = " + map.size());
-        printMemStats();
+        log.info(basename + ": map size = " + map.size());
     }
 
     public void printMemStats() {
@@ -124,10 +123,10 @@ public class StringMapTest {
 
         long totalFree = max - used;
 
-        log.info(basename + " free = " + TestUtils.humanReadableByteCount(free, true) + " = " + free);
-        log.info(basename + " total free = " + TestUtils.humanReadableByteCount(totalFree, true) + " = " + totalFree);
-        log.info(basename + " used = " + TestUtils.humanReadableByteCount(used, true) + " = " + used);
-        log.info(basename + " max = " + TestUtils.humanReadableByteCount(max, true) + " = " + max);
-        log.info(basename + " usedOfMax = " + usedOfMax + "%");
+        log.info(basename + ": free = " + TestUtils.humanReadableByteCount(free, true) + " = " + free);
+        log.info(basename + ": total free = " + TestUtils.humanReadableByteCount(totalFree, true) + " = " + totalFree);
+        log.info(basename + ": used = " + TestUtils.humanReadableByteCount(used, true) + " = " + used);
+        log.info(basename + ": max = " + TestUtils.humanReadableByteCount(max, true) + " = " + max);
+        log.info(basename + ": usedOfMax = " + usedOfMax + "%");
     }
 }
