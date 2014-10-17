@@ -28,6 +28,7 @@ import com.hazelcast.stabilizer.tests.annotations.Performance;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Teardown;
+import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
 import com.hazelcast.stabilizer.tests.map.helpers.KeyUtils;
 import com.hazelcast.stabilizer.tests.map.helpers.StringUtils;
@@ -38,61 +39,37 @@ import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class StringMapTest {
+import static com.hazelcast.stabilizer.tests.utils.TestUtils.isMemberNode;
 
+public class StringMapTest {
     private final static ILogger log = Logger.getLogger(StringMapTest.class);
 
-    //props
-    public int writePercentage = 10;
-    public int threadCount = 10;
-    public int keyLength = 10;
-    public int valueLength = 10;
-    public int keyCount = 10000;
-    public int valueCount = 10000;
-    public int logFrequency = 10000;
-    public int performanceUpdateFrequency = 10000;
-    public boolean usePut = true;
+    public int threadCount = 3;
+    public int keyLength = 30;
+    public int valueLength = 30;
+    public int keyCount = 100000;
+    public int valueCount = 100000;
+
     public String basename = "stringmap";
     public KeyLocality keyLocality = KeyLocality.Random;
-    public int minNumberOfMembers = 0;
-
-    //probes
-    public IntervalProbe getLatency;
-    public IntervalProbe putLatency;
-    public SimpleProbe throughput;
 
     private IMap<String, String> map;
     private String[] keys;
     private String[] values;
-    private final AtomicLong operations = new AtomicLong();
-    private TestContext testContext;
 
+    private TestContext testContext;
     private HazelcastInstance targetInstance;
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
-        if (writePercentage < 0) {
-            throw new IllegalArgumentException("Write percentage can't be smaller than 0");
-        }
-
-        if (writePercentage > 100) {
-            throw new IllegalArgumentException("Write percentage can't be larger than 100");
-        }
 
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
-        map = targetInstance.getMap(basename + "-" + testContext.getTestId());
-    }
-
-    @Teardown
-    public void teardown() throws Exception {
-        map.destroy();
-        log.info(TestUtils.getOperationCountInformation(targetInstance));
+        map = targetInstance.getMap(basename);
     }
 
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
-        TestUtils.waitClusterSize(log, targetInstance, minNumberOfMembers);
         keys = KeyUtils.generateKeys(keyCount, keyLength, keyLocality, testContext.getTargetInstance());
         values = StringUtils.generateStrings(valueCount, valueLength);
 
@@ -102,6 +79,8 @@ public class StringMapTest {
             String value = values[random.nextInt(valueCount)];
             map.put(key, value);
         }
+
+        log.info(basename+": map size = "+map.size());
     }
 
     @Run
@@ -113,72 +92,38 @@ public class StringMapTest {
         spawner.awaitCompletion();
     }
 
-    @Performance
-    public long getOperationCount() {
-        return operations.get();
-    }
-
     private class Worker implements Runnable {
-        private final Random random = new Random();
-
-        @Override
         public void run() {
-            long iteration = 0;
             while (!testContext.isStopped()) {
-
-                String key = randomKey();
-
-                if (shouldWrite(iteration)) {
-                    String value = randomValue();
-                    putLatency.started();
-                    if (usePut) {
-                        map.put(key, value);
-                    } else {
-                        map.set(key, value);
-                    }
-                    putLatency.done();
-                } else {
-                    getLatency.started();
-                    map.get(key);
-                    getLatency.done();
+                try {
+                    Thread.sleep(5000);
+                    printMemStats();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-
-                if (iteration % logFrequency == 0) {
-                    log.info(Thread.currentThread().getName() + " At iteration: " + iteration);
-                }
-
-                if (iteration % performanceUpdateFrequency == 0) {
-                    operations.addAndGet(performanceUpdateFrequency);
-                }
-
-                iteration++;
-                throughput.done();
-            }
-        }
-
-        private String randomValue() {
-            return values[random.nextInt(values.length)];
-        }
-
-        private String randomKey() {
-            int length = keys.length;
-            return keys[random.nextInt(length)];
-        }
-
-        private boolean shouldWrite(long iteration) {
-            if (writePercentage == 0) {
-                return false;
-            } else if (writePercentage == 100) {
-                return true;
-            } else {
-                return (iteration % 100) < writePercentage;
             }
         }
     }
 
-    public static void main(String[] args) throws Throwable {
-        StringMapTest test = new StringMapTest();
-        test.writePercentage = 10;
-        new TestRunner(test).run();
+    @Verify(global = false)
+    public void localVerify() throws Exception {
+        log.info(basename + " map size = " + map.size());
+        printMemStats();
+    }
+
+    public void printMemStats() {
+        long free = Runtime.getRuntime().freeMemory();
+        long total = Runtime.getRuntime().totalMemory();
+        long used = total - free;
+        long max = Runtime.getRuntime().maxMemory();
+        double usedOfMax = 100.0 * ((double) used / (double) max);
+
+        long totalFree = max - used;
+
+        log.info(basename + " free = " + TestUtils.humanReadableByteCount(free, true) + " = " + free);
+        log.info(basename + " total free = " + TestUtils.humanReadableByteCount(totalFree, true) + " = " + totalFree);
+        log.info(basename + " used = " + TestUtils.humanReadableByteCount(used, true) + " = " + used);
+        log.info(basename + " max = " + TestUtils.humanReadableByteCount(max, true) + " = " + max);
+        log.info(basename + " usedOfMax = " + usedOfMax + "%");
     }
 }
