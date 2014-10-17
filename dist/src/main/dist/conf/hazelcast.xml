@@ -40,4 +40,8 @@
         <statistics-enabled>false</statistics-enabled>
     </map>
 
+    <map name="ObjectMap*">
+        <in-memory-format>OBJECT</in-memory-format>
+    </map>
+
 </hazelcast>
