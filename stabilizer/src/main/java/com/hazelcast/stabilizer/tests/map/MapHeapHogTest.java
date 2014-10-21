@@ -83,6 +83,9 @@ public class MapHeapHogTest {
             }
         }
 
+
+        log.info(basename +":getHeapUsageFactor = "+getHeapUsageFactor());
+        log.info(basename +": map size = "+map.size());
     }
 
     @Run
