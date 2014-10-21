@@ -24,7 +24,7 @@ public class MapHeapHogTest {
     private final static ILogger log = Logger.getLogger(MapHeapHogTest.class);
 
     public int threadCount = 3;
-    public int memberCount = 4;
+    public int memberCount = 3;
     public double approxHeapUsageFactor = 0.1;
 
     public int valueSizeBytes = 20000;
