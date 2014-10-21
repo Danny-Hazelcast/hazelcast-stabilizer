@@ -5,9 +5,9 @@ import com.hazelcast.logging.Logger;
 import com.hazelcast.stabilizer.TestCase;
 import com.hazelcast.stabilizer.Utils;
 import com.hazelcast.stabilizer.agent.workerjvm.WorkerJvmSettings;
-import com.hazelcast.stabilizer.common.probes.Result;
-import com.hazelcast.stabilizer.common.probes.impl.ProbesResultXmlWriter;
 import com.hazelcast.stabilizer.coordinator.remoting.AgentsClient;
+import com.hazelcast.stabilizer.probes.probes.Result;
+import com.hazelcast.stabilizer.probes.probes.ProbesResultXmlWriter;
 import com.hazelcast.stabilizer.tests.Failure;
 import com.hazelcast.stabilizer.tests.TestSuite;
 import com.hazelcast.stabilizer.worker.commands.GenericCommand;
@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.hazelcast.stabilizer.Utils.closeQuietly;
 import static com.hazelcast.stabilizer.Utils.secondsToHuman;
 import static java.lang.String.format;
 
@@ -34,6 +34,8 @@ import static java.lang.String.format;
  */
 public class TestCaseRunner {
     private final static ILogger log = Logger.getLogger(TestCaseRunner.class);
+
+    public final static AtomicBoolean performanceWritten = new AtomicBoolean();
 
     private final TestCase testCase;
     private final Coordinator coordinator;
@@ -175,6 +177,11 @@ public class TestCaseRunner {
                 log.info("Operation-count: " + performanceFormat.format(operationCount));
                 double performance = (operationCount * 1.0d) / testSuite.duration;
                 log.info("Performance: " + performanceFormat.format(performance) + " ops/s");
+            }
+
+            if (performanceWritten.compareAndSet(false, true)) {
+                double performance = (operationCount * 1.0d) / testSuite.duration;
+                Utils.appendText("" + performance + "\n", new File("performance.txt"));
             }
         }
     }

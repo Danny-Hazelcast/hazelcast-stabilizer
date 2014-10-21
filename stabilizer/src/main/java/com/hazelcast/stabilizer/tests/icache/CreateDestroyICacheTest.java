@@ -37,6 +37,11 @@ import javax.cache.CacheException;
 import java.io.Serializable;
 import java.util.Random;
 
+
+/**
+ * In This tests we are concurrently creating deleting destroying and putting to a cache.
+ * However this test is a sub set of MangleIcacheTest ? so could be deleted
+ */
 public class CreateDestroyICacheTest {
 
     private final static ILogger log = Logger.getLogger(CreateDestroyICacheTest.class);
@@ -85,7 +90,6 @@ public class CreateDestroyICacheTest {
 
         public void run() {
             config.setName(basename);
-            config.setTypes(Object.class, Object.class);
 
             while (!testContext.isStopped()) {
                 double chance = random.nextDouble();
@@ -93,8 +97,7 @@ public class CreateDestroyICacheTest {
                     try {
                         cacheManager.createCache(basename, config);
                         counter.create++;
-                    } catch (Exception e) {
-                        log.severe(basename+": createCache "+e, e);
+                    } catch (CacheException e) {
                         counter.createException++;
                     }
                 } else if ((chance -= putCacheProb) < 0) {
@@ -104,8 +107,7 @@ public class CreateDestroyICacheTest {
                             cache.put(random.nextInt(), random.nextInt());
                             counter.put++;
                         }
-                    } catch (Exception e){
-                        log.severe(basename+": getCache "+e, e);
+                    } catch (IllegalStateException e){
                         counter.putException++;
                     }
                 } else if ((chance -= closeCacheProb) < 0){
@@ -115,16 +117,14 @@ public class CreateDestroyICacheTest {
                             cache.close();
                             counter.close++;
                         }
-                    } catch (Exception e){
-                        log.severe(basename+": getCache "+e, e);
+                    } catch (IllegalStateException e){
                         counter.closeException++;
                     }
                 } else if ((chance -= destroyCacheProb) < 0) {
                     try{
                         cacheManager.destroyCache(basename);
                         counter.destroy++;
-                    } catch (Exception e){
-                        log.severe(basename+": destroyCache "+e, e);
+                    } catch (IllegalStateException e){
                         counter.destroyException++;
                     }
                 }

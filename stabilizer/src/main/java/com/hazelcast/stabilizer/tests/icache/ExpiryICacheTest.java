@@ -79,7 +79,6 @@ public class ExpiryICacheTest {
 
         CacheConfig<Long, Long> config = new CacheConfig<Long, Long>();
         config.setName(basename);
-        config.setTypes(Long.class, Long.class);
 
         try {
             cacheManager.createCache(basename, config);
@@ -87,7 +86,7 @@ public class ExpiryICacheTest {
             //temp hack to deal with multiple nodes wanting to make the same cache.
             log.severe(hack);
         }
-        cache = cacheManager.getCache(basename, Long.class, Long.class);
+        cache = cacheManager.getCache(basename);
     }
 
     @Performance

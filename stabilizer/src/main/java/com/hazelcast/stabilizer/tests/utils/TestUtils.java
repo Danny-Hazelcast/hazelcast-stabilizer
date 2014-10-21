@@ -28,7 +28,7 @@ import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
 import com.hazelcast.spi.OperationService;
 import com.hazelcast.stabilizer.TestCase;
-import com.hazelcast.stabilizer.common.probes.ProbesConfiguration;
+import com.hazelcast.stabilizer.probes.probes.ProbesConfiguration;
 import com.hazelcast.stabilizer.tests.BindException;
 
 import java.io.Serializable;
@@ -151,7 +151,7 @@ public class TestUtils {
     }
 
     public final static class GetOperationCount implements Callable<Long>, HazelcastInstanceAware, Serializable {
-        private HazelcastInstance hz;
+        private transient HazelcastInstance hz;
 
         @Override
         public Long call() throws Exception {

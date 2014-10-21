@@ -19,16 +19,16 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
-import com.hazelcast.stabilizer.common.probes.IntervalProbe;
-import com.hazelcast.stabilizer.common.probes.SimpleProbe;
+import com.hazelcast.stabilizer.probes.probes.IntervalProbe;
+import com.hazelcast.stabilizer.probes.probes.SimpleProbe;
 import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.TestRunner;
-import com.hazelcast.stabilizer.tests.annotations.Name;
 import com.hazelcast.stabilizer.tests.annotations.Performance;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Teardown;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
+import com.hazelcast.stabilizer.tests.map.helpers.KeyUtils;
 import com.hazelcast.stabilizer.tests.map.helpers.StringUtils;
 import com.hazelcast.stabilizer.tests.utils.KeyLocality;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
@@ -55,26 +55,21 @@ public class StringMapTest {
     public KeyLocality keyLocality = KeyLocality.Random;
     public int minNumberOfMembers = 0;
 
+    //probes
+    public IntervalProbe getLatency;
+    public IntervalProbe putLatency;
+    public SimpleProbe throughput;
+
     private IMap<String, String> map;
     private String[] keys;
     private String[] values;
     private final AtomicLong operations = new AtomicLong();
     private TestContext testContext;
+
     private HazelcastInstance targetInstance;
 
-    private IntervalProbe getLatency;
-    private IntervalProbe putLatency;
-    private SimpleProbe throughput;
-
     @Setup
-    public void setup(TestContext testContext,
-                      @Name("getLatency") IntervalProbe getLatency,
-                      @Name("putLatency") IntervalProbe putLatency,
-                      @Name("throughput") SimpleProbe throughput) throws Exception {
-        this.getLatency = getLatency;
-        this.putLatency = putLatency;
-        this.throughput = throughput;
-
+    public void setup(TestContext testContext) throws Exception {
         if (writePercentage < 0) {
             throw new IllegalArgumentException("Write percentage can't be smaller than 0");
         }
@@ -97,8 +92,8 @@ public class StringMapTest {
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
         TestUtils.waitClusterSize(log, targetInstance, minNumberOfMembers);
-        keys = StringUtils.generateKeys(keyCount, keyLength,keyLocality,testContext.getTargetInstance());
-        values = StringUtils.generateStrings(valueCount,valueLength);
+        keys = KeyUtils.generateKeys(keyCount, keyLength, keyLocality, testContext.getTargetInstance());
+        values = StringUtils.generateStrings(valueCount, valueLength);
 
         Random random = new Random();
         for (int k = 0; k < keys.length; k++) {

@@ -40,8 +40,7 @@ import javax.cache.CacheException;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.hazelcast.stabilizer.tests.map.helpers.StringUtils.generateKeys;
-import static com.hazelcast.stabilizer.tests.map.helpers.StringUtils.generateStrings;
+import static com.hazelcast.stabilizer.tests.map.helpers.KeyUtils.generateKeys;
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.waitClusterSize;
 
 public class StringICacheTest {
@@ -96,7 +95,6 @@ public class StringICacheTest {
 
         CacheConfig<String, String> config = new CacheConfig<String, String>();
         config.setName(basename);
-        config.setTypes(String.class, String.class);
 
         try {
             cacheManager.createCache(basename, config);
@@ -104,7 +102,7 @@ public class StringICacheTest {
             //temp hack to deal with multiple nodes wanting to make the same cache.
             log.severe(hack);
         }
-        cache = cacheManager.getCache(basename, String.class, String.class);
+        cache = cacheManager.getCache(basename);
     }
 
     @Teardown
@@ -117,7 +115,7 @@ public class StringICacheTest {
         waitClusterSize(log, targetInstance, minNumberOfMembers);
 
         keys = generateKeys(keyCount, keyLength, keyLocality, testContext.getTargetInstance());
-        values = generateStrings(valueCount, valueLength);
+        values = StringUtils.generateStrings(valueCount, valueLength);
 
         Random random = new Random();
 

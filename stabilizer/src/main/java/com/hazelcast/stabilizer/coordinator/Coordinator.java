@@ -178,11 +178,6 @@ public class Coordinator {
             runSequential();
         }
 
-        if (monitorPerformance) {
-            double performance = (operationCount * 1.0d) / testSuite.duration;
-            Utils.appendText("" + performance + "\n", new File("performance.txt"));
-        }
-
         terminateWorkers();
 
         //the coordinator needs to sleep some to make sure that it will get failures if they are there.
@@ -387,6 +382,7 @@ public class Coordinator {
 
                     bash.execute(syncCommand);
                 }
+                log.info("    " + ip + " copied");
             }
 
             log.info(format("Finished copying workerClasspath '%s' to agents", workerClassPath));

@@ -45,6 +45,11 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+/**
+ * In This tests we a putting and getting to/from a cache using an Expiry Policy
+ * the expiryDuration can be configured
+ * we Verify that the cache is empty and items have expired
+ * */
 public class ExpiryTest {
 
     private final static ILogger log = Logger.getLogger(ExpiryTest.class);
@@ -84,7 +89,6 @@ public class ExpiryTest {
         expiryPolicy = new CreatedExpiryPolicy(new Duration(TimeUnit.MILLISECONDS, expiryDuration));
 
         config.setName(basename);
-        config.setTypes(Integer.class, Long.class);
     }
 
     @Warmup(global = true)
@@ -104,7 +108,7 @@ public class ExpiryTest {
     private class Worker implements Runnable {
         private Random random = new Random();
         private Counter counter = new Counter();
-        private ICache<Integer, Long> cache = cacheManager.getCache(basename, config.getKeyType(), config.getValueType());
+        private ICache<Integer, Long> cache = cacheManager.getCache(basename);
 
         public void run() {
             while (!testContext.isStopped()) {
@@ -148,7 +152,7 @@ public class ExpiryTest {
         }
         log.info(basename + ": " + total + " from " + results.size() + " worker Threads");
 
-        final ICache<Integer, Long> cache = cacheManager.getCache(basename, Integer.class, Long.class);
+        final ICache<Integer, Long> cache = cacheManager.getCache(basename);
 
         for(int i=0; i<keyCount; i++){
             assertFalse(basename + ": cache should not contain any keys ", cache.containsKey(i) );

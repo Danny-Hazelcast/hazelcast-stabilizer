@@ -71,7 +71,6 @@ public class EntryProcessorICacheTest {
 
         CacheConfig<Integer, Long> config = new CacheConfig<Integer, Long>();
         config.setName(basename);
-        config.setTypes(Integer.class, Long.class);
 
         try {
             cacheManager.createCache(basename, config);
@@ -80,7 +79,7 @@ public class EntryProcessorICacheTest {
             log.severe(hack);
         }
 
-        cache = cacheManager.getCache(basename, Integer.class, Long.class);
+        cache = cacheManager.getCache(basename);
         resultsPerWorker = targetInstance.getList(basename + "ResultMap" + testContext.getTestId());
     }
 
