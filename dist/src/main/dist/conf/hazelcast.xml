@@ -34,7 +34,7 @@
         <min-eviction-check-millis>0</min-eviction-check-millis>
     </map>
 
-    <map name="basicMap*">
+    <map name="NoBackup*">
         <backup-count>0</backup-count>
         <async-backup-count>0</async-backup-count>
         <statistics-enabled>false</statistics-enabled>
