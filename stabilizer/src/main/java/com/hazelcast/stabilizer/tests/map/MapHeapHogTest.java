@@ -14,6 +14,7 @@ import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.nextKeyOwnedBy;
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.isMemberNode;
+import static com.hazelcast.stabilizer.tests.utils.TestUtils.sleepMs;
 
 import java.util.concurrent.TimeUnit;
 
@@ -29,8 +30,12 @@ public class MapHeapHogTest {
     private HazelcastInstance targetInstance;
     private String basename;
 
+
     private long approxEntryBytesSize = 238;
     private IMap map;
+
+
+    byte[] value = new byte[10];
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
@@ -49,6 +54,28 @@ public class MapHeapHogTest {
             }
             log.info(basename + ": "+memberCount+" member cluster formed");
         }
+
+
+        while (getHeapUsageFactor() < approxHeapUsageFactor ) {
+            long totalFree = getTotalFree();
+            long maxLocalEntries = (long) ((totalFree / approxEntryBytesSize) * approxHeapUsageFactor);
+
+            maxLocalEntries = maxLocalEntries / threadCount;
+
+            long key = 0;
+            for (int i = 0; i < maxLocalEntries; i++) {
+                key = nextKeyOwnedBy(key, targetInstance);
+                map.put(key, key);
+                key++;
+            }
+
+            printMemStats();
+
+            if( getHeapUsageFactor() >= approxHeapUsageFactor ) {
+                log.info(basename +": Hit Target Usage Factor used = "+getHeapUsageFactor());
+            }
+        }
+
     }
 
     @Run
@@ -65,48 +92,30 @@ public class MapHeapHogTest {
         @Override
         public void run() {
             while (!testContext.isStopped()) {
-
-                if (getHeapUsageFactor() < approxHeapUsageFactor ) {
-                    long totalFree = getTotalFree();
-                    long maxLocalEntries = (long) ((totalFree / approxEntryBytesSize) * approxHeapUsageFactor);
-
-                    maxLocalEntries = maxLocalEntries / threadCount;
-
-                    long key = 0;
-                    for (int i = 0; i < maxLocalEntries; i++) {
-                        key = nextKeyOwnedBy(key, targetInstance);
-                        map.put(key, key);
-                        key++;
-                    }
-
-                    printMemStats();
-
-                    if( getHeapUsageFactor() >= approxHeapUsageFactor ) {
-                        log.info(basename +": Hit Target Usage Factor used = "+getHeapUsageFactor());
-                    }
-                }
+                printMemStats();
+                sleepMs(5000);
             }
-        }
-
-        public double getHeapUsageFactor(){
-            long free = Runtime.getRuntime().freeMemory();
-            long total = Runtime.getRuntime().totalMemory();
-            long used = total - free;
-            long max = Runtime.getRuntime().maxMemory();
-            return (double) used / (double) max;
-        }
-
-        public long getTotalFree(){
-            long free = Runtime.getRuntime().freeMemory();
-            long total = Runtime.getRuntime().totalMemory();
-            long used = total - free;
-            long max = Runtime.getRuntime().maxMemory();
-            return  max - used;
         }
     }
 
+    public double getHeapUsageFactor(){
+        long free = Runtime.getRuntime().freeMemory();
+        long total = Runtime.getRuntime().totalMemory();
+        long used = total - free;
+        long max = Runtime.getRuntime().maxMemory();
+        return (double) used / (double) max;
+    }
+
+    public long getTotalFree(){
+        long free = Runtime.getRuntime().freeMemory();
+        long total = Runtime.getRuntime().totalMemory();
+        long used = total - free;
+        long max = Runtime.getRuntime().maxMemory();
+        return  max - used;
+    }
+
     @Verify(global = false)
-    public void localVerify() throws Exception {
+    public void verify() throws Exception {
         if (isMemberNode(targetInstance)) {
             printMemStats();
         }
