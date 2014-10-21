@@ -40,22 +40,17 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.isMemberNode;
+import static com.hazelcast.stabilizer.tests.utils.TestUtils.nextKeyOwnedBy;
 
 public class StringMapTest {
     private final static ILogger log = Logger.getLogger(StringMapTest.class);
 
-    public int threadCount = 3;
-    public int keyLength = 30;
-    public int valueLength = 30;
-    public int keyCount = 100000;
-    public int valueCount = 100000;
+    public int valueLength = 20000;
+    public int keyCount = 1000000;
 
     public String basename;
-    public KeyLocality keyLocality = KeyLocality.Random;
 
-    private IMap<String, String> map;
-    private String[] keys;
-    private String[] values;
+    private IMap map;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
@@ -70,29 +65,23 @@ public class StringMapTest {
 
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
-        valueCount = keyCount;
 
-        keys = KeyUtils.generateKeys(keyCount, keyLength, keyLocality, testContext.getTargetInstance());
-        values = StringUtils.generateStrings(valueCount, valueLength);
-
-        for (int k = 0; k < keys.length; k++) {
-            String key = keys[k];
-            String value = values[k];
+        String value = StringUtils.generateString(valueLength);
+        long key=0;
+        while(map.size() < keyCount){
+            key = nextKeyOwnedBy(key, targetInstance);
             map.put(key, value);
         }
-
-        log.info(basename+": map size = "+map.size());
         MapConfig mapConfig = targetInstance.getConfig().getMapConfig(basename);
 
+        log.info(basename+": map size = "+map.size());
         log.info(basename+":"+" "+mapConfig);
     }
 
     @Run
     public void run() {
         ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
-        for (int k = 0; k < threadCount; k++) {
-            spawner.spawn(new Worker());
-        }
+        spawner.spawn(new Worker());
         spawner.awaitCompletion();
     }
 
