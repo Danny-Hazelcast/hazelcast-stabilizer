@@ -46,7 +46,7 @@ public class StringMapTest {
     private final static ILogger log = Logger.getLogger(StringMapTest.class);
 
     public int valueLength = 20000;
-    public int keyCount = 1000000;
+    public int keyCount = 1000;
 
     public String basename;
 
@@ -68,7 +68,7 @@ public class StringMapTest {
 
         String value = StringUtils.generateString(valueLength);
         long key=0;
-        while(map.size() < keyCount){
+        for(int i=0; i < keyCount; i++){
             key = nextKeyOwnedBy(key, targetInstance);
             map.put(key, value);
         }
