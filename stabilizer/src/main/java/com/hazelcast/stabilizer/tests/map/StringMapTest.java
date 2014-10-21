@@ -47,6 +47,7 @@ public class StringMapTest {
 
     public int valueLength = 20000;
     public int keyCount = 1000;
+    public int memberCount = 3;
 
     public String basename;
 
@@ -65,6 +66,11 @@ public class StringMapTest {
 
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
+
+        while (targetInstance.getCluster().getMembers().size() != memberCount) {
+            Thread.sleep(1000);
+        }
+        log.info(basename + ": "+memberCount+" member cluster formed");
 
         String value = StringUtils.generateString(valueLength);
         long key=0;
