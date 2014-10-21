@@ -16,6 +16,7 @@ import static com.hazelcast.stabilizer.tests.utils.TestUtils.nextKeyOwnedBy;
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.isMemberNode;
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.sleepMs;
 
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class MapHeapHogTest {
@@ -24,18 +25,18 @@ public class MapHeapHogTest {
 
     public int threadCount = 3;
     public int memberCount = 4;
-    public double approxHeapUsageFactor = 0.8;
+    public double approxHeapUsageFactor = 0.1;
+
+    public int valueSizeBytes = 20000;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
     private String basename;
 
-
     private long approxEntryBytesSize = 238;
     private IMap map;
 
-
-    byte[] value = new byte[10];
+    byte[] value;
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
@@ -44,6 +45,12 @@ public class MapHeapHogTest {
         basename = testContext.getTestId();
 
         map = targetInstance.getMap(basename);
+
+        approxEntryBytesSize =+ valueSizeBytes;
+        value = new byte[valueSizeBytes];
+
+        Random random = new Random();
+        random.nextBytes(value);
     }
 
     @Warmup(global = false)
