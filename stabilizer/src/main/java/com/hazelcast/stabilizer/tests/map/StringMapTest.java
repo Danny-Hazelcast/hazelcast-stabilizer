@@ -72,10 +72,14 @@ public class StringMapTest {
     }
 
     @Warmup(global = false)
-    public void warmup() throws InterruptedException {
+    public void warmup() throws Exception {
 
+        int trys=0;
         while (targetInstance.getCluster().getMembers().size() != memberCount) {
-            Thread.sleep(1000);
+            Thread.sleep(2000);
+            if( trys++ > 30 ) {
+                throw new Exception("CLUSTER not formed target="+ memberCount);
+            }
         }
         log.info(basename + ": "+memberCount+" member cluster formed");
 
