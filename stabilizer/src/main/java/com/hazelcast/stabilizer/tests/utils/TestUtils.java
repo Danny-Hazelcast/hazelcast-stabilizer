@@ -443,12 +443,13 @@ public class TestUtils {
     public static long nextKeyOwnedBy(long key, HazelcastInstance instance) {
         final Member localMember = instance.getCluster().getLocalMember();
         final PartitionService partitionService = instance.getPartitionService();
+
         for (; ; ) {
+            key++;
             Partition partition = partitionService.getPartition(key);
             if (localMember.equals(partition.getOwner())) {
                 return key;
             }
-            key++;
         }
     }
 

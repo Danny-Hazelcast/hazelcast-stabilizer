@@ -18,6 +18,8 @@ package com.hazelcast.stabilizer.tests.map;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
+import com.hazelcast.core.Partition;
+import com.hazelcast.core.PartitionService;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
 import com.hazelcast.stabilizer.probes.probes.IntervalProbe;
@@ -37,6 +39,7 @@ import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.isMemberNode;
@@ -71,6 +74,15 @@ public class StringMapTest {
             Thread.sleep(1000);
         }
         log.info(basename + ": "+memberCount+" member cluster formed");
+
+        PartitionService partitionService = targetInstance.getPartitionService();
+        for (Partition partition : partitionService.getPartitions()) {
+            while (partition.getOwner() == null) {
+                Thread.sleep(1000);
+            }
+        }
+        log.info(basename + ": Partitions assigned");
+
 
         String value = StringUtils.generateString(valueLength);
         long key=0;
