@@ -13,9 +13,9 @@ for (( i=1; i<=$max; i++ ))
 do
     for box in $ips
     do
-        ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${box} "rm -f heap.bin; jps | grep Member.* | cut -d ' ' -f1 | xargs -L 1  jmap -heap:format=b $1"
+        ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no stabilizer@${box} "rm -f heap.bin; jps | grep Member.* | cut -d ' ' -f1 | xargs -L 1  jmap -histo $1 > histo.txt"
 
-        scp stabilizer@${box}:heap.bin ${box}MemberHeap.bin
+        scp stabilizer@${box}: ${box}MemberHeap.bin
     done
 
 

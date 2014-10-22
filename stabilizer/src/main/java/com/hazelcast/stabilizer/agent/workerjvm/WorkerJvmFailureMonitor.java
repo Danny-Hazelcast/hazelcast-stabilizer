@@ -33,7 +33,7 @@ import static com.hazelcast.stabilizer.Utils.sleepSeconds;
 
 public class WorkerJvmFailureMonitor {
     private final static Logger log = Logger.getLogger(WorkerJvmFailureMonitor.class);
-    private final static int LAST_SEEN_TIMEOUT_MS = 60 * 1000;
+    private final static int LAST_SEEN_TIMEOUT_MS = 240 * 1000;
 
     private final Agent agent;
     private final BlockingQueue<Failure> failureQueue = new LinkedBlockingQueue<Failure>();

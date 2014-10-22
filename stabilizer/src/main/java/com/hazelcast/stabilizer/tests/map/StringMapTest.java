@@ -44,6 +44,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.isMemberNode;
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.nextKeyOwnedBy;
+import static com.hazelcast.stabilizer.tests.utils.TestUtils.sleepMs;
 
 public class StringMapTest {
     private final static ILogger log = Logger.getLogger(StringMapTest.class);
@@ -51,13 +52,14 @@ public class StringMapTest {
     public int valueLength = 20000;
     public int keyCount = 1000;
     public int memberCount = 3;
-
+    public int logMs = 10000;
     public String basename;
-
-    private IMap map;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
+    private IMap map;
+    private long minUsed=Long.MAX_VALUE;
+    private long maxUsed=Long.MIN_VALUE;
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
@@ -106,12 +108,8 @@ public class StringMapTest {
     private class Worker implements Runnable {
         public void run() {
             while (!testContext.isStopped()) {
-                try {
-                    Thread.sleep(10000);
-                    printMemStats();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                sleepMs(logMs);
+                printMemStats();
             }
         }
     }
@@ -119,6 +117,8 @@ public class StringMapTest {
     @Verify(global = false)
     public void localVerify() throws Exception {
         log.info(basename + ": map size = " + map.size());
+        log.info(basename + ": max used = " + TestUtils.humanReadableByteCount(maxUsed, true));
+        log.info(basename + ": min used = " + TestUtils.humanReadableByteCount(minUsed, true));
     }
 
     public void printMemStats() {
@@ -130,10 +130,17 @@ public class StringMapTest {
 
         long totalFree = max - used;
 
-        log.info(basename + ": free = " + TestUtils.humanReadableByteCount(free, true) + " = " + free);
-        log.info(basename + ": total free = " + TestUtils.humanReadableByteCount(totalFree, true) + " = " + totalFree);
-        log.info(basename + ": used = " + TestUtils.humanReadableByteCount(used, true) + " = " + used);
-        log.info(basename + ": max = " + TestUtils.humanReadableByteCount(max, true) + " = " + max);
+        if(used < minUsed){
+            minUsed = used;
+        }
+        if(used > maxUsed){
+            maxUsed = used;
+        }
+
+        log.info(basename + ": free = " + TestUtils.humanReadableByteCount(free, true));
+        log.info(basename + ": total free = " + TestUtils.humanReadableByteCount(totalFree, true));
+        log.info(basename + ": used = " + TestUtils.humanReadableByteCount(used, true));
+        log.info(basename + ": max = " + TestUtils.humanReadableByteCount(max, true));
         log.info(basename + ": usedOfMax = " + usedOfMax + "%");
     }
 }
