@@ -50,7 +50,9 @@ public class StringMapTest {
     private final static ILogger log = Logger.getLogger(StringMapTest.class);
 
     public int valueLength = 20000;
-    public int keyCount = 1000;
+    public int localKeyCount = 1000;
+    public int globalKeyCount = -1;
+
     public int memberCount = 3;
     public int logMs = 10000;
     public String basename;
@@ -88,12 +90,19 @@ public class StringMapTest {
 
         String value = StringUtils.generateString(valueLength);
         long key=0;
-        for(int i=0; i < keyCount; i++){
-            key = nextKeyOwnedBy(key, targetInstance);
-            map.put(key, value);
+        if(globalKeyCount!=-1){
+            while(map.size() < globalKeyCount){
+                key = nextKeyOwnedBy(key, targetInstance);
+                map.put(key, value);
+            }
+        }else{
+            for(int i=0; i < localKeyCount; i++){
+                key = nextKeyOwnedBy(key, targetInstance);
+                map.put(key, value);
+            }
         }
-        MapConfig mapConfig = targetInstance.getConfig().getMapConfig(basename);
 
+        MapConfig mapConfig = targetInstance.getConfig().getMapConfig(basename);
         log.info(basename+": map size = "+map.size());
         log.info(basename+":"+" "+mapConfig);
     }
