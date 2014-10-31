@@ -59,8 +59,8 @@ public class TemplateBuilder {
 
         template.getOptions()
                 .inboundPorts(inboundPorts())
-                .runScript(adminAccess)
-                .securityGroups(securityGroup);
+                .runScript(adminAccess);
+                //.securityGroups(securityGroup);
 
         return template;
     }
