@@ -61,7 +61,7 @@ public class TemplateBuilder {
                 .inboundPorts(inboundPorts())
                 .runScript(adminAccess)
                 .subnetId("subnet-378d2140")
-                .securityGroups("stabilizer-vpc-Sg");
+                .securityGroups("sg-f3b7bc96"); //sg-f3b7bc96  //stabilizer-vpc-Sg
 
         return template;
     }
