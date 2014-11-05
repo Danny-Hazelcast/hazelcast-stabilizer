@@ -68,8 +68,10 @@ public class MapPutGet {
                 Partition partition = partitionService.getPartition(i);
                 if (localMember.equals(partition.getOwner())) {
                     map.put(i, new Customer());
+                    log.info(basename+": setup Put key="+i);
                 }
             }
+            log.info(basename+": After setup map size="+map.size());
 
             printMemStats();
         }
@@ -144,7 +146,7 @@ public class MapPutGet {
 
         MapConfig mapConfig = targetInstance.getConfig().getMapConfig(basename);
         log.info(basename+": "+mapConfig);
-        log.info(basename+": map size="+map.size());
+        log.info(basename+":verify map size="+map.size());
 
         IList<IntHistogram>  putHistos = targetInstance.getList(basename+"putHisto");
         IList<IntHistogram>  getHistos = targetInstance.getList(basename+"getHisto");
@@ -169,9 +171,6 @@ public class MapPutGet {
 
         log.info(basename+": put/sec ="+putsPerSec);
         log.info(basename+": get/Sec ="+getPerSec);
-
-
-        log.severe(basename+": totalkeys="+totalKeys);
 
         if(map.size() != totalKeys){
             throw new Exception("map.size()!="+totalKeys+",  mapSize="+map.size());
