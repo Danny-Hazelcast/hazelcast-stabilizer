@@ -62,12 +62,16 @@ public class MapPutGet {
             final Member localMember = targetInstance.getCluster().getLocalMember();
             final PartitionService partitionService = targetInstance.getPartitionService();
 
+            printMemStats();
+
             for(int i=0; i<totalKeys; i++){
                 Partition partition = partitionService.getPartition(i);
                 if (localMember.equals(partition.getOwner())) {
                     map.put(i, new Customer());
                 }
             }
+
+            printMemStats();
         }
     }
 
@@ -168,8 +172,21 @@ public class MapPutGet {
         }
     }
 
-    public static void main(String[] args) throws Throwable {
-        Customer c = new Customer();
-        System.out.println(c);
+
+    public void printMemStats() {
+        long free = Runtime.getRuntime().freeMemory();
+        long total = Runtime.getRuntime().totalMemory();
+        long used = total - free;
+        long max = Runtime.getRuntime().maxMemory();
+        double usedOfMax = 100.0 * ((double) used / (double) max);
+
+        long totalFree = max - used;
+
+        log.info(basename + " free = " + TestUtils.humanReadableByteCount(free, true) + " = " + free);
+        log.info(basename + " total free = " + TestUtils.humanReadableByteCount(totalFree, true) + " = " + totalFree);
+        log.info(basename + " used = " + TestUtils.humanReadableByteCount(used, true) + " = " + used);
+        log.info(basename + " max = " + TestUtils.humanReadableByteCount(max, true) + " = " + max);
+        log.info(basename + " usedOfMax = " + usedOfMax + "%");
     }
+
 }
