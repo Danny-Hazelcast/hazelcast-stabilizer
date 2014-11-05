@@ -121,14 +121,17 @@ public class MapPutGet {
                     if(c==null){
                         log.severe(basename+": key "+key+" == null");
                         log.severe(basename+": map size="+map.size());
+                        log.severe(basename+": totalkeys="+totalKeys);
                     }
 
                 }else{
+                    /*
                     key = totalKeys+1;
                     long start = System.currentTimeMillis();
                     map.put(key, new Customer());
                     long stop = System.currentTimeMillis();
                     putLatencyHisto.recordValue(stop - start);
+                    */
                 }
 
                 now = System.currentTimeMillis();
@@ -167,8 +170,11 @@ public class MapPutGet {
         log.info(basename+": put/sec ="+putsPerSec);
         log.info(basename+": get/Sec ="+getPerSec);
 
-        if(map.size() != totalKeys+1){
-            throw new Exception("map.size()!="+totalKeys+1+",  mapSize="+map.size());
+
+        log.severe(basename+": totalkeys="+totalKeys);
+
+        if(map.size() != totalKeys){
+            throw new Exception("map.size()!="+totalKeys+",  mapSize="+map.size());
         }
     }
 
