@@ -2,9 +2,10 @@ package com.hazelcast.stabilizer.tests.performance.domain;
 
 import com.hazelcast.stabilizer.tests.map.helpers.StringUtils;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class Item {
+public class Item implements Serializable {
 
     public static Random rand = new Random();
 

@@ -2,11 +2,12 @@ package com.hazelcast.stabilizer.tests.performance.domain;
 
 import com.hazelcast.stabilizer.tests.map.helpers.StringUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Order {
+public class Order implements Serializable {
 
     public String id;
     public Date orderDate;
