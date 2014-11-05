@@ -15,6 +15,7 @@ import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
+import com.hazelcast.stabilizer.tests.performance.domain.Customer;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 import org.HdrHistogram.IntHistogram;
@@ -39,27 +40,20 @@ public class MapPutGet {
 
     public String basename = this.getClass().getName();
     public int threadCount = 3;
-    public int valueLength = 1000;
     public int totalKeys = 1000;
     public int memberCount = 1;
-    public int jitWarmUpMs = 1000*30;
     public int durationMs = 1000*60;
-    public double putProb = 0.5;
+    public double getProb = 0.8;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
-    private IMap map;
-    private byte[] value;
+    private IMap<Integer, Customer> map;
 
     @Setup
     public void setup(TestContext testContex) throws Exception {
         testContext = testContex;
         targetInstance = testContext.getTargetInstance();
         map = targetInstance.getMap(basename);
-        value = new byte[valueLength];
-
-        Random random = new Random();
-        random.nextBytes(value);
 
         if(TestUtils.isMemberNode(targetInstance)){
             TestUtils.waitClusterSize(log, targetInstance, memberCount);
@@ -71,7 +65,7 @@ public class MapPutGet {
             for(int i=0; i<totalKeys; i++){
                 Partition partition = partitionService.getPartition(i);
                 if (localMember.equals(partition.getOwner())) {
-                    map.put(i, value);
+                    map.put(i, new Customer());
                 }
             }
         }
@@ -104,9 +98,6 @@ public class MapPutGet {
         Random random = new Random();
 
         public void run() {
-            test(jitWarmUpMs);
-            putLatencyHisto.reset();
-            getLatencyHisto.reset();
             test(durationMs);
         }
 
@@ -116,16 +107,24 @@ public class MapPutGet {
             do{
                 int key = random.nextInt(totalKeys);
 
-                if(random.nextDouble() < putProb){
+                if(random.nextDouble() < getProb){
+
                     long start = System.currentTimeMillis();
-                    map.put(key, value);
-                    long stop = System.currentTimeMillis();
-                    putLatencyHisto.recordValue(stop - start);
-                }else{
-                    long start = System.currentTimeMillis();
-                    map.get(key);
+                    Customer c = map.get(key);
                     long stop = System.currentTimeMillis();
                     getLatencyHisto.recordValue(stop - start);
+
+                    if(c==null){
+                        log.severe(basename+": key "+key+" == null");
+                        log.severe(basename+": map size="+map.size());
+                    }
+
+                }else{
+                    key = totalKeys+1;
+                    long start = System.currentTimeMillis();
+                    map.put(key, new Customer());
+                    long stop = System.currentTimeMillis();
+                    putLatencyHisto.recordValue(stop - start);
                 }
 
                 now = System.currentTimeMillis();
@@ -163,5 +162,14 @@ public class MapPutGet {
 
         log.info(basename+": put/sec ="+putsPerSec);
         log.info(basename+": get/Sec ="+getPerSec);
+
+        if(map.size() != totalKeys+1){
+            throw new Exception("map.size()!="+totalKeys+1+",  mapSize="+map.size());
+        }
+    }
+
+    public static void main(String[] args) throws Throwable {
+        Customer c = new Customer();
+        System.out.println(c);
     }
 }
