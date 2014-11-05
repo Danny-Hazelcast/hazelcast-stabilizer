@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -189,12 +190,13 @@ public class TestUtils {
     public static void warmupPartitions(ILogger logger, HazelcastInstance hz) {
         logger.info("Waiting for partition assignment");
         PartitionService partitionService = hz.getPartitionService();
-        for (Partition partition : partitionService.getPartitions()) {
+        Set<Partition> partitionSet = partitionService.getPartitions();
+        for (Partition partition : partitionSet) {
             while (partition.getOwner() == null) {
                 sleepMs(1000);
             }
         }
-        logger.info("all Partitions assigned");
+        logger.info("all "+partitionSet.size()+" Partitions assigned");
     }
 
     public static void waitClusterSize(ILogger logger, HazelcastInstance hz, int clusterSize) throws InterruptedException {

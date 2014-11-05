@@ -182,11 +182,11 @@ public class MapPutGet {
 
         long totalFree = max - used;
 
-        log.info(basename + " free = " + TestUtils.humanReadableByteCount(free, true) + " = " + free);
-        log.info(basename + " total free = " + TestUtils.humanReadableByteCount(totalFree, true) + " = " + totalFree);
-        log.info(basename + " used = " + TestUtils.humanReadableByteCount(used, true) + " = " + used);
-        log.info(basename + " max = " + TestUtils.humanReadableByteCount(max, true) + " = " + max);
-        log.info(basename + " usedOfMax = " + usedOfMax + "%");
+        log.info(basename + ": free = " + TestUtils.humanReadableByteCount(free, true) + " = " + free);
+        log.info(basename + ": total free = " + TestUtils.humanReadableByteCount(totalFree, true) + " = " + totalFree);
+        log.info(basename + ": used = " + TestUtils.humanReadableByteCount(used, true) + " = " + used);
+        log.info(basename + ": max = " + TestUtils.humanReadableByteCount(max, true) + " = " + max);
+        log.info(basename + ": usedOfMax = " + usedOfMax + "%");
     }
 
 }
