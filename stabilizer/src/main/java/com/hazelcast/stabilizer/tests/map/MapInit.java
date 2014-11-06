@@ -21,10 +21,11 @@ import static junit.framework.Assert.assertEquals;
 
 public class MapInit {
     private final static ILogger log = Logger.getLogger(MapInit.class);
+    private String basename = this.getClass().getCanonicalName();
 
-    public String basename = this.getClass().getName();
     public int totalKeys = 1000;
     public int memberCount = 1;
+    public String mapName;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
@@ -34,7 +35,7 @@ public class MapInit {
     public void setup(TestContext testContex) throws Exception {
         testContext = testContex;
         targetInstance = testContext.getTargetInstance();
-        map = targetInstance.getMap(basename);
+        map = targetInstance.getMap(mapName);
 
         if(TestUtils.isMemberNode(targetInstance)){
 
@@ -71,7 +72,7 @@ public class MapInit {
 
     @Verify(global = true)
     public void verify() throws Exception {
-        MapConfig mapConfig = targetInstance.getConfig().getMapConfig(basename);
+        MapConfig mapConfig = targetInstance.getConfig().getMapConfig(mapName);
         log.info(basename+": "+mapConfig);
         log.info(basename+": verify map size="+map.size());
 
