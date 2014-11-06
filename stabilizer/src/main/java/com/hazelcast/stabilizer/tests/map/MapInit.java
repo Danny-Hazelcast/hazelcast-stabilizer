@@ -15,7 +15,9 @@ import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.map.domain.*;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
+import org.HdrHistogram.IntHistogram;
 
+import java.util.Random;
 import java.util.Set;
 
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.printMemStats;
@@ -25,6 +27,7 @@ public class MapInit {
     private final static ILogger log = Logger.getLogger(MapInit.class);
     private String basename = this.getClass().getCanonicalName();
 
+    public int threadCount=3;
     public int totalKeys = 1000;
     public int memberCount = 1;
     public String mapName;
@@ -65,6 +68,10 @@ public class MapInit {
                     log.info(basename+": setup Put key="+i);
                 }
             }
+
+            while(map.size()!=totalKeys){
+                Thread.sleep(1000);
+            }
             log.info(basename + ": After setup map size=" + map.size());
 
             printMemStats(basename);
@@ -72,9 +79,55 @@ public class MapInit {
     }
 
     @Run
-    public void run() { }
+    public void run() {
 
-    @Verify(global = true)
+        ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
+
+        Worker[] workers = new Worker[threadCount];
+
+        for(int i=0; i<threadCount; i++){
+            workers[i] = new Worker();
+            spawner.spawn(workers[i]);
+        }
+        spawner.awaitCompletion();
+
+        for(int i=1; i<threadCount; i++){
+            workers[0].putLatencyHisto.add(workers[i].putLatencyHisto);
+            workers[0].getLatencyHisto.add(workers[i].getLatencyHisto);
+        }
+
+        targetInstance.getList(basename+"putHisto").add(workers[0].putLatencyHisto);
+        targetInstance.getList(basename+"getHisto").add(workers[0].getLatencyHisto);
+
+    }
+
+    private class Worker implements Runnable {
+        IntHistogram putLatencyHisto = new IntHistogram(1, 1000*30, 0);
+        IntHistogram getLatencyHisto = new IntHistogram(1, 1000*30, 0);
+        Random random = new Random();
+
+        public void run() {
+            while (!testContext.isStopped()) {
+
+                int key = random.nextInt(totalKeys);
+
+
+                long start = System.currentTimeMillis();
+                Customer c = map.get(key);
+                long stop = System.currentTimeMillis();
+                getLatencyHisto.recordValue(stop - start);
+
+                if(c==null){
+                    log.severe(basename+": key "+key+" == null");
+                    log.severe(basename+": map size="+map.size());
+                    log.severe(basename+": totalkeys="+totalKeys);
+                }
+            }
+        }
+    }
+
+
+    @Verify(global = false)
     public void verify() throws Exception {
         MapConfig mapConfig = targetInstance.getConfig().getMapConfig(mapName);
         log.info(basename+": "+mapConfig);
