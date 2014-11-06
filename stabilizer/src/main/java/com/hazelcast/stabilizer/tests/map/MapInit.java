@@ -69,9 +69,10 @@ public class MapInit {
                 }
             }
 
-            while(map.size()!=totalKeys){
-                Thread.sleep(1000);
-            }
+            //while(map.size()!=totalKeys){
+            //    Thread.sleep(1000);
+            //}
+
             log.info(basename + ": After setup map size=" + map.size());
 
             printMemStats(basename);
