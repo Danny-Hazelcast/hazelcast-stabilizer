@@ -1,13 +1,12 @@
-package com.hazelcast.stabilizer.tests.performance.domain;
+package com.hazelcast.stabilizer.tests.map.domain;
 
 import com.hazelcast.stabilizer.tests.map.helpers.StringUtils;
-import com.hazelcast.stabilizer.tests.utils.TestUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Customer implements Serializable {
+public class Customer implements Serializable  {
 
     public String id;
     public String name;
