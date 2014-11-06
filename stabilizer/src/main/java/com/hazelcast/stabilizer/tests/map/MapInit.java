@@ -9,10 +9,12 @@ import com.hazelcast.core.PartitionService;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
 import com.hazelcast.stabilizer.tests.TestContext;
+import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.map.domain.*;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
+import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
 import java.util.Set;
 
@@ -69,6 +71,8 @@ public class MapInit {
         }
     }
 
+    @Run
+    public void run() { }
 
     @Verify(global = true)
     public void verify() throws Exception {
