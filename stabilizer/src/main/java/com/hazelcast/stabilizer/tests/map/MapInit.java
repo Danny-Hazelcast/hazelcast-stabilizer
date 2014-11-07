@@ -33,7 +33,7 @@ public class MapInit {
     private final static ILogger log = Logger.getLogger(MapInit.class);
     private String basename = this.getClass().getCanonicalName();
 
-    public int threadCount=3;
+    public int threadCount=10;
     public int memberCount = 1;
     public String mapName;
     public int stressKeys = 100;
@@ -133,7 +133,7 @@ public class MapInit {
                     count.mapSizeError++;
                 }
 
-                key = random.nextInt(stressKeys);
+                key = random.nextInt(totalKeys);
                 IMap stressMap = targetInstance.getMap(basename+"stress");
                 stressMap.put(key, stressObj);
             }
@@ -166,6 +166,9 @@ public class MapInit {
         log.info(basename+": "+mapConfig);
         log.info(basename+": verify map size="+map.size());
 
+        log.info(basename+": Stress map size="+targetInstance.getMap(basename+"stress").size());
+
+
         IList<Counter> results = targetInstance.getList(basename + "res");
         Counter total = new Counter();
         for (Counter i : results) {
@@ -175,7 +178,7 @@ public class MapInit {
 
         assertEquals(basename + ": map (" + map.getName() + ") size ", totalKeys, map.size());
 
-        //assertEquals(basename + ": "+total, total.getNull, 0);
-        //assertEquals(basename + ": "+total, total.mapSizeError, 0);
+        assertEquals(basename + ": "+total, total.getNull, 0);
+        assertEquals(basename + ": "+total, total.mapSizeError, 0);
     }
 }
