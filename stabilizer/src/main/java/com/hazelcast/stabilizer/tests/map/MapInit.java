@@ -55,15 +55,17 @@ public class MapInit {
             }
             log.info(basename + ": cluster == " + memberCount);
 
-            Thread.sleep(3000);
+            Thread.sleep(1000 * 10);
 
+            /*
             PartitionService partitionService = targetInstance.getPartitionService();
             while(!partitionService.isClusterSafe()){
                 Thread.sleep(1000);
             }
             log.info(basename + ": cluster is safe ");
+            */
 
-
+            PartitionService partitionService = targetInstance.getPartitionService();
             final Set<Partition> partitionSet = partitionService.getPartitions();
             for (Partition partition : partitionSet) {
                 while (partition.getOwner() == null) {
