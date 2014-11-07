@@ -34,9 +34,7 @@ public class MapInit {
     private String basename = this.getClass().getCanonicalName();
 
     public int threadCount=10;
-    public int memberCount = 1;
     public String mapName;
-    public int stressKeys = 100;
 
 
     private int totalKeys;
@@ -52,25 +50,14 @@ public class MapInit {
 
         if(TestUtils.isMemberNode(targetInstance)){
 
-            /*
-            while ( targetInstance.getCluster().getMembers().size() != memberCount ) {
-                Thread.sleep(1000);
-            }
-            log.info(basename + ": cluster == " + memberCount);
-            */
-
-
             PartitionService partitionService = targetInstance.getPartitionService();
             final Set<Partition> partitionSet = partitionService.getPartitions();
 
             for (Partition partition : partitionSet) {
-
                 while (partition.getOwner() == null) {
                     Thread.sleep(1000);
                 }
             }
-
-
             log.info(basename+": "+partitionSet.size()+" partitions");
 
             totalKeys = partitionService.getPartitions().size() * 4;
