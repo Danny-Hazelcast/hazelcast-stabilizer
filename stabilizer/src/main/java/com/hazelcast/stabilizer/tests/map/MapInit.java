@@ -54,9 +54,13 @@ public class MapInit {
             }
             log.info(basename + ": cluster == " + memberCount);
 
-            Thread.sleep(1000*10);
-
             final PartitionService partitionService = targetInstance.getPartitionService();
+
+
+            while(!partitionService.isClusterSafe()){
+                Thread.sleep(1000);
+            }
+
             final Set<Partition> partitionSet = partitionService.getPartitions();
             for (Partition partition : partitionSet) {
                 while (partition.getOwner() == null) {
@@ -136,7 +140,7 @@ public class MapInit {
 
                 key = random.nextInt(stressKeys);
                 IMap stressMap = targetInstance.getMap(basename+"stress");
-                stressMap.put(key, c);
+                stressMap.put(key, stress);
             }
         }
     }
