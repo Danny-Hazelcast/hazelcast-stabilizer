@@ -28,7 +28,7 @@ public class Customer implements Serializable  {
         billingAddress = new Address();
         deliveryAddress = new Address();
 
-        orders = new ArrayList<Order>(100);
+        orders = new ArrayList<Order>(10);
         for(int i=0; i<100; i++){
             orders.add(new Order());
         }

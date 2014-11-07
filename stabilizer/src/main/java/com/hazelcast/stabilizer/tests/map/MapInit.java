@@ -67,11 +67,13 @@ public class MapInit {
 
             printMemStats(basename);
 
+            Customer c =  new Customer();
+
             final Member localMember = targetInstance.getCluster().getLocalMember();
             for(int i=0; i<totalKeys; i++){
                 Partition partition = partitionService.getPartition(i);
                 if (localMember.equals(partition.getOwner())) {
-                    map.put(i, new Customer());
+                    map.put(i, c);
                     log.info(basename+": setup Put key="+i);
                 }
             }
@@ -111,6 +113,8 @@ public class MapInit {
         IntHistogram getLatencyHisto = new IntHistogram(1, 1000*30, 0);
         Random random = new Random();
 
+        Customer stress = new Customer();
+
         public void run() {
             while (!testContext.isStopped()) {
 
@@ -132,7 +136,7 @@ public class MapInit {
 
                 key = random.nextInt(stressKeys);
                 IMap stressMap = targetInstance.getMap(basename+"stress");
-                stressMap.put(key, new Customer());
+                stressMap.put(key, c);
             }
         }
     }

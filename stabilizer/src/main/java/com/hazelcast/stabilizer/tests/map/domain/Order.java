@@ -23,7 +23,7 @@ public class Order implements Serializable {
         orderDate = new Date();
         deliveryDate = new Date();
 
-        items = new ArrayList<Item>(100);
+        items = new ArrayList<Item>(10);
         for(int i=0; i<100; i++){
             items.add(new Item());
         }
