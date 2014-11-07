@@ -2,6 +2,7 @@ package com.hazelcast.stabilizer.tests.map;
 
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IAtomicReference;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.Member;
 import com.hazelcast.core.Partition;
@@ -19,6 +20,7 @@ import org.HdrHistogram.IntHistogram;
 
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.printMemStats;
 import static junit.framework.Assert.assertEquals;
@@ -82,6 +84,8 @@ public class MapInit {
 
     @Run
     public void run() {
+
+        //IAtomicReference<Boolean> running = targetInstance.getAtomicReference("running");
 
         ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
 
