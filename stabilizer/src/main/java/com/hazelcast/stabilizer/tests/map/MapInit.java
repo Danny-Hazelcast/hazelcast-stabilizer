@@ -150,10 +150,14 @@ public class MapInit {
                     log.severe(basename+": key "+key+" == null");
                     log.severe(basename+": map size="+map.size());
                     log.severe(basename+": totalkeys="+totalKeys);
+
+                    throw new RuntimeException("Lost data 1");
                 }
 
                 if(map.size()!=totalKeys){
                     log.severe(basename+": map size="+map.size()+" !");
+
+                    throw new RuntimeException("Lost data 2");
                 }
 
                 key = random.nextInt(stressKeys);
