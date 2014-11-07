@@ -49,6 +49,8 @@ public class MapInit {
             }
             log.info(basename + ": cluster == " + memberCount);
 
+            Thread.sleep(1000*10);
+
             final PartitionService partitionService = targetInstance.getPartitionService();
             final Set<Partition> partitionSet = partitionService.getPartitions();
             for (Partition partition : partitionSet) {
@@ -57,6 +59,8 @@ public class MapInit {
                 }
             }
             log.info(basename + ": all " + partitionSet.size() + " partitions assigned");
+
+
 
             printMemStats(basename);
 
