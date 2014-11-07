@@ -13,6 +13,7 @@ import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
+import com.hazelcast.stabilizer.tests.annotations.Warmup;
 import com.hazelcast.stabilizer.tests.map.domain.*;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
@@ -54,12 +55,14 @@ public class MapInit {
             }
             log.info(basename + ": cluster == " + memberCount);
 
-            final PartitionService partitionService = targetInstance.getPartitionService();
+            Thread.sleep(3000);
 
-
+            PartitionService partitionService = targetInstance.getPartitionService();
             while(!partitionService.isClusterSafe()){
                 Thread.sleep(1000);
             }
+            log.info(basename + ": cluster is safe ");
+
 
             final Set<Partition> partitionSet = partitionService.getPartitions();
             for (Partition partition : partitionSet) {
@@ -68,29 +71,32 @@ public class MapInit {
                 }
             }
             log.info(basename + ": all " + partitionSet.size() + " partitions assigned");
-
-            printMemStats(basename);
-
-            Customer c =  new Customer();
-
-            final Member localMember = targetInstance.getCluster().getLocalMember();
-            for(int i=0; i<totalKeys; i++){
-                Partition partition = partitionService.getPartition(i);
-                if (localMember.equals(partition.getOwner())) {
-                    map.put(i, c);
-                    log.info(basename+": setup Put key="+i);
-                }
-            }
-
-            log.info(basename + ": After setup map size=" + map.size());
-
-            printMemStats(basename);
         }
+    }
+
+    @Warmup(global = false)
+    public void warmup() throws Exception {
+        printMemStats(basename);
+
+        Customer c =  new Customer();
+
+        PartitionService partitionService = targetInstance.getPartitionService();
+        Member localMember = targetInstance.getCluster().getLocalMember();
+
+        for(int i=0; i<totalKeys; i++){
+            Partition partition = partitionService.getPartition(i);
+            if (localMember.equals(partition.getOwner())) {
+                map.put(i, c);
+                //log.info(basename+": setup Put key="+i);
+            }
+        }
+        log.info(basename + ": After setup map size=" + map.size());
+
+        printMemStats(basename);
     }
 
     @Run
     public void run() {
-
         //IAtomicReference<Boolean> running = targetInstance.getAtomicReference("running");
 
         ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
