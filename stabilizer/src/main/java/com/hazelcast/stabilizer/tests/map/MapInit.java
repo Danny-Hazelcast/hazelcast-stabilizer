@@ -3,6 +3,7 @@ package com.hazelcast.stabilizer.tests.map;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IAtomicReference;
+import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.Member;
 import com.hazelcast.core.Partition;
@@ -19,8 +20,10 @@ import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 import org.HdrHistogram.IntHistogram;
 
+import java.io.Serializable;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.printMemStats;
@@ -31,13 +34,12 @@ public class MapInit {
     private String basename = this.getClass().getCanonicalName();
 
     public int threadCount=3;
-    public int totalKeys = 1000;
-
-    public int stressKeys = 100;
-
     public int memberCount = 1;
     public String mapName;
+    public int stressKeys = 100;
 
+
+    private int totalKeys;
     private TestContext testContext;
     private HazelcastInstance targetInstance;
     private IMap map;
@@ -57,14 +59,6 @@ public class MapInit {
 
             Thread.sleep(1000 * 10);
 
-            /*
-            PartitionService partitionService = targetInstance.getPartitionService();
-            while(!partitionService.isClusterSafe()){
-                Thread.sleep(1000);
-            }
-            log.info(basename + ": cluster is safe ");
-            */
-
             PartitionService partitionService = targetInstance.getPartitionService();
             final Set<Partition> partitionSet = partitionService.getPartitions();
             for (Partition partition : partitionSet) {
@@ -81,36 +75,19 @@ public class MapInit {
     public void warmup() throws Exception {
         printMemStats(basename);
 
-        Customer c =  new Customer();
-
         PartitionService partitionService = targetInstance.getPartitionService();
-        Member localMember = targetInstance.getCluster().getLocalMember();
-
-        /*
-        for(int i=0; i<totalKeys; i++){
-            Partition partition = partitionService.getPartition(i);
-            if (localMember.equals(partition.getOwner())) {
-                map.put(i, c);
-                //log.info(basename+": setup Put key="+i);
-            }
-        }
-        */
 
         totalKeys = partitionService.getPartitions().size() * 4;
         for(int i=0; i<totalKeys; i++){
             map.put(i, i);
         }
-
-
-        log.info(basename + ": After setup map size=" + map.size());
+        log.info(basename + ": After warmup map size=" + map.size());
 
         printMemStats(basename);
     }
 
     @Run
     public void run() {
-        //IAtomicReference<Boolean> running = targetInstance.getAtomicReference("running");
-
         ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
 
         Worker[] workers = new Worker[threadCount];
@@ -121,49 +98,54 @@ public class MapInit {
         }
         spawner.awaitCompletion();
 
-        for(int i=1; i<threadCount; i++){
-            workers[0].putLatencyHisto.add(workers[i].putLatencyHisto);
-            workers[0].getLatencyHisto.add(workers[i].getLatencyHisto);
-        }
-
-        targetInstance.getList(basename+"putHisto").add(workers[0].putLatencyHisto);
-        targetInstance.getList(basename+"getHisto").add(workers[0].getLatencyHisto);
     }
 
     private class Worker implements Runnable {
-        IntHistogram putLatencyHisto = new IntHistogram(1, 1000*30, 0);
-        IntHistogram getLatencyHisto = new IntHistogram(1, 1000*30, 0);
         Random random = new Random();
-
-        Customer stress = new Customer();
+        Customer stressObj = new Customer();
+        Counter count = new Counter();
 
         public void run() {
             while (!testContext.isStopped()) {
 
                 int key = random.nextInt(totalKeys);
-                long start = System.currentTimeMillis();
                 Object obj = map.get(key);
-                long stop = System.currentTimeMillis();
-                getLatencyHisto.recordValue(stop - start);
 
                 if(obj==null){
                     log.severe(basename+": key "+key+" == null");
                     log.severe(basename+": map size="+map.size());
                     log.severe(basename+": totalkeys="+totalKeys);
-
-                    throw new RuntimeException("Lost data 1");
+                    count.getNull++;
                 }
 
                 if(map.size()!=totalKeys){
                     log.severe(basename+": map size="+map.size()+" !");
-
-                    throw new RuntimeException("Lost data 2");
+                    count.mapSizeError++;
                 }
 
                 key = random.nextInt(stressKeys);
                 IMap stressMap = targetInstance.getMap(basename+"stress");
-                stressMap.put(key, stress);
+                stressMap.put(key, stressObj);
             }
+            targetInstance.getList(basename+"res").add(count);
+        }
+    }
+
+    private static class Counter implements Serializable {
+        public long getNull=0;
+        public long mapSizeError=0;
+
+        public void add(Counter c) {
+            getNull+=c.getNull;
+            mapSizeError+=c.mapSizeError;
+        }
+
+        @Override
+        public String toString() {
+            return "Counter{" +
+                    "getNull=" + getNull +
+                    ", mapSizeError=" + mapSizeError +
+                    '}';
         }
     }
 
@@ -174,6 +156,16 @@ public class MapInit {
         log.info(basename+": "+mapConfig);
         log.info(basename+": verify map size="+map.size());
 
+        IList<Counter> results = targetInstance.getList(basename + "res");
+        Counter total = new Counter();
+        for (Counter i : results) {
+            total.add(i);
+        }
+        log.info(basename + ": " + total + " from " + results.size()+" worker Threads");
+
         assertEquals(basename + ": map (" + map.getName() + ") size ", totalKeys, map.size());
+
+        assertEquals(basename + ": "+total, total.getNull, 0);
+        assertEquals(basename + ": "+total, total.mapSizeError, 0);
     }
 }
