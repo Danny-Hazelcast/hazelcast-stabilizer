@@ -57,8 +57,6 @@ public class MapInit {
             }
             log.info(basename + ": cluster == " + memberCount);
 
-            Thread.sleep(1000 * 10);
-
             PartitionService partitionService = targetInstance.getPartitionService();
             final Set<Partition> partitionSet = partitionService.getPartitions();
             for (Partition partition : partitionSet) {
@@ -68,11 +66,22 @@ public class MapInit {
                 }
             }
             log.info(basename + ": all " + partitionSet.size() + " partitions assigned");
+
+            totalKeys = partitionService.getPartitions().size() * 4;
+            Member localMember = targetInstance.getCluster().getLocalMember();
+            for(int i=0; i<totalKeys; i++){
+                Partition partition = partitionService.getPartition(i);
+                if (localMember.equals(partition.getOwner())) {
+                    map.put(i, i);
+                    log.info(basename+": setup Put key="+i);
+                }
+            }
         }
     }
 
     @Warmup(global = false)
     public void warmup() throws Exception {
+        /*
         printMemStats(basename);
 
         PartitionService partitionService = targetInstance.getPartitionService();
@@ -84,6 +93,7 @@ public class MapInit {
         log.info(basename + ": After warmup map size=" + map.size());
 
         printMemStats(basename);
+        */
     }
 
     @Run
