@@ -29,6 +29,9 @@ public class MapInit {
 
     public int threadCount=3;
     public int totalKeys = 1000;
+
+    public int stressKeys = 10;
+
     public int memberCount = 1;
     public String mapName;
 
@@ -60,8 +63,6 @@ public class MapInit {
             }
             log.info(basename + ": all " + partitionSet.size() + " partitions assigned");
 
-
-
             printMemStats(basename);
 
             final Member localMember = targetInstance.getCluster().getLocalMember();
@@ -72,10 +73,6 @@ public class MapInit {
                     log.info(basename+": setup Put key="+i);
                 }
             }
-
-            //while(map.size()!=totalKeys){
-            //    Thread.sleep(1000);
-            //}
 
             log.info(basename + ": After setup map size=" + map.size());
 
@@ -103,7 +100,6 @@ public class MapInit {
 
         targetInstance.getList(basename+"putHisto").add(workers[0].putLatencyHisto);
         targetInstance.getList(basename+"getHisto").add(workers[0].getLatencyHisto);
-
     }
 
     private class Worker implements Runnable {
@@ -115,8 +111,6 @@ public class MapInit {
             while (!testContext.isStopped()) {
 
                 int key = random.nextInt(totalKeys);
-
-
                 long start = System.currentTimeMillis();
                 Customer c = map.get(key);
                 long stop = System.currentTimeMillis();
@@ -127,6 +121,14 @@ public class MapInit {
                     log.severe(basename+": map size="+map.size());
                     log.severe(basename+": totalkeys="+totalKeys);
                 }
+
+                if(map.size()!=totalKeys){
+                    log.severe(basename+": map size="+map.size()+" !");
+                }
+
+                key = random.nextInt(stressKeys);
+                IMap stressMap = targetInstance.getMap(basename+"stress");
+                stressMap.put(key, new Customer());
             }
         }
     }
