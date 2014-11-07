@@ -62,14 +62,14 @@ public class MapInit {
 
             PartitionService partitionService = targetInstance.getPartitionService();
             final Set<Partition> partitionSet = partitionService.getPartitions();
-            /*
+
             for (Partition partition : partitionSet) {
 
                 while (partition.getOwner() == null) {
                     Thread.sleep(1000);
                 }
             }
-            */
+
 
             log.info(basename+": "+partitionSet.size()+" partitions");
 
