@@ -33,14 +33,14 @@ public class MapInit {
     public int threadCount=3;
     public int totalKeys = 1000;
 
-    public int stressKeys = 10;
+    public int stressKeys = 100;
 
     public int memberCount = 1;
     public String mapName;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
-    private IMap<Integer, Customer> map;
+    private IMap map;
 
     @Setup
     public void setup(TestContext testContex) throws Exception {
@@ -68,6 +68,7 @@ public class MapInit {
             PartitionService partitionService = targetInstance.getPartitionService();
             final Set<Partition> partitionSet = partitionService.getPartitions();
             for (Partition partition : partitionSet) {
+
                 while (partition.getOwner() == null) {
                     Thread.sleep(1000);
                 }
@@ -85,6 +86,7 @@ public class MapInit {
         PartitionService partitionService = targetInstance.getPartitionService();
         Member localMember = targetInstance.getCluster().getLocalMember();
 
+        /*
         for(int i=0; i<totalKeys; i++){
             Partition partition = partitionService.getPartition(i);
             if (localMember.equals(partition.getOwner())) {
@@ -92,6 +94,14 @@ public class MapInit {
                 //log.info(basename+": setup Put key="+i);
             }
         }
+        */
+
+        totalKeys = partitionService.getPartitions().size() * 4;
+        for(int i=0; i<totalKeys; i++){
+            map.put(i, i);
+        }
+
+
         log.info(basename + ": After setup map size=" + map.size());
 
         printMemStats(basename);
@@ -132,11 +142,11 @@ public class MapInit {
 
                 int key = random.nextInt(totalKeys);
                 long start = System.currentTimeMillis();
-                Customer c = map.get(key);
+                Object obj = map.get(key);
                 long stop = System.currentTimeMillis();
                 getLatencyHisto.recordValue(stop - start);
 
-                if(c==null){
+                if(obj==null){
                     log.severe(basename+": key "+key+" == null");
                     log.severe(basename+": map size="+map.size());
                     log.severe(basename+": totalkeys="+totalKeys);
