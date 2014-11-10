@@ -1,4 +1,4 @@
-package com.hazelcast.stabilizer.tests.performance.domain;
+package com.hazelcast.stabilizer.tests.map.domain;
 
 import com.hazelcast.stabilizer.tests.map.helpers.StringUtils;
 

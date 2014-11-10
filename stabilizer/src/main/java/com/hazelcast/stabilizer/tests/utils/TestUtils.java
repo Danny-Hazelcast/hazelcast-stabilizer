@@ -270,6 +270,22 @@ public class TestUtils {
         }
     }
 
+    public static void printMemStats(String basename) {
+        long free = Runtime.getRuntime().freeMemory();
+        long total = Runtime.getRuntime().totalMemory();
+        long used = total - free;
+        long max = Runtime.getRuntime().maxMemory();
+        double usedOfMax = 100.0 * ((double) used / (double) max);
+
+        long totalFree = max - used;
+
+        log.info(basename + ": free = " + TestUtils.humanReadableByteCount(free, true) + " = " + free);
+        log.info(basename + ": total free = " + TestUtils.humanReadableByteCount(totalFree, true) + " = " + totalFree);
+        log.info(basename + ": used = " + TestUtils.humanReadableByteCount(used, true) + " = " + used);
+        log.info(basename + ": max = " + TestUtils.humanReadableByteCount(max, true) + " = " + max);
+        log.info(basename + ": usedOfMax = " + usedOfMax + "%");
+    }
+
     // we don't want instances
     private TestUtils() {
     }

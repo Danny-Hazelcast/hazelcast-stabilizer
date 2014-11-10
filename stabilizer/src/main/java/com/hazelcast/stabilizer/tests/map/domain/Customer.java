@@ -1,13 +1,12 @@
-package com.hazelcast.stabilizer.tests.performance.domain;
+package com.hazelcast.stabilizer.tests.map.domain;
 
 import com.hazelcast.stabilizer.tests.map.helpers.StringUtils;
-import com.hazelcast.stabilizer.tests.utils.TestUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Customer implements Serializable {
+public class Customer implements Serializable  {
 
     public String id;
     public String name;
@@ -29,7 +28,7 @@ public class Customer implements Serializable {
         billingAddress = new Address();
         deliveryAddress = new Address();
 
-        orders = new ArrayList<Order>(100);
+        orders = new ArrayList<Order>(10);
         for(int i=0; i<100; i++){
             orders.add(new Order());
         }
