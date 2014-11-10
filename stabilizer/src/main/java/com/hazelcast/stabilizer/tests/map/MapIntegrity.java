@@ -2,7 +2,6 @@ package com.hazelcast.stabilizer.tests.map;
 
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IAtomicReference;
 import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.Member;
@@ -18,24 +17,20 @@ import com.hazelcast.stabilizer.tests.annotations.Warmup;
 import com.hazelcast.stabilizer.tests.map.domain.*;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
-import org.HdrHistogram.IntHistogram;
 
 import java.io.Serializable;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.printMemStats;
 import static junit.framework.Assert.assertEquals;
 
-public class MapInit {
-    private final static ILogger log = Logger.getLogger(MapInit.class);
+public class MapIntegrity {
+    private final static ILogger log = Logger.getLogger(MapIntegrity.class);
     private String basename = this.getClass().getCanonicalName();
 
     public int threadCount=10;
     public String mapName;
-
 
     private int totalKeys;
     private TestContext testContext;
@@ -62,31 +57,19 @@ public class MapInit {
 
             totalKeys = partitionService.getPartitions().size() * 4;
             Member localMember = targetInstance.getCluster().getLocalMember();
+
+            printMemStats(basename);
+
             for(int i=0; i<totalKeys; i++){
                 Partition partition = partitionService.getPartition(i);
                 if (localMember.equals(partition.getOwner())) {
                     map.put(i, i);
-                    log.info(basename+": setup Put key="+i);
+                    log.info(basename+": Put key="+i);
                 }
             }
+            log.info(basename + ": map (" + map.getName() + ") size =" + map.s        
+            printMemStats(basename);
         }
-    }
-
-    @Warmup(global = false)
-    public void warmup() throws Exception {
-        /*
-        printMemStats(basename);
-
-        PartitionService partitionService = targetInstance.getPartitionService();
-
-        totalKeys = partitionService.getPartitions().size() * 4;
-        for(int i=0; i<totalKeys; i++){
-            map.put(i, i);
-        }
-        log.info(basename + ": After warmup map size=" + map.size());
-
-        printMemStats(basename);
-        */
     }
 
     @Run
@@ -116,8 +99,6 @@ public class MapInit {
 
                 if(obj==null){
                     log.severe(basename+": key "+key+" == null");
-                    log.severe(basename+": map size="+map.size());
-                    log.severe(basename+": totalkeys="+totalKeys);
                     count.getNull++;
                 }
 
@@ -152,13 +133,11 @@ public class MapInit {
         }
     }
 
-
     @Verify(global = false)
     public void verify() throws Exception {
         MapConfig mapConfig = targetInstance.getConfig().getMapConfig(mapName);
         log.info(basename+": "+mapConfig);
         log.info(basename+": verify map size="+map.size());
-
         log.info(basename+": Stress map size="+targetInstance.getMap(basename+"stress").size());
 
 
