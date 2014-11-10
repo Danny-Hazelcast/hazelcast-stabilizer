@@ -13,7 +13,6 @@ import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
-import com.hazelcast.stabilizer.tests.annotations.Warmup;
 import com.hazelcast.stabilizer.tests.map.domain.*;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
@@ -59,7 +58,6 @@ public class MapIntegrity {
             Member localMember = targetInstance.getCluster().getLocalMember();
 
             printMemStats(basename);
-
             for(int i=0; i<totalKeys; i++){
                 Partition partition = partitionService.getPartition(i);
                 if (localMember.equals(partition.getOwner())) {
@@ -67,7 +65,7 @@ public class MapIntegrity {
                     log.info(basename+": Put key="+i);
                 }
             }
-            log.info(basename + ": map (" + map.getName() + ") size =" + map.s        
+            log.info(basename + ": map (" + map.getName() + ") size =" + map.size());
             printMemStats(basename);
         }
     }
@@ -75,15 +73,10 @@ public class MapIntegrity {
     @Run
     public void run() {
         ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
-
-        Worker[] workers = new Worker[threadCount];
-
         for(int i=0; i<threadCount; i++){
-            workers[i] = new Worker();
-            spawner.spawn(workers[i]);
+            spawner.spawn( new Worker() );
         }
         spawner.awaitCompletion();
-
     }
 
     private class Worker implements Runnable {
