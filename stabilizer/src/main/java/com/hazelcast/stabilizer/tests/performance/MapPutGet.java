@@ -72,7 +72,8 @@ public class MapPutGet {
                     iput++;
                 }
             }
-            log.info(basename+": iput="+iput);
+
+            log.info(basename+": member "+targetInstance.getName()+" put="+iput);
         }
     }
 
