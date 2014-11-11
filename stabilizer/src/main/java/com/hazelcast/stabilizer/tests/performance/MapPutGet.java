@@ -38,9 +38,8 @@ public class MapPutGet {
     public int threadCount = 3;
     public int valueLength = 100;
     public int totalKeys = 10000;
-    public int memberCount = 1;
-    public int jitWarmUpMs = 1000*30;
-    public int durationMs = 1000*60;
+    public int jitWarmUpMs = 1000*60;
+    public int durationMs = 1000*60*2;
     public double putProb = 0.5;
 
     private TestContext testContext;
@@ -58,6 +57,8 @@ public class MapPutGet {
         Random random = new Random();
         random.nextBytes(value);
 
+        int iput=0;
+
         if(TestUtils.isMemberNode(targetInstance)){
             TestUtils.warmupPartitions(log, targetInstance);
 
@@ -68,8 +69,10 @@ public class MapPutGet {
                 Partition partition = partitionService.getPartition(i);
                 if (localMember.equals(partition.getOwner())) {
                     map.put(i, value);
+                    iput++;
                 }
             }
+            log.info(basename+": iput="+iput);
         }
     }
 
@@ -157,7 +160,7 @@ public class MapPutGet {
         getHisto.outputPercentileDistribution(System.out, 1.0);
         double getPerSec = getHisto.getTotalCount() / (durationMs/1000);
 
-        log.info(basename+": put/sec ="+putsPerSec);
-        log.info(basename+": get/Sec ="+getPerSec);
+        log.info(basename+": avg put/sec ="+putsPerSec+" over "+durationMs/1000+" seconds");
+        log.info(basename+": avg get/Sec ="+getPerSec+" over "+durationMs/1000+" seconds");
     }
 }
