@@ -45,6 +45,7 @@
         <module>dist</module>
         <module>visualiser</module>
         <module>probes</module>
+        <module>eeTests</module>
     </modules>
 
     <scm>
