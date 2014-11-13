@@ -44,4 +44,25 @@
         <in-memory-format>OBJECT</in-memory-format>
     </map>
 
+
+    <cache name="offHeapEvictionCache">
+        <backup-count>1</backup-count>
+        <async-backup-count>0</async-backup-count>
+        <eviction-percentage>10</eviction-percentage>
+        <eviction-threshold-percentage>95</eviction-threshold-percentage>
+        <eviction-policy>LRU</eviction-policy>
+        <in-memory-format>NATIVE</in-memory-format>
+        <statistics-enabled>true</statistics-enabled>
+    </cache>
+
+    <serialization>
+        <use-native-byte-order>true</use-native-byte-order>
+        <allow-unsafe>true</allow-unsafe>
+    </serialization>
+
+    <native-memory allocator-type="POOLED" enabled="true">
+        <size unit="GIGABYTES" value="5" />
+        <metadata-space-percentage>5</metadata-space-percentage>
+    </native-memory>
+
 </hazelcast>

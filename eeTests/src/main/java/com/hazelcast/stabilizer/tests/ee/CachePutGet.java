@@ -1,9 +1,11 @@
 package com.hazelcast.stabilizer.tests.ee;
 
-import com.hazelcast.config.MapConfig;
+import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
+import com.hazelcast.config.CacheConfig;
+import com.hazelcast.config.CacheSimpleConfig;
+import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
-import com.hazelcast.core.IMap;
 import com.hazelcast.core.Member;
 import com.hazelcast.core.Partition;
 import com.hazelcast.core.PartitionService;
@@ -15,49 +17,61 @@ import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
+import org.HdrHistogram.IntHistogram;
 
+import javax.cache.Cache;
+import javax.cache.CacheManager;
+import javax.cache.spi.CachingProvider;
 import java.util.Random;
 
-/*
-* Test performance of map put/get.  gives latency histogram and through put
-* every member node in the test,  init's the map with keysPerNode number of key/value
-* during initialization each member puts to a partition they own,  this cuts down on network traffic during
-* test init.  In total there will be keysPerNode * memberCount keys in the map.  the value used is
-* a byte array,  the test uses the same byte array to put as the value for every map entry, so
-* cutting down the memory footprint of the test.
-* the clients or members that run the test, do puts and get (at ratio putProb) from the key range 0 to totalKeys,  so
-* their puts and gets can hit every member.  put / get latency and through put info is collected from every worker thread
-* so there is no competition between worker threads.  this test also has a JIT warm up phase before the measurements are take
-* */
-public class MapPutGet {
-    private final static ILogger log = Logger.getLogger(MapPutGet.class);
 
-    public String basename = this.getClass().getName();
+/* <native-memory allocator-type="POOLED" enabled="true">
+        <size unit="GIGABYTES" value="5" />
+        <metadata-space-percentage>5</metadata-space-percentage>
+        <min-block-size>16</min-block-size>
+        <page-size></page-size>
+    </native-memory>
+*/
+public class CachePutGet {
+    private final static ILogger log = Logger.getLogger(CachePutGet.class);
+
+    public String basename = "offHeapEvictionCache"; //this.getClass().getCanonicalName();
     public int threadCount = 3;
     public int valueLength = 1000;
-    public int totalKeys = 1000;
-    public int memberCount = 1;
+    public int totalKeys = 10000;
     public int jitWarmUpMs = 1000*30;
     public int durationMs = 1000*60;
     public double putProb = 0.5;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
-    private IMap map;
     private byte[] value;
+
+    private Cache<Object, Object> cache;
 
     @Setup
     public void setup(TestContext testContex) throws Exception {
         testContext = testContex;
         targetInstance = testContext.getTargetInstance();
-        map = targetInstance.getMap(basename);
-        value = new byte[valueLength];
 
+        CachingProvider cachingProvider = HazelcastServerCachingProvider.createCachingProvider(targetInstance);
+        CacheManager cacheManager = cachingProvider.getCacheManager();
+
+        /*
+        CacheConfig cacheConfig = new CacheConfig();
+        cacheConfig.setInMemoryFormat(InMemoryFormat.NATIVE);
+        cacheConfig.setName(basename);
+        cacheConfig.setStatisticsEnabled(true);
+        */
+
+        cache = cacheManager.getCache(basename);
+
+        //doing the initilization of cache data hear, so the members can put key's they own even if clients are envolved in the test, speeding things up
+        value = new byte[valueLength];
         Random random = new Random();
         random.nextBytes(value);
 
         if(TestUtils.isMemberNode(targetInstance)){
-            TestUtils.waitClusterSize(log, targetInstance, memberCount);
             TestUtils.warmupPartitions(log, targetInstance);
 
             final Member localMember = targetInstance.getCluster().getLocalMember();
@@ -66,7 +80,7 @@ public class MapPutGet {
             for(int i=0; i<totalKeys; i++){
                 Partition partition = partitionService.getPartition(i);
                 if (localMember.equals(partition.getOwner())) {
-                    map.put(i, value);
+                    cache.put(i, value);
                 }
             }
         }
@@ -113,12 +127,12 @@ public class MapPutGet {
 
                 if(random.nextDouble() < putProb){
                     long start = System.currentTimeMillis();
-                    map.put(key, value);
+                    cache.put(key, value);
                     long stop = System.currentTimeMillis();
                     putLatencyHisto.recordValue(stop - start);
                 }else{
                     long start = System.currentTimeMillis();
-                    map.get(key);
+                    cache.get(key);
                     long stop = System.currentTimeMillis();
                     getLatencyHisto.recordValue(stop - start);
                 }
@@ -131,9 +145,8 @@ public class MapPutGet {
     @Verify(global = true)
     public void verify() throws Exception {
 
-        MapConfig mapConfig = targetInstance.getConfig().getMapConfig(basename);
-        log.info(basename+": "+mapConfig);
-        log.info(basename+": map size="+map.size());
+        CacheSimpleConfig cacheConfig = targetInstance.getConfig().getCacheConfig(basename);
+        log.info(basename+": "+cacheConfig);
 
         IList<IntHistogram> putHistos = targetInstance.getList(basename+"putHisto");
         IList<IntHistogram>  getHistos = targetInstance.getList(basename+"getHisto");
