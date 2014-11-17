@@ -19,6 +19,16 @@
             <version>${jsr107.api.version}</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-enterprise</artifactId>
+            <version>${hazelcast.version}</version>
+            <scope>system</scope>
+            <systemPath>/home/danny/.m2/repository/com/hazelcast/hazelcast-enterprise/3.4-RC1-SNAPSHOT/hazelcast-enterprise-3.4-RC1-SNAPSHOT.jar</systemPath>
+        </dependency>
+
+
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>
@@ -30,6 +40,9 @@
             <artifactId>hazelcast-client</artifactId>
             <version>${hazelcast.version}</version>
         </dependency>
+
+
+
 
         <dependency>
             <groupId>org.hdrhistogram</groupId>
