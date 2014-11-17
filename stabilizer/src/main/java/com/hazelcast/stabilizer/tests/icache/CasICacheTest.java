@@ -131,7 +131,7 @@ public class CasICacheTest {
             log.info(basename+": "+memoryStats.toString());
         }
 
-        assertEquals(failures + " key=>values have been incremented unExpected", 0, failures);
+        assertEquals(basename+" "+failures+" key=>values have been incremented unExpected", 0, failures);
     }
 
     public static void main(String[] args) throws Throwable {

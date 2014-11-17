@@ -121,7 +121,7 @@ public class EntryProcessorICacheTest {
                 failures++;
             }
         }
-        assertEquals("Failures have been found", 0, failures);
+        assertEquals(basename+" Failures have been found", 0, failures);
     }
 
 
