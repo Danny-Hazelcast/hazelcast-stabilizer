@@ -1,4 +1,4 @@
-package com.stabilizer.enterprise.tests.icache;
+package com.hazelcast.enterprise.tests.icache;
 
 import javax.cache.Cache;
 import javax.cache.CacheManager;;

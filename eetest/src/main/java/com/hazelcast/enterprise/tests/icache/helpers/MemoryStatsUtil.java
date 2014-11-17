@@ -1,4 +1,4 @@
-package com.stabilizer.enterprise.tests.icache.helpers;
+package com.hazelcast.enterprise.tests.icache.helpers;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.instance.HazelcastInstanceImpl;

@@ -1,4 +1,4 @@
-package com.stabilizer.enterprise.tests.icache;
+package com.hazelcast.enterprise.tests.icache;
 
 
 import com.hazelcast.cache.impl.HazelcastServerCacheManager;

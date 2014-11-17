@@ -1,4 +1,4 @@
-package com.stabilizer.enterprise.tests.icache;
+package com.hazelcast.enterprise.tests.icache;
 
 import javax.cache.Cache;
 import javax.cache.CacheManager;;
@@ -19,7 +19,7 @@ import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
-import com.stabilizer.enterprise.tests.icache.helpers.MemoryStatsUtil;
+import com.hazelcast.enterprise.tests.icache.helpers.MemoryStatsUtil;
 
 
 import java.util.Random;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.stabilizer.enterprise.tests.icache;
+package com.hazelcast.enterprise.tests.icache;
 
 import com.hazelcast.cache.ICache;
 import javax.cache.CacheManager;;
