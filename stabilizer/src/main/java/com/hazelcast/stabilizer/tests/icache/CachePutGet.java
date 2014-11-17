@@ -29,6 +29,12 @@ import java.util.Random;
         <min-block-size>16</min-block-size>
         <page-size></page-size>
     </native-memory>
+
+    <serialization>
+        <use-native-byte-order>true</use-native-byte-order>
+        <allow-unsafe>true</allow-unsafe>
+    </serialization>
+
 */
 public class CachePutGet {
     private final static ILogger log = Logger.getLogger(CachePutGet.class);

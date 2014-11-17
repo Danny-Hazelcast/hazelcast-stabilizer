@@ -109,7 +109,7 @@ public class CasICacheTest {
         }
     }
 
-    @Verify
+    @Verify(global = true)
     public void verify() throws Exception {
         long[] amount = new long[keyCount];
 
@@ -128,6 +128,7 @@ public class CasICacheTest {
                 failures++;
             }
         }
+
         assertEquals(failures + " key=>values have been incremented unExpected", 0, failures);
     }
 
