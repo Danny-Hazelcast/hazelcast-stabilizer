@@ -25,7 +25,7 @@
             <artifactId>hazelcast-enterprise</artifactId>
             <version>${hazelcast.version}</version>
             <scope>system</scope>
-            <systemPath>/home/danny/.m2/repository/com/hazelcast/hazelcast-enterprise/3.4-RC1-SNAPSHOT/hazelcast-enterprise-3.4-RC1-SNAPSHOT.jar</systemPath>
+            <systemPath>${user.home}/.m2/repository/com/hazelcast/hazelcast-enterprise/${hazelcast.version}/hazelcast-enterprise-${hazelcast.version}.jar</systemPath>
         </dependency>
 
 
