@@ -64,10 +64,13 @@ public class ReadWriteICacheTest {
     public int getDelayMs=0;
     public int removeDealyMs=0;
 
+    public String basename;
+
+
     private TestContext testContext;
     private HazelcastInstance targetInstance;
     private CacheManager cacheManager;
-    private String basename;
+
 
     private MutableConfiguration config;
     private Cache<Object,Object> cache;
@@ -76,7 +79,7 @@ public class ReadWriteICacheTest {
     public void setup(TestContext testContext) throws Exception {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
-        basename = testContext.getTestId();
+        basename = basename+""+testContext.getTestId();
 
         if (TestUtils.isMemberNode(targetInstance)) {
             HazelcastServerCachingProvider hcp = new HazelcastServerCachingProvider();
@@ -126,7 +129,6 @@ public class ReadWriteICacheTest {
                 if ( (chance -= putProb) < 0 ) {
                     cache.put(key, key);
                     counter.put++;
-
                 }
                 else if ( (chance -= getProb) < 0 ) {
                     Object o = cache.get(key);

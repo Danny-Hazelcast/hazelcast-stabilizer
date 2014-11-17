@@ -44,7 +44,6 @@ public class CachePutGet {
     public int jitWarmUpMs = 1000*30;
     public int durationMs = 1000*60;
     public double putProb = 0.5;
-
     public String basename;
 
     private TestContext testContext;
@@ -167,7 +166,7 @@ public class CachePutGet {
         getHisto.outputPercentileDistribution(System.out, 1.0);
         double getPerSec = getHisto.getTotalCount() / (durationMs/1000);
 
-        log.info(basename+": put/sec ="+putsPerSec);
-        log.info(basename+": get/Sec ="+getPerSec);
+        log.info(basename+":avg put/sec ="+putsPerSec);
+        log.info(basename+":avg get/Sec ="+getPerSec);
     }
 }

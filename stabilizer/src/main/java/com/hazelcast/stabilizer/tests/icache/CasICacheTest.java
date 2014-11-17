@@ -128,7 +128,7 @@ public class CasICacheTest {
         }
 
         if ( TestUtils.isMemberNode(targetInstance) ){
-            log.info(basename+": "+memoryStats);
+            log.info(basename+": "+memoryStats.toString());
         }
 
         assertEquals(failures + " key=>values have been incremented unExpected", 0, failures);

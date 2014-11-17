@@ -57,6 +57,7 @@ public class AddRemoveListenerICacheTest {
     public void setup(TestContext textConTx) {
         testContext = textConTx;
         targetInstance = testContext.getTargetInstance();
+        basename = basename+""+testContext.getTestId();
 
         if (TestUtils.isMemberNode(targetInstance)) {
             HazelcastServerCachingProvider hcp = new HazelcastServerCachingProvider();
@@ -66,7 +67,6 @@ public class AddRemoveListenerICacheTest {
             cacheManager = new HazelcastClientCacheManager( hcp, targetInstance, hcp.getDefaultURI(), hcp.getDefaultClassLoader(), null);
         }
 
-        basename = basename+""+testContext.getTestId();
         cache = cacheManager.getCache(basename);
     }
 
