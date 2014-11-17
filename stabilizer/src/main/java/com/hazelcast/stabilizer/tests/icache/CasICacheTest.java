@@ -65,17 +65,17 @@ public class CasICacheTest {
         }
         cache = cacheManager.getCache(basename);
 
-        memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
+        if ( TestUtils.isMemberNode(targetInstance) ){
+            memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
+        }
     }
 
     @Warmup(global = true)
     public void warmup() throws Exception {
 
-
         System.out.println(basename);
         System.out.println(testContext.getTestId());
         System.out.println(memoryStats);
-
 
         log.info(basename+": "+memoryStats);
 
