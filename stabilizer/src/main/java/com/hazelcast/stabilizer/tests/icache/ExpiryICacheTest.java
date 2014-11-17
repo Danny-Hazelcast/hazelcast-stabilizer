@@ -51,11 +51,10 @@ public class ExpiryICacheTest {
     private final static ILogger log = Logger.getLogger(ExpiryICacheTest.class);
 
     // properties
-    public String basename = "ttlicachetest";
     public int threadCount = 3;
     public double maxHeapUsagePercentage = 80;
-    public int logFrequency = 10000;
-    public int performanceUpdateFrequency = 10000;
+    public String basename;
+
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
@@ -144,13 +143,7 @@ public class ExpiryICacheTest {
                         long key = random.nextLong();
                         cache.put(key, 0l, expiryPolicy);
 
-                        if (iteration % logFrequency == 0) {
-                            log.info(Thread.currentThread().getName() + " At iteration: " + iteration);
-                        }
 
-                        if (iteration % performanceUpdateFrequency == 0) {
-                            operations.addAndGet(performanceUpdateFrequency);
-                        }
                     }
                 }
             }

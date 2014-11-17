@@ -1,9 +1,7 @@
-package com.hazelcast.stabilizer.tests.ee;
+package com.hazelcast.stabilizer.tests.icache;
 
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
-import com.hazelcast.config.CacheConfig;
 import com.hazelcast.config.CacheSimpleConfig;
-import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
 import com.hazelcast.core.Member;
@@ -35,13 +33,14 @@ import java.util.Random;
 public class CachePutGet {
     private final static ILogger log = Logger.getLogger(CachePutGet.class);
 
-    public String basename = "offHeapEvictionCache"; //this.getClass().getCanonicalName();
     public int threadCount = 3;
     public int valueLength = 1000;
     public int totalKeys = 10000;
     public int jitWarmUpMs = 1000*30;
     public int durationMs = 1000*60;
     public double putProb = 0.5;
+
+    public String basename;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
@@ -53,16 +52,10 @@ public class CachePutGet {
     public void setup(TestContext testContex) throws Exception {
         testContext = testContex;
         targetInstance = testContext.getTargetInstance();
+        basename = basename+""+testContex.getTestId();
 
         CachingProvider cachingProvider = HazelcastServerCachingProvider.createCachingProvider(targetInstance);
         CacheManager cacheManager = cachingProvider.getCacheManager();
-
-        /*
-        CacheConfig cacheConfig = new CacheConfig();
-        cacheConfig.setInMemoryFormat(InMemoryFormat.NATIVE);
-        cacheConfig.setName(basename);
-        cacheConfig.setStatisticsEnabled(true);
-        */
 
         cache = cacheManager.getCache(basename);
 

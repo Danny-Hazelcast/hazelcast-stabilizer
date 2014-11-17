@@ -47,23 +47,20 @@ public class CasICacheTest {
     public int keyCount = 1000;
     public int logFrequency = 10000;
     public int performanceUpdateFrequency = 10000;
+    public String basename;
 
     private final AtomicLong operations = new AtomicLong();
-    private IList<long[]> resultsPerWorker;
     private TestContext testContext;
     private HazelcastInstance targetInstance;
     private CacheManager cacheManager;
     private Cache<Integer, Long> cache;
-    private String basename;
 
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
-        basename=testContext.getTestId();
-        resultsPerWorker = targetInstance.getList(basename);
-
+        basename = basename+""+testContext.getTestId();
 
         if (TestUtils.isMemberNode(targetInstance)) {
             HazelcastServerCachingProvider hcp = new HazelcastServerCachingProvider();
@@ -74,22 +71,7 @@ public class CasICacheTest {
             cacheManager = new HazelcastClientCacheManager(
                     hcp, targetInstance, hcp.getDefaultURI(), hcp.getDefaultClassLoader(), null);
         }
-
-        CacheConfig<Integer, Long> config = new CacheConfig<Integer, Long>();
-        config.setName(basename);
-
-        try {
-            cacheManager.createCache(basename, config);
-        } catch (CacheException e) {
-            log.severe(basename + ": createCache "+e);
-        }
         cache = cacheManager.getCache(basename);
-    }
-
-    @Teardown
-    public void teardown() throws Exception {
-        cache.close();
-        resultsPerWorker.destroy();
     }
 
     @Warmup(global = true)
@@ -101,7 +83,6 @@ public class CasICacheTest {
 
     @Run
     public void run() {
-
         ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
         for (int k = 0; k < threadCount; k++) {
             spawner.spawn(new Worker());
@@ -109,10 +90,30 @@ public class CasICacheTest {
         spawner.awaitCompletion();
     }
 
+    private class Worker implements Runnable {
+        private final Random random = new Random();
+        private final long[] increments = new long[keyCount];
+
+        public void run() {
+            while (!testContext.isStopped()) {
+                int key = random.nextInt(keyCount);
+                long increment = random.nextInt(100);
+
+                Long current = cache.get(key);
+                if (cache.replace(key, current, current + increment)) {
+                    increments[key] += increment;
+                }
+
+            }
+            targetInstance.getList(basename).add(increments);
+        }
+    }
+
     @Verify
     public void verify() throws Exception {
         long[] amount = new long[keyCount];
 
+        IList<long[]> resultsPerWorker = targetInstance.getList(basename);
         for (long[] incrments : resultsPerWorker) {
             for (int i=0 ; i<keyCount; i++) {
                 amount[i] += incrments[i];
@@ -128,43 +129,6 @@ public class CasICacheTest {
             }
         }
         assertEquals(failures + " key=>values have been incremented unExpected", 0, failures);
-    }
-
-    @Performance
-    public long getOperationCount() {
-        return operations.get();
-    }
-
-    private class Worker implements Runnable {
-        private final Random random = new Random();
-        private final long[] increments = new long[keyCount];
-
-        public void run() {
-            long iteration = 0;
-            while (!testContext.isStopped()) {
-                int key = random.nextInt(keyCount);
-                long increment = random.nextInt(100);
-
-                for (; ; ) {
-                    Long current = cache.get(key);
-                    if (cache.replace(key, current, current + increment)) {
-                        increments[key] += increment;
-                        break;
-                    }
-                }
-
-                if (iteration % logFrequency == 0) {
-                    log.info(Thread.currentThread().getName() + " At iteration: " + iteration);
-                }
-
-                if (iteration % performanceUpdateFrequency == 0) {
-                    operations.addAndGet(performanceUpdateFrequency);
-                }
-
-                iteration++;
-            }
-            resultsPerWorker.add(increments);
-        }
     }
 
     public static void main(String[] args) throws Throwable {

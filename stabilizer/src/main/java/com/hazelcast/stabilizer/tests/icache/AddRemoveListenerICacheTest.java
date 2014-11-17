@@ -5,7 +5,6 @@ import com.hazelcast.cache.impl.HazelcastServerCacheManager;
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.client.cache.impl.HazelcastClientCacheManager;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
-import com.hazelcast.config.CacheConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
 import com.hazelcast.logging.ILogger;
@@ -42,24 +41,22 @@ public class AddRemoveListenerICacheTest {
     public double deregister=0;
     public double put=0;
     public double get=0;
+    public String basename;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
     private CacheManager cacheManager;
-    private String basename;
 
-    private CacheConfig<Integer, Long> config = new CacheConfig<Integer, Long>();
     private Cache<Integer, Long> cache;
     private MyCacheEntryListener<Integer, Long> listener;
     private MyCacheEntryEventFilter<Integer, Long> filter;
 
-    private MutableCacheEntryListenerConfiguration m;
+    private MutableCacheEntryListenerConfiguration entryListenerConfig;
 
     @Setup
     public void setup(TestContext textConTx) {
         testContext = textConTx;
         targetInstance = testContext.getTargetInstance();
-        basename = testContext.getTestId();
 
         if (TestUtils.isMemberNode(targetInstance)) {
             HazelcastServerCachingProvider hcp = new HazelcastServerCachingProvider();
@@ -69,18 +66,17 @@ public class AddRemoveListenerICacheTest {
             cacheManager = new HazelcastClientCacheManager( hcp, targetInstance, hcp.getDefaultURI(), hcp.getDefaultClassLoader(), null);
         }
 
-        config.setName(basename);
-        cacheManager.createCache(basename, config);
+        basename = basename+""+testContext.getTestId();
+        cache = cacheManager.getCache(basename);
     }
 
     @Warmup(global = false)
     public void warmup() {
-        cache = cacheManager.getCache(basename);
 
         listener = new MyCacheEntryListener<Integer, Long>();
         filter = new MyCacheEntryEventFilter<Integer, Long>();
 
-        m = new MutableCacheEntryListenerConfiguration<Integer, Long>(
+        entryListenerConfig = new MutableCacheEntryListenerConfiguration<Integer, Long>(
                 FactoryBuilder.factoryOf(listener),
                 FactoryBuilder.factoryOf(filter),
                 false, syncEvents);
@@ -105,14 +101,14 @@ public class AddRemoveListenerICacheTest {
                 double chance = random.nextDouble();
                 if((chance -= register) < 0){
                     try{
-                        cache.registerCacheEntryListener(m);
+                        cache.registerCacheEntryListener(entryListenerConfig);
                         counter.register++;
                     }catch(IllegalArgumentException e){
                         counter.registerIllegalArgException++;
                     }
                 }
                 else if((chance -= deregister) < 0){
-                    cache.deregisterCacheEntryListener(m);
+                    cache.deregisterCacheEntryListener(entryListenerConfig);
                     counter.deregister++;
 
                 }else if((chance -= put) < 0){

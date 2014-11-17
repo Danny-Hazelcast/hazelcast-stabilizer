@@ -61,11 +61,12 @@ public class CacheLoaderTest {
     public int keyCount = 10;
     public int loadAllDelayMs = 0;
     public boolean waitForLoadAllFutureComplition = true;
+    public String basename;
+
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
     private CacheManager cacheManager;
-    private String basename;
 
     private MutableConfiguration config;
     private Cache<Object,Object> cache;
@@ -75,7 +76,7 @@ public class CacheLoaderTest {
     public void setup(TestContext testContext) throws Exception {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
-        basename = testContext.getTestId();
+        basename = basename+""+testContext.getTestId();
 
         if (TestUtils.isMemberNode(targetInstance)) {
             HazelcastServerCachingProvider hcp = new HazelcastServerCachingProvider();

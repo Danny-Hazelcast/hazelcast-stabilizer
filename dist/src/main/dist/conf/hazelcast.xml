@@ -45,7 +45,8 @@
     </map>
 
 
-    <cache name="offHeapEvictionCache">
+
+    <cache name="offHeapEvictionCache*">
         <backup-count>1</backup-count>
         <async-backup-count>0</async-backup-count>
         <eviction-percentage>10</eviction-percentage>
@@ -61,7 +62,7 @@
     </serialization>
 
     <native-memory allocator-type="POOLED" enabled="true">
-        <size unit="GIGABYTES" value="5" />
+        <size unit="GIGABYTES" value="1" />
         <metadata-space-percentage>5</metadata-space-percentage>
     </native-memory>
 
