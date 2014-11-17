@@ -71,6 +71,12 @@ public class CasICacheTest {
     @Warmup(global = true)
     public void warmup() throws Exception {
 
+
+        System.out.println(basename);
+        System.out.println(testContext.getTestId());
+        System.out.println(memoryStats);
+
+
         log.info(basename+": "+memoryStats);
 
         for (int k = 0; k < keyCount; k++) {
