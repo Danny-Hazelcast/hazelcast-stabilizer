@@ -67,23 +67,16 @@ public class CasICacheTest {
 
         if ( TestUtils.isMemberNode(targetInstance) ){
             memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
+
+            log.info(basename+": "+memoryStats);
         }
     }
 
     @Warmup(global = true)
     public void warmup() throws Exception {
-
-        System.out.println(basename);
-        System.out.println(testContext.getTestId());
-        System.out.println(memoryStats);
-
-        log.info(basename+": "+memoryStats);
-
         for (int k = 0; k < keyCount; k++) {
             cache.put(k, 0l);
         }
-
-        log.info(basename+": "+memoryStats);
     }
 
     @Run
@@ -134,7 +127,10 @@ public class CasICacheTest {
             }
         }
 
-        log.info(basename+": "+memoryStats);
+        if ( TestUtils.isMemberNode(targetInstance) ){
+            log.info(basename+": "+memoryStats);
+        }
+
         assertEquals(failures + " key=>values have been incremented unExpected", 0, failures);
     }
 
