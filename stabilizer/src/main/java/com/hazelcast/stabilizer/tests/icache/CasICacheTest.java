@@ -1,32 +1,27 @@
 package com.hazelcast.stabilizer.tests.icache;
 
-import com.hazelcast.cache.ICache;
-
 import javax.cache.Cache;
 import javax.cache.CacheManager;;
 import com.hazelcast.cache.impl.HazelcastServerCacheManager;
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.client.cache.impl.HazelcastClientCacheManager;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
-import com.hazelcast.config.CacheConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
+import com.hazelcast.monitor.LocalMemoryStats;
 import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.TestRunner;
-import com.hazelcast.stabilizer.tests.annotations.Performance;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
-import com.hazelcast.stabilizer.tests.annotations.Teardown;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
+import com.hazelcast.stabilizer.tests.icache.helpers.MemoryStatsUtil;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
-import javax.cache.CacheException;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.Assert.assertEquals;
 
@@ -45,16 +40,13 @@ public class CasICacheTest {
 
     public int threadCount = 10;
     public int keyCount = 1000;
-    public int logFrequency = 10000;
-    public int performanceUpdateFrequency = 10000;
     public String basename;
 
-    private final AtomicLong operations = new AtomicLong();
     private TestContext testContext;
     private HazelcastInstance targetInstance;
     private CacheManager cacheManager;
     private Cache<Integer, Long> cache;
-
+    private LocalMemoryStats memoryStats;
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
@@ -72,13 +64,20 @@ public class CasICacheTest {
                     hcp, targetInstance, hcp.getDefaultURI(), hcp.getDefaultClassLoader(), null);
         }
         cache = cacheManager.getCache(basename);
+
+        memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
     }
 
     @Warmup(global = true)
     public void warmup() throws Exception {
+
+        log.info(basename+": "+memoryStats);
+
         for (int k = 0; k < keyCount; k++) {
             cache.put(k, 0l);
         }
+
+        log.info(basename+": "+memoryStats);
     }
 
     @Run
@@ -129,6 +128,7 @@ public class CasICacheTest {
             }
         }
 
+        log.info(basename+": "+memoryStats);
         assertEquals(failures + " key=>values have been incremented unExpected", 0, failures);
     }
 

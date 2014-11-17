@@ -34,7 +34,6 @@ import java.util.Random;
         <use-native-byte-order>true</use-native-byte-order>
         <allow-unsafe>true</allow-unsafe>
     </serialization>
-
 */
 public class CachePutGet {
     private final static ILogger log = Logger.getLogger(CachePutGet.class);
