@@ -98,7 +98,7 @@ public class EntryProcessorICacheTest {
                 cache.invoke(key, new IncrementEntryProcessor(inc, delayMs));
             }
             //sleep to give time for the last EntryProcessor tasks to complete.
-            sleepMs(maxProcessorDelayMs * 2);
+            sleepMs(2000 + maxProcessorDelayMs * 2);
 
             targetInstance.getList(basename).add(increments);
         }

@@ -9,6 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <name>Hazelcast Stabilizer eeTest</name>
     <artifactId>eetest</artifactId>
 
     <dependencies>
@@ -23,7 +24,7 @@
         <dependency>
             <groupId>com.hazelcast.stabilizer</groupId>
             <artifactId>stabilizer</artifactId>
-            <version>${parent.version}</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
