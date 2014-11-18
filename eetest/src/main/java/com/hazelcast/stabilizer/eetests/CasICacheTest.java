@@ -2,9 +2,9 @@ package com.hazelcast.stabilizer.eetests;
 
 import javax.cache.Cache;
 import javax.cache.CacheManager;
-import com.hazelcast.cache.impl.HazelcastServerCacheManager;
+import javax.cache.spi.CachingProvider;
+
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
-import com.hazelcast.client.cache.impl.HazelcastClientCacheManager;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
@@ -44,9 +44,7 @@ public class CasICacheTest {
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
-    private CacheManager cacheManager;
     private Cache<Integer, Long> cache;
-    private LocalMemoryStats memoryStats;
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
@@ -54,28 +52,26 @@ public class CasICacheTest {
         targetInstance = testContext.getTargetInstance();
         basename = basename+""+testContext.getTestId();
 
+        CachingProvider cachingProvider;
         if (TestUtils.isMemberNode(targetInstance)) {
-            HazelcastServerCachingProvider hcp = new HazelcastServerCachingProvider();
-            cacheManager = new HazelcastServerCacheManager(
-                    hcp, targetInstance, hcp.getDefaultURI(), hcp.getDefaultClassLoader(), null);
+            cachingProvider = HazelcastServerCachingProvider.createCachingProvider(targetInstance);
         } else {
-            HazelcastClientCachingProvider hcp = new HazelcastClientCachingProvider();
-            cacheManager = new HazelcastClientCacheManager(
-                    hcp, targetInstance, hcp.getDefaultURI(), hcp.getDefaultClassLoader(), null);
+            cachingProvider = HazelcastClientCachingProvider.createCachingProvider(targetInstance);
         }
+        CacheManager cacheManager = cachingProvider.getCacheManager();
+
         cache = cacheManager.getCache(basename);
-
-        if ( TestUtils.isMemberNode(targetInstance) ){
-            memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
-
-            log.info(basename+": "+memoryStats);
-        }
     }
 
     @Warmup(global = true)
     public void warmup() throws Exception {
         for (int k = 0; k < keyCount; k++) {
             cache.put(k, 0l);
+        }
+
+        if ( TestUtils.isMemberNode(targetInstance) ){
+            LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
+            log.info(basename+": "+memoryStats);
         }
     }
 
@@ -125,10 +121,6 @@ public class CasICacheTest {
             if (expected != found) {
                 failures++;
             }
-        }
-
-        if ( TestUtils.isMemberNode(targetInstance) ){
-            log.info(basename+": "+memoryStats.toString());
         }
 
         assertEquals(basename+" "+failures+" key=>values have been incremented unExpected", 0, failures);
