@@ -24,7 +24,7 @@ public class CachePutTest {
     public int threadCount = 3;
     public int maxValueLength = 10000;
     public int minValueLength = 1000;
-    public int durationSec = 0;
+    public int durationSec = 1;
     public String basename;
 
     private TestContext testContext;
@@ -96,7 +96,7 @@ public class CachePutTest {
 
         System.out.println(basename + ": Put Latency Histogram");
         putHisto.outputPercentileDistribution(System.out, 1.0);
-        double putsPerSec = putHisto.getTotalCount() / (durationSec/1000);
+        double putsPerSec = putHisto.getTotalCount() / durationSec;
 
 
         log.info(basename+": puts ="+putHisto.getTotalCount());
