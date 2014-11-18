@@ -6,6 +6,7 @@ import javax.cache.spi.CachingProvider;
 
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
+import com.hazelcast.config.CacheConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
 import com.hazelcast.logging.ILogger;
@@ -58,6 +59,13 @@ public class CasICacheTest {
             cachingProvider = HazelcastClientCachingProvider.createCachingProvider(targetInstance);
         }
         CacheManager cacheManager = cachingProvider.getCacheManager();
+
+        CacheConfig config = new CacheConfig<Integer, Long>();
+        config.setName(basename);
+
+        try{
+            cacheManager.createCache(basename, config);
+        }catch (Exception e){}
 
         cache = cacheManager.getCache(basename);
 

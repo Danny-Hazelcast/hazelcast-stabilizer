@@ -2,6 +2,7 @@ package com.hazelcast.stabilizer.eetests;
 
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
+import com.hazelcast.config.CacheConfig;
 import com.hazelcast.config.CacheSimpleConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
@@ -47,6 +48,14 @@ public class CachePutTest {
             cachingProvider = HazelcastClientCachingProvider.createCachingProvider(targetInstance);
         }
         CacheManager cacheManager = cachingProvider.getCacheManager();
+
+        CacheConfig config = new CacheConfig();
+        config.setName(basename);
+
+        try{
+            cacheManager.createCache(basename, config);
+        }catch (Exception e){}
+
 
         cache = cacheManager.getCache(basename);
     }
