@@ -60,6 +60,8 @@ public class CasICacheTest {
         CacheManager cacheManager = cachingProvider.getCacheManager();
 
         cache = cacheManager.getCache(basename);
+
+        log.info(basename+" cacheGet = "+cache);
     }
 
     @Warmup(global = true)
@@ -93,6 +95,9 @@ public class CasICacheTest {
                 long increment = random.nextInt(100);
 
                 long current = cache.get(key);
+
+                log.info(basename+": current == "+current);
+
                 if (cache.replace(key, current, current + increment)) {
                     increments[key] += increment;
                 }
