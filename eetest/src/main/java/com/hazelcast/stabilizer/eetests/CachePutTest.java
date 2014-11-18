@@ -1,9 +1,6 @@
 package com.hazelcast.stabilizer.eetests;
 
-import com.hazelcast.cache.HazelcastCachingProvider;
-import com.hazelcast.cache.impl.HazelcastServerCacheManager;
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
-import com.hazelcast.client.cache.impl.HazelcastClientCacheManager;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.CacheSimpleConfig;
 import com.hazelcast.core.HazelcastInstance;

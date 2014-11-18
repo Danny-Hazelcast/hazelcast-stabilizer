@@ -12,7 +12,6 @@ import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
 import com.hazelcast.monitor.LocalMemoryStats;
 import com.hazelcast.stabilizer.tests.TestContext;
-import com.hazelcast.stabilizer.tests.TestRunner;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
@@ -93,11 +92,10 @@ public class CasICacheTest {
                 int key = random.nextInt(keyCount);
                 long increment = random.nextInt(100);
 
-                Long current = cache.get(key);
+                long current = cache.get(key);
                 if (cache.replace(key, current, current + increment)) {
                     increments[key] += increment;
                 }
-
             }
             targetInstance.getList(basename).add(increments);
         }
@@ -122,12 +120,6 @@ public class CasICacheTest {
                 failures++;
             }
         }
-
         assertEquals(basename+" "+failures+" key=>values have been incremented unExpected", 0, failures);
-    }
-
-    public static void main(String[] args) throws Throwable {
-        CasICacheTest test = new CasICacheTest();
-        new TestRunner(test).run();
     }
 }
