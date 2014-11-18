@@ -1,6 +1,10 @@
 package com.hazelcast.stabilizer.eetests;
 
+import com.hazelcast.cache.HazelcastCachingProvider;
+import com.hazelcast.cache.impl.HazelcastServerCacheManager;
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
+import com.hazelcast.client.cache.impl.HazelcastClientCacheManager;
+import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.CacheSimpleConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
@@ -10,6 +14,7 @@ import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
+import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 import org.HdrHistogram.IntCountsHistogram;
 
@@ -38,7 +43,12 @@ public class CachePutTest {
         targetInstance = testContext.getTargetInstance();
         basename = basename+""+testContex.getTestId();
 
-        CachingProvider cachingProvider = HazelcastServerCachingProvider.createCachingProvider(targetInstance);
+        CachingProvider cachingProvider;
+        if (TestUtils.isMemberNode(targetInstance)) {
+            cachingProvider = HazelcastServerCachingProvider.createCachingProvider(targetInstance);
+        } else {
+            cachingProvider = HazelcastClientCachingProvider.createCachingProvider(targetInstance);
+        }
         CacheManager cacheManager = cachingProvider.getCacheManager();
 
         cache = cacheManager.getCache(basename);
