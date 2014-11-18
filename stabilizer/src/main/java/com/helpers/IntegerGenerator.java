@@ -15,7 +15,7 @@
  * LICENSE file.                                                                                                                                                                   
  */
 
-package com.hazelcast.stabilizer.tests.map.helpers;
+package com.helpers;
 
 /**
  * A generator that is capable of generating ints as well as strings

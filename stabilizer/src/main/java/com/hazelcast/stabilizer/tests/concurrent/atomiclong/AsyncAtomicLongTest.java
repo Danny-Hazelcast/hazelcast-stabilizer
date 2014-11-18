@@ -31,7 +31,7 @@ import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Teardown;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
-import com.hazelcast.stabilizer.tests.map.helpers.KeyUtils;
+import com.helpers.KeyUtils;
 import com.hazelcast.stabilizer.tests.utils.AssertTask;
 import com.hazelcast.stabilizer.tests.utils.ExceptionReporter;
 import com.hazelcast.stabilizer.tests.utils.KeyLocality;
@@ -42,7 +42,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.assertTrueEventually;

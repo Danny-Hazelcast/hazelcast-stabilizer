@@ -1,4 +1,4 @@
-package com.hazelcast.stabilizer.tests.map.helpers;
+package com.helpers;
 
 import java.io.Serializable;
 import java.util.Random;

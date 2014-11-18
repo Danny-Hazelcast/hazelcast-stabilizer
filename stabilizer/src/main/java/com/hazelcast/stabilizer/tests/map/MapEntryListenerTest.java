@@ -26,11 +26,11 @@ import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Teardown;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
-import com.hazelcast.stabilizer.tests.map.helpers.EntryListenerImpl;
-import com.hazelcast.stabilizer.tests.map.helpers.EventCount;
-import com.hazelcast.stabilizer.tests.map.helpers.KeyUtils;
-import com.hazelcast.stabilizer.tests.map.helpers.ScrambledZipfianGenerator;
-import com.hazelcast.stabilizer.tests.map.helpers.StringUtils;
+import com.helpers.EntryListenerImpl;
+import com.helpers.EventCount;
+import com.helpers.KeyUtils;
+import com.helpers.ScrambledZipfianGenerator;
+import com.helpers.StringUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
 import java.util.Random;

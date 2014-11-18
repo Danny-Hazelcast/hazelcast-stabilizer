@@ -15,7 +15,7 @@
  * LICENSE file.                                                                                                                                                                   
  */
 
-package com.hazelcast.stabilizer.tests.map.helpers;
+package com.helpers;
 
 import java.util.Random;
 

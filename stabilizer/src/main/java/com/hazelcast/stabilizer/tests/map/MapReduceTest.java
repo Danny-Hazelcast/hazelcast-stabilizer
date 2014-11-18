@@ -21,7 +21,7 @@ import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
-import com.hazelcast.stabilizer.tests.map.helpers.Employee;
+import com.helpers.Employee;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
 import java.io.Serializable;
@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import static com.hazelcast.stabilizer.tests.utils.TestUtils.warmupPartitions;
 import static org.junit.Assert.assertTrue;
 
 public class MapReduceTest {

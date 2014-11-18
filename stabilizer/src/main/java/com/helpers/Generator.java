@@ -15,7 +15,7 @@
  * LICENSE file.                                                                                                                                                                   
  */
 
-package com.hazelcast.stabilizer.tests.map.helpers;
+package com.helpers;
 
 /**
  * An expression that generates a sequence of string values, following some distribution (Uniform, Zipfian, Sequential, etc.)

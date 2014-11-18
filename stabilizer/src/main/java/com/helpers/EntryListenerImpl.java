@@ -1,4 +1,4 @@
-package com.hazelcast.stabilizer.tests.map.helpers;
+package com.helpers;
 
 import com.hazelcast.core.EntryEvent;
 import com.hazelcast.core.EntryListener;
