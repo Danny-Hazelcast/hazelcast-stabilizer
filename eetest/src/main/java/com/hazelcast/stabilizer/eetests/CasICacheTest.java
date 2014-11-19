@@ -112,15 +112,20 @@ public class CasICacheTest {
 
                 Long current = cache.get(key);
 
+
                 if(current!=null){
                     log.severe(basename+": key " + key + "value="+current);
 
+                    cache.put(key, current+increment);
+                    /*
                     if (cache.replace(key, current, current + increment)) {
                         increments[key] += increment;
                     }
+                    */
                 }else{
                     log.severe("ERROR key " + key + "value=null");
                 }
+
             }
             targetInstance.getList(basename).add(increments);
         }
