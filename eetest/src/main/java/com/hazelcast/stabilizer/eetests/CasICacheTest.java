@@ -79,12 +79,11 @@ public class CasICacheTest {
             cache.put(k, 0l);
         }
         log.info(basename+": put "+keyCount+" keys");
-        /*
+
         if ( TestUtils.isMemberNode(targetInstance) ){
             LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
             log.info(basename+": "+memoryStats);
         }
-        */
     }
 
     @Run
