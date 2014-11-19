@@ -20,6 +20,7 @@ import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
 
+import java.util.Iterator;
 import java.util.Random;
 
 
@@ -77,6 +78,11 @@ public class CasICacheTest {
             cache.put(k, 0l);
         }
         log.info(basename+": put "+keyCount+" keys");
+
+        final Iterator<Cache.Entry<Integer,Long>> i = cache.iterator();
+        while(i.hasNext()){
+            log.info(basename+":"+i.next());
+        }
 
         /*
         if ( TestUtils.isMemberNode(targetInstance) ){

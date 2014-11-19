@@ -168,7 +168,11 @@ public class CasICacheTest {
     }
 
     public static void main(String[] args) throws Throwable {
-        CasICacheTest test = new CasICacheTest();
-        new TestRunner(test).run();
+
+        Long l = null;
+        long a = l+5;
+
+        //CasICacheTest test = new CasICacheTest();
+        //new TestRunner(test).run();
     }
 }
