@@ -25,8 +25,8 @@ public class CachePutTest {
     private final static ILogger log = Logger.getLogger(CachePutTest.class);
 
     public int threadCount = 3;
-    public int maxValueLength = 10000;
-    public int minValueLength = 1000;
+    public int maxValueLength = 1000000; //1MB
+    public int minValueLength = 10000;   //0.01Mb
     public int durationSec = 1;
     public String basename;
 
@@ -85,11 +85,12 @@ public class CachePutTest {
         public void run() {
             while(!testContext.isStopped()){
                 int key = random.nextInt();
-                int size = random.nextInt(maxValueLength-minValueLength) + maxValueLength;
-                byte[] value = new byte[size];
+                int size = random.nextInt(maxValueLength-minValueLength) + minValueLength;
+                byte[] bytes = new byte[size];
+                random.nextBytes(bytes);
 
                 long start = System.currentTimeMillis();
-                cache.put(key, value);
+                cache.put(key, bytes);
                 long stop = System.currentTimeMillis();
                 putLatencyHisto.recordValue(stop - start);
             }
