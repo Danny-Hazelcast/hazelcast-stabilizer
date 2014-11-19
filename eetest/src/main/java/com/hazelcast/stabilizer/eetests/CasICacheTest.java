@@ -8,7 +8,6 @@ import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.CacheConfig;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IList;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
 import com.hazelcast.monitor.LocalMemoryStats;
@@ -23,7 +22,6 @@ import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
 import java.util.Random;
 
-import static org.junit.Assert.assertEquals;
 
 /**
  * This tests the cas method: replace. So for optimistic concurrency control.
@@ -80,10 +78,12 @@ public class CasICacheTest {
         }
         log.info(basename+": put "+keyCount+" keys");
 
+        /*
         if ( TestUtils.isMemberNode(targetInstance) ){
             LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
             log.info(basename+": "+memoryStats);
         }
+        */
     }
 
     @Run
