@@ -69,7 +69,7 @@ public class CasICacheTest {
 
         cache = cacheManager.getCache(basename);
 
-        log.info(basename+" cacheGet = "+cache);
+        log.info(basename+" cacheGet = "+cache + "config = "+config);
     }
 
     @Warmup(global = true)
