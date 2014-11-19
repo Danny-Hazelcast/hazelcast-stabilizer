@@ -104,12 +104,14 @@ public class CasICacheTest {
                 int key = random.nextInt(keyCount);
                 long increment = random.nextInt(100);
 
-                long current = cache.get(key);
+                Long current = cache.get(key);
 
-                log.info(basename+": current == "+current);
-
-                if (cache.replace(key, current, current + increment)) {
-                    increments[key] += increment;
+                if(current!=null){
+                    if (cache.replace(key, current, current + increment)) {
+                        increments[key] += increment;
+                    }
+                }else{
+                    log.info("key "+key+" evicted");
                 }
             }
             targetInstance.getList(basename).add(increments);
