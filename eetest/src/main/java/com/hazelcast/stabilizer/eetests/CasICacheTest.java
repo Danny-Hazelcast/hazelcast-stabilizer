@@ -78,7 +78,7 @@ public class CasICacheTest {
         for (int k = 0; k < keyCount; k++) {
             cache.put(k, 0l);
         }
-
+        log.info(basename+" put "+keyCount+" keys");
         /*
         if ( TestUtils.isMemberNode(targetInstance) ){
             LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
@@ -112,7 +112,7 @@ public class CasICacheTest {
                         increments[key] += increment;
                     }
                 }else{
-                    log.severe("key " + key + " evicted");
+                    log.severe("key " + key + "value=null");
                 }
             }
             targetInstance.getList(basename).add(increments);
