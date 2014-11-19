@@ -123,7 +123,7 @@ public class CasICacheTest {
                     }
                     */
                 }else{
-                    log.severe("ERROR key " + key + "value=null");
+                    log.severe("HI ERROR key " + key + "value=null");
                 }
 
             }
