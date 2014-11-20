@@ -65,6 +65,7 @@ public class CachePutTest {
 
             CacheSimpleConfig cacheConfig = targetInstance.getConfig().getCacheConfig(basename);
             log.info(basename+": "+cacheConfig);
+            log.info(basename+": "+cacheConfig.getInMemoryFormat());
         }
     }
 
