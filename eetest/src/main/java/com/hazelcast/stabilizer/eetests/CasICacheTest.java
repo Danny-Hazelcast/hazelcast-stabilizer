@@ -7,10 +7,13 @@ import javax.cache.spi.CachingProvider;
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.CacheConfig;
+import com.hazelcast.config.NativeMemoryConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
 import com.hazelcast.monitor.LocalMemoryStats;
+import com.hazelcast.nio.serialization.NativeMemoryData;
+import com.hazelcast.nio.serialization.NativeMemoryDataUtil;
 import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
@@ -37,7 +40,7 @@ public class CasICacheTest {
 
     private final static ILogger log = Logger.getLogger(CasICacheTest.class);
 
-    public int threadCount = 10;
+    public int threadCount = 3;
     public int keyCount = 1000;
     public String basename;
 
@@ -84,12 +87,10 @@ public class CasICacheTest {
             log.info(basename+":"+i.next());
         }
 
-        /*
         if ( TestUtils.isMemberNode(targetInstance) ){
             LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
             log.info(basename+": "+memoryStats);
         }
-        */
     }
 
     @Run
@@ -111,21 +112,9 @@ public class CasICacheTest {
                 long increment = random.nextInt(100);
 
                 Long current = cache.get(key);
-
-
-                if(current!=null){
-                    log.severe(basename+": key " + key + "value="+current);
-
-                    cache.put(key, current+increment);
-                    /*
-                    if (cache.replace(key, current, current + increment)) {
-                        increments[key] += increment;
-                    }
-                    */
-                }else{
-                    log.severe("HI ERROR key " + key + "value=null");
+                if (cache.replace(key, current, current + increment)) {
+                    increments[key] += increment;
                 }
-
             }
             targetInstance.getList(basename).add(increments);
         }
@@ -133,6 +122,7 @@ public class CasICacheTest {
 
     @Verify(global = true)
     public void verify() throws Exception {
+
 
         /*
         long[] amount = new long[keyCount];
