@@ -1,11 +1,8 @@
 package com.hazelcast.stabilizer.eetests;
 
 
-import com.hazelcast.cache.impl.HazelcastServerCacheManager;
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
-import com.hazelcast.client.cache.impl.HazelcastClientCacheManager;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
-import com.hazelcast.config.CacheConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
 import com.hazelcast.logging.ILogger;
@@ -58,6 +55,9 @@ public class GetDestroyICacheTest {
             cachingProvider = HazelcastClientCachingProvider.createCachingProvider(targetInstance);
         }
         cacheManager = cachingProvider.getCacheManager();
+
+        Cache cache = cacheManager.getCache(basename);
+
 
         value = new byte[valueSize];
         Random random = new Random();
