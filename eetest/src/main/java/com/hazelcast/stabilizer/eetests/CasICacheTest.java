@@ -82,11 +82,6 @@ public class CasICacheTest {
         }
         log.info(basename+": put "+keyCount+" keys");
 
-        final Iterator<Cache.Entry<Integer,Long>> i = cache.iterator();
-        while(i.hasNext()){
-            log.info(basename+":"+i.next());
-        }
-
         if ( TestUtils.isMemberNode(targetInstance) ){
             LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
             log.info(basename+": "+memoryStats);
