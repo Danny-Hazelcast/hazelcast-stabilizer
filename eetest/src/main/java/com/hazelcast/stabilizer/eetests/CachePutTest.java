@@ -50,13 +50,6 @@ public class CachePutTest {
         }
         CacheManager cacheManager = cachingProvider.getCacheManager();
 
-        CacheConfig config = new CacheConfig();
-        config.setName(basename);
-
-        try{
-            cacheManager.createCache(basename, config);
-        }catch (Exception e){}
-
         cache = cacheManager.getCache(basename);
 
         if ( TestUtils.isMemberNode(targetInstance) ){
