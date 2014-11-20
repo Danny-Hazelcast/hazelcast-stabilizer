@@ -22,6 +22,7 @@ import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 import javax.cache.Cache;
 import javax.cache.CacheException;
 import javax.cache.CacheManager;
+import javax.cache.spi.CachingProvider;
 import java.io.Serializable;
 import java.util.Random;
 
@@ -50,15 +51,13 @@ public class GetDestroyICacheTest {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
 
+        CachingProvider cachingProvider;
         if (TestUtils.isMemberNode(targetInstance)) {
-            HazelcastServerCachingProvider hcp = new HazelcastServerCachingProvider();
-            cacheManager = new HazelcastServerCacheManager(
-                    hcp, targetInstance, hcp.getDefaultURI(), hcp.getDefaultClassLoader(), null);
+            cachingProvider = HazelcastServerCachingProvider.createCachingProvider(targetInstance);
         } else {
-            HazelcastClientCachingProvider hcp = new HazelcastClientCachingProvider();
-            cacheManager = new HazelcastClientCacheManager(
-                    hcp, targetInstance, hcp.getDefaultURI(), hcp.getDefaultClassLoader(), null);
+            cachingProvider = HazelcastClientCachingProvider.createCachingProvider(targetInstance);
         }
+        cacheManager = cachingProvider.getCacheManager();
 
         value = new byte[valueSize];
         Random random = new Random();
@@ -76,11 +75,9 @@ public class GetDestroyICacheTest {
 
     private class Worker implements Runnable {
         private final Random random = new Random();
-        private final CacheConfig config = new CacheConfig();
         private final Counter counter = new Counter();
 
         public void run() {
-            config.setName(basename);
 
             while (!testContext.isStopped()) {
                 double chance = random.nextDouble();
