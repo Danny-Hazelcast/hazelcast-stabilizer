@@ -7,13 +7,11 @@ import javax.cache.spi.CachingProvider;
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.CacheConfig;
-import com.hazelcast.config.NativeMemoryConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
 import com.hazelcast.monitor.LocalMemoryStats;
-import com.hazelcast.nio.serialization.NativeMemoryData;
-import com.hazelcast.nio.serialization.NativeMemoryDataUtil;
+import com.hazelcast.stabilizer.eetests.Utils.MemoryStatsUtil;
 import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
@@ -23,7 +21,6 @@ import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
 
-import java.util.Iterator;
 import java.util.Random;
 
 
@@ -52,7 +49,6 @@ public class CasICacheTest {
     public void setup(TestContext testContext) throws Exception {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
-        basename = basename+""+testContext.getTestId();
 
         CachingProvider cachingProvider;
         if (TestUtils.isMemberNode(targetInstance)) {

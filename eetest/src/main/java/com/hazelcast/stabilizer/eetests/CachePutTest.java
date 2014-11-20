@@ -9,6 +9,7 @@ import com.hazelcast.core.IList;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
 import com.hazelcast.monitor.LocalMemoryStats;
+import com.hazelcast.stabilizer.eetests.Utils.MemoryStatsUtil;
 import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
@@ -40,7 +41,6 @@ public class CachePutTest {
     public void setup(TestContext testContex) throws Exception {
         testContext = testContex;
         targetInstance = testContext.getTargetInstance();
-        basename = basename+""+testContex.getTestId();
 
         CachingProvider cachingProvider;
         if (TestUtils.isMemberNode(targetInstance)) {
@@ -73,14 +73,16 @@ public class CachePutTest {
         }
         spawner.awaitCompletion();
 
+        /*
         for(int i=1; i<threadCount; i++){
             workers[0].putLatencyHisto.add(workers[i].putLatencyHisto);
         }
         targetInstance.getList(basename+"putHisto").add(workers[0].putLatencyHisto);
+        */
     }
 
     private class Worker implements Runnable {
-        IntCountsHistogram putLatencyHisto = new IntCountsHistogram(1, 1000*30, 0);
+        //IntCountsHistogram putLatencyHisto = new IntCountsHistogram(1, 1000*30, 0);
         Random random = new Random();
 
         public void run() {
@@ -90,10 +92,10 @@ public class CachePutTest {
                 byte[] bytes = new byte[size];
                 random.nextBytes(bytes);
 
-                long start = System.currentTimeMillis();
+                //long start = System.currentTimeMillis();
                 cache.put(key, bytes);
-                long stop = System.currentTimeMillis();
-                putLatencyHisto.recordValue(stop - start);
+                //long stop = System.currentTimeMillis();
+                //putLatencyHisto.recordValue(stop - start);
             }
         }
     }
@@ -110,6 +112,7 @@ public class CachePutTest {
         CacheSimpleConfig cacheConfig = targetInstance.getConfig().getCacheConfig(basename);
         log.info(basename+": "+cacheConfig);
 
+        /*
         IList<IntCountsHistogram> putHistos = targetInstance.getList(basename+"putHisto");
 
         IntCountsHistogram putHisto = putHistos.get(0);
@@ -125,5 +128,6 @@ public class CachePutTest {
 
         log.info(basename+": puts ="+putHisto.getTotalCount());
         log.info(basename+": avg put/sec ="+putsPerSec);
+        */
     }
 }

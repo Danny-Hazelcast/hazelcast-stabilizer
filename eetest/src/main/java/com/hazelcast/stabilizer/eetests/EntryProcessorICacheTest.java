@@ -48,7 +48,6 @@ public class EntryProcessorICacheTest {
     public void setup(TestContext testContext) throws Exception {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
-        basename = basename+""+testContext.getTestId();
 
         CacheManager cacheManager;
         if (TestUtils.isMemberNode(targetInstance)) {

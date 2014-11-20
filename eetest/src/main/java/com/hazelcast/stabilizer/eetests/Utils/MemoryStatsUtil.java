@@ -1,4 +1,4 @@
-package com.hazelcast.stabilizer.eetests;
+package com.hazelcast.stabilizer.eetests.Utils;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.instance.HazelcastInstanceImpl;

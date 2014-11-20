@@ -75,7 +75,6 @@ public class ExpiryTest {
     public void setup(TestContext textConTx) {
         testContext = textConTx;
         targetInstance = testContext.getTargetInstance();
-        basename = testContext.getTestId();
 
         if (TestUtils.isMemberNode(targetInstance)) {
             HazelcastServerCachingProvider hcp = new HazelcastServerCachingProvider();

@@ -56,7 +56,6 @@ public class CachePutGetTest {
     public void setup(TestContext testContex) throws Exception {
         testContext = testContex;
         targetInstance = testContext.getTargetInstance();
-        basename = basename+""+testContex.getTestId();
 
         CachingProvider cachingProvider = HazelcastServerCachingProvider.createCachingProvider(targetInstance);
         CacheManager cacheManager = cachingProvider.getCacheManager();
