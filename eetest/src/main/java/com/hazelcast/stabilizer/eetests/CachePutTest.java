@@ -57,8 +57,15 @@ public class CachePutTest {
             cacheManager.createCache(basename, config);
         }catch (Exception e){}
 
-
         cache = cacheManager.getCache(basename);
+
+        if ( TestUtils.isMemberNode(targetInstance) ){
+            LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
+            log.info(basename+": "+memoryStats);
+
+            CacheSimpleConfig cacheConfig = targetInstance.getConfig().getCacheConfig(basename);
+            log.info(basename+": "+cacheConfig);
+        }
     }
 
     @Run
@@ -102,15 +109,6 @@ public class CachePutTest {
 
     @Verify(global = true)
     public void verify() throws Exception {
-
-        if ( TestUtils.isMemberNode(targetInstance) ){
-            LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
-            log.info(basename+": "+memoryStats);
-        }
-
-
-        CacheSimpleConfig cacheConfig = targetInstance.getConfig().getCacheConfig(basename);
-        log.info(basename+": "+cacheConfig);
 
         /*
         IList<IntCountsHistogram> putHistos = targetInstance.getList(basename+"putHisto");
