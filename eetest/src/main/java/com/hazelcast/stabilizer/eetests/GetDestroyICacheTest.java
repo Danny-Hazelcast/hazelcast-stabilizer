@@ -37,10 +37,11 @@ public class GetDestroyICacheTest {
     public double closeCacheProb=0.3;
     public double destroyCacheProb=0.3;
     public int valueSize=100000;
+    public String basename;
+
     private TestContext testContext;
     private HazelcastInstance targetInstance;
     private CacheManager cacheManager;
-    private String basename;
 
     private byte[] value;
 
