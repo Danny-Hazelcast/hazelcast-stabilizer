@@ -9,6 +9,8 @@ import com.hazelcast.core.Partition;
 import com.hazelcast.core.PartitionService;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
+import com.hazelcast.monitor.LocalMemoryStats;
+import com.hazelcast.stabilizer.eetests.Utils.MemoryStatsUtil;
 import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
@@ -23,17 +25,11 @@ import javax.cache.spi.CachingProvider;
 import java.util.Random;
 
 
-/* <native-memory allocator-type="POOLED" enabled="true">
-        <size unit="GIGABYTES" value="5" />
-        <metadata-space-percentage>5</metadata-space-percentage>
-        <min-block-size>16</min-block-size>
-        <page-size></page-size>
-    </native-memory>
-
-    <serialization>
-        <use-native-byte-order>true</use-native-byte-order>
-        <allow-unsafe>true</allow-unsafe>
-    </serialization>
+/*
+* Cache put get performance test,  however as off heap cache has default evection
+* we should take care that are gets are not returning null, and effecting the test.
+* simple we should run this test in isolation and not fill the cache above the default
+* eviction threshold
 */
 public class CachePutGetTest {
     private final static ILogger log = Logger.getLogger(CachePutGetTest.class);
@@ -79,6 +75,13 @@ public class CachePutGetTest {
                     cache.put(i, value);
                 }
             }
+
+            LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
+            log.info(basename+": "+memoryStats);
+
+            CacheSimpleConfig cacheConfig = targetInstance.getConfig().getCacheConfig(basename);
+            log.info(basename+": "+cacheConfig);
+            log.info(basename+": "+cacheConfig.getInMemoryFormat());
         }
     }
 

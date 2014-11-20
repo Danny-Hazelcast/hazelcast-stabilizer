@@ -7,6 +7,7 @@ import javax.cache.spi.CachingProvider;
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.CacheConfig;
+import com.hazelcast.config.CacheSimpleConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
@@ -24,15 +25,6 @@ import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 import java.util.Random;
 
 
-/**
- * This tests the cas method: replace. So for optimistic concurrency control.
- * <p/>
- * We have a bunch of predefined keys, and we are going to concurrently increment the value
- * and we protect ourselves against lost updates using cas method replace.
- * <p/>
- * Locally we keep track of all increments, and if the sum of these local increments matches the
- * global increment, we are done
- */
 public class CasICacheTest {
 
     private final static ILogger log = Logger.getLogger(CasICacheTest.class);
@@ -58,16 +50,16 @@ public class CasICacheTest {
         }
         CacheManager cacheManager = cachingProvider.getCacheManager();
 
-        CacheConfig config = new CacheConfig<Integer, Long>();
-        config.setName(basename);
-
-        try{
-            cacheManager.createCache(basename, config);
-        }catch (Exception e){}
-
         cache = cacheManager.getCache(basename);
 
-        log.info(basename+": cacheGet = "+cache + "config = "+config);
+        if ( TestUtils.isMemberNode(targetInstance) ){
+            LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
+            log.info(basename+": "+memoryStats);
+
+            CacheSimpleConfig cacheConfig = targetInstance.getConfig().getCacheConfig(basename);
+            log.info(basename+": "+cacheConfig);
+            log.info(basename+": "+cacheConfig.getInMemoryFormat());
+        }
     }
 
     @Warmup(global = true)
@@ -95,7 +87,6 @@ public class CasICacheTest {
 
     private class Worker implements Runnable {
         private final Random random = new Random();
-        private final long[] increments = new long[keyCount];
 
         public void run() {
             while (!testContext.isStopped()) {
@@ -103,37 +94,18 @@ public class CasICacheTest {
                 long increment = random.nextInt(100);
 
                 Long current = cache.get(key);
-                if (cache.replace(key, current, current + increment)) {
-                    increments[key] += increment;
+                if(current!=null){
+                    cache.replace(key, current, current + increment);
                 }
             }
-            targetInstance.getList(basename).add(increments);
         }
     }
 
     @Verify(global = true)
     public void verify() throws Exception {
-
-
-        /*
-        long[] amount = new long[keyCount];
-
-        IList<long[]> resultsPerWorker = targetInstance.getList(basename);
-        for (long[] incrments : resultsPerWorker) {
-            for (int i=0 ; i<keyCount; i++) {
-                amount[i] += incrments[i];
-            }
+        if ( TestUtils.isMemberNode(targetInstance) ){
+            LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
+            log.info(basename+": "+memoryStats);
         }
-
-        int failures = 0;
-        for (int k = 0; k < keyCount; k++) {
-            long expected = amount[k];
-            long found = cache.get(k);
-            if (expected != found) {
-                failures++;
-            }
-        }
-        assertEquals(basename+" "+failures+" key=>values have been incremented unExpected", 0, failures);
-        */
     }
 }

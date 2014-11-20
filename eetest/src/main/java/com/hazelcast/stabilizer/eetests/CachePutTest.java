@@ -23,13 +23,18 @@ import javax.cache.CacheManager;
 import javax.cache.spi.CachingProvider;
 import java.util.Random;
 
+
+/**
+ * Unconstrained put test.  off heap cache has a eviction configured by default
+ * this test should never throw an out of memory exception.  we also have a cache
+ * configured in the hazelcast xml offHeapEvictionCache*,  which we can use for this test.
+ */
 public class CachePutTest {
     private final static ILogger log = Logger.getLogger(CachePutTest.class);
 
     public int threadCount = 3;
     public int maxValueLength = 1000000; //1MB
     public int minValueLength = 10000;   //0.01Mb
-    public int durationSec = 1;
     public String basename;
 
     private TestContext testContext;
@@ -73,17 +78,9 @@ public class CachePutTest {
             spawner.spawn(workers[i]);
         }
         spawner.awaitCompletion();
-
-        /*
-        for(int i=1; i<threadCount; i++){
-            workers[0].putLatencyHisto.add(workers[i].putLatencyHisto);
-        }
-        targetInstance.getList(basename+"putHisto").add(workers[0].putLatencyHisto);
-        */
     }
 
     private class Worker implements Runnable {
-        //IntCountsHistogram putLatencyHisto = new IntCountsHistogram(1, 1000*30, 0);
         Random random = new Random();
 
         public void run() {
@@ -93,33 +90,16 @@ public class CachePutTest {
                 byte[] bytes = new byte[size];
                 random.nextBytes(bytes);
 
-                //long start = System.currentTimeMillis();
                 cache.put(key, bytes);
-                //long stop = System.currentTimeMillis();
-                //putLatencyHisto.recordValue(stop - start);
             }
         }
     }
 
-    @Verify(global = true)
+    @Verify(global = false)
     public void verify() throws Exception {
-
-        /*
-        IList<IntCountsHistogram> putHistos = targetInstance.getList(basename+"putHisto");
-
-        IntCountsHistogram putHisto = putHistos.get(0);
-
-        for(int i=1; i<putHistos.size(); i++){
-            putHisto.add(putHistos.get(i));
+        if ( TestUtils.isMemberNode(targetInstance) ){
+            LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
+            log.info(basename+": "+memoryStats);
         }
-
-        System.out.println(basename + ": Put Latency Histogram");
-        putHisto.outputPercentileDistribution(System.out, 1.0);
-        double putsPerSec = putHisto.getTotalCount() / durationSec;
-
-
-        log.info(basename+": puts ="+putHisto.getTotalCount());
-        log.info(basename+": avg put/sec ="+putsPerSec);
-        */
     }
 }

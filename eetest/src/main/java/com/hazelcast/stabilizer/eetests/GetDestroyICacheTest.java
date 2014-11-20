@@ -10,6 +10,8 @@ import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
+import com.hazelcast.monitor.LocalMemoryStats;
+import com.hazelcast.stabilizer.eetests.Utils.MemoryStatsUtil;
 import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
@@ -18,10 +20,14 @@ import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
 import javax.cache.Cache;
+import javax.cache.CacheException;
 import javax.cache.CacheManager;
 import java.io.Serializable;
 import java.util.Random;
 
+/*
+* we use this test to check for memory leaks in getting closing destroying caches
+* */
 public class GetDestroyICacheTest {
 
     private final static ILogger log = Logger.getLogger(GetDestroyICacheTest.class);
@@ -30,11 +36,13 @@ public class GetDestroyICacheTest {
     public double getCacheProb=0.4;
     public double closeCacheProb=0.3;
     public double destroyCacheProb=0.3;
-
+    public int valueSize=100000;
     private TestContext testContext;
     private HazelcastInstance targetInstance;
     private CacheManager cacheManager;
     private String basename;
+
+    private byte[] value;
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
@@ -50,6 +58,10 @@ public class GetDestroyICacheTest {
             cacheManager = new HazelcastClientCacheManager(
                     hcp, targetInstance, hcp.getDefaultURI(), hcp.getDefaultClassLoader(), null);
         }
+
+        value = new byte[valueSize];
+        Random random = new Random();
+        random.nextBytes(value);
     }
 
     @Run
@@ -74,7 +86,15 @@ public class GetDestroyICacheTest {
                 if ((chance -= getCacheProb) < 0) {
                     try{
                         Cache cache = cacheManager.getCache(basename);
-
+                        if(cache!=null){
+                            int key = random.nextInt();
+                            try{
+                                cache.put(key, value);
+                                counter.putCache++;
+                            }catch (CacheException e) {
+                                counter.putCacheException++;
+                            }
+                        }
                         counter.getCache++;
                     } catch (IllegalStateException e){
                         counter.getCacheException++;
@@ -106,8 +126,14 @@ public class GetDestroyICacheTest {
         }
     }
 
-    @Verify(global = true)
+    @Verify(global = false)
     public void verify() throws Exception {
+
+        if ( TestUtils.isMemberNode(targetInstance) ){
+            LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
+            log.info(basename+": "+memoryStats);
+        }
+
         IList<Counter> counters = targetInstance.getList(basename);
         Counter total = new Counter();
         for(Counter c : counters){
@@ -119,19 +145,23 @@ public class GetDestroyICacheTest {
     public static class Counter implements Serializable {
 
         public long getCache = 0;
+        public long putCache = 0;
         public long closeCache=0;
         public long destroyCache = 0;
 
         public long getCacheException = 0;
+        public long putCacheException = 0;
         public long closeCacheException = 0;
         public long destroyCacheException = 0;
 
         public void add(Counter c) {
             getCache += c.getCache;
+            putCache += c.putCache;
             closeCache += c.closeCache;
             destroyCache += c.destroyCache;
 
             getCacheException += c.getCacheException;
+            putCacheException += c.putCacheException;
             closeCacheException += c.closeCacheException;
             destroyCacheException += c.destroyCacheException;
         }
@@ -140,9 +170,11 @@ public class GetDestroyICacheTest {
         public String toString() {
             return "Counter{" +
                     "getCache=" + getCache +
+                    ", putCache=" + putCache +
                     ", closeCache=" + closeCache +
                     ", destroyCache=" + destroyCache +
                     ", getCacheException=" + getCacheException +
+                    ", putCacheException=" + putCacheException +
                     ", closeCacheException=" + closeCacheException +
                     ", destroyCacheException=" + destroyCacheException +
                     '}';
