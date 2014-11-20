@@ -47,8 +47,8 @@
     <cache name="offHeapEvictionCache*">
         <backup-count>1</backup-count>
         <async-backup-count>0</async-backup-count>
-        <eviction-percentage>10</eviction-percentage>
-        <eviction-threshold-percentage>95</eviction-threshold-percentage>
+        <eviction-percentage>1</eviction-percentage>
+        <eviction-threshold-percentage>99</eviction-threshold-percentage>
         <eviction-policy>LRU</eviction-policy>
         <in-memory-format>NATIVE</in-memory-format>
         <statistics-enabled>true</statistics-enabled>
