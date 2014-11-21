@@ -102,7 +102,7 @@ public class GetDestroyICacheTest {
                         Cache cache = cacheManager.getCache(basename);
                         if(cache!=null){
                             try{
-                            cache.close();
+                                cache.close();
                             } catch (IllegalStateException e){
                                 counter.closeCacheException++;
                             }
