@@ -11,6 +11,7 @@ import org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilderSpec;
+import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.ec2.domain.SecurityGroup;
 import org.jclouds.ec2.features.SecurityGroupApi;
 import org.jclouds.net.domain.IpProtocol;
@@ -39,11 +40,11 @@ public class TemplateBuilder {
 
         log.info("Machine spec: " + machineSpec);
 
-        securityGroup = props.get("SECURITY_GROUP", "stabilizer");
+        //securityGroup = props.get("SECURITY_GROUP", "stabilizer");
 
         spec = TemplateBuilderSpec.parse(machineSpec);
 
-        initSecurityGroup();
+        //initSecurityGroup();
 
 
         Template template = buildTemplate();
@@ -56,10 +57,11 @@ public class TemplateBuilder {
 
         log.info("Loginname to the remote machines: " + user);
 
-        template.getOptions()
+        template.getOptions().as(AWSEC2TemplateOptions.class)
                 .inboundPorts(inboundPorts())
                 .runScript(adminAccess)
-                .securityGroups(securityGroup);
+                .subnetId("subnet-378d2140")
+                .securityGroups("sg-f3b7bc96"); //sg-f3b7bc96  //stabilizer-vpc-Sg
 
         return template;
     }
@@ -97,8 +99,13 @@ public class TemplateBuilder {
             return;
         }
 
-        //in case of AWS, we are going to create the security group, if it doesn't exist.
 
+        TemplateOptions options = compute.templateOptions();
+        options.as(AWSEC2TemplateOptions.class).subnetId("subnet-378d2140");
+
+
+
+        //in case of AWS, we are going to create the security group, if it doesn't exist.
         AWSEC2Api ec2Api = compute.getContext().unwrapApi(AWSEC2Api.class);
 
         SecurityGroupApi securityGroupApi = ec2Api.getSecurityGroupApi().get();
@@ -121,6 +128,8 @@ public class TemplateBuilder {
         securityGroupApi.authorizeSecurityGroupIngressInRegion(region, securityGroup, IpProtocol.TCP, 22, 22, "0.0.0.0/0");
         securityGroupApi.authorizeSecurityGroupIngressInRegion(region, securityGroup, IpProtocol.TCP, 9000, 9001, "0.0.0.0/0");
         securityGroupApi.authorizeSecurityGroupIngressInRegion(region, securityGroup, IpProtocol.TCP, 5701, 5751, "0.0.0.0/0");
+
+
     }
 
 }
