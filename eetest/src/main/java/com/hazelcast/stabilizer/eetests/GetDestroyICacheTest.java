@@ -89,6 +89,8 @@ public class GetDestroyICacheTest {
                             try{
                                 cache.put(key, value);
                                 counter.putCache++;
+                            }catch (IllegalArgumentException e) {
+                                counter.putCacheException++;
                             }catch (CacheException e) {
                                 counter.putCacheException++;
                             }
