@@ -79,10 +79,6 @@ public class CachePutGetTest {
                     cache.put(i, value);
                 }
             }
-
-            CacheSimpleConfig cacheConfig = targetInstance.getConfig().getCacheConfig(basename);
-            log.info(basename+": "+cacheConfig);
-            log.info(basename+": "+cacheConfig.getInMemoryFormat());
         }
     }
 
@@ -103,13 +99,13 @@ public class CachePutGetTest {
             workers[0].getLatencyHisto.add(workers[i].getLatencyHisto);
         }
 
-        targetInstance.getList(basename+"putHisto").add(workers[0].putLatencyHisto);
-        targetInstance.getList(basename+"getHisto").add(workers[0].getLatencyHisto);
+        targetInstance.getList("putHisto").add(workers[0].putLatencyHisto);
+        targetInstance.getList("getHisto").add(workers[0].getLatencyHisto);
     }
 
     private class Worker implements Runnable {
-        IntCountsHistogram putLatencyHisto = new IntCountsHistogram(1, 1000*30, 0);
-        IntCountsHistogram getLatencyHisto = new IntCountsHistogram(1, 1000*30, 0);
+        IntCountsHistogram putLatencyHisto = new IntCountsHistogram(1, 1000*10, 0);
+        IntCountsHistogram getLatencyHisto = new IntCountsHistogram(1, 1000*10, 0);
         Random random = new Random();
 
         public void run() {
@@ -148,8 +144,8 @@ public class CachePutGetTest {
         CacheSimpleConfig cacheConfig = targetInstance.getConfig().getCacheConfig(basename);
         log.info(basename+": "+cacheConfig);
 
-        IList<IntCountsHistogram> putHistos = targetInstance.getList(basename+"putHisto");
-        IList<IntCountsHistogram>  getHistos = targetInstance.getList(basename+"getHisto");
+        IList<IntCountsHistogram> putHistos = targetInstance.getList("putHisto");
+        IList<IntCountsHistogram>  getHistos = targetInstance.getList("getHisto");
 
         IntCountsHistogram putHisto = putHistos.get(0);
         IntCountsHistogram getHisto = getHistos.get(0);
