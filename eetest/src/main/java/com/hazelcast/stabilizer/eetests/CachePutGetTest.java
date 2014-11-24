@@ -1,6 +1,7 @@
 package com.hazelcast.stabilizer.eetests;
 
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
+import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.CacheSimpleConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
@@ -51,7 +52,12 @@ public class CachePutGetTest {
         testContext = testContex;
         targetInstance = testContext.getTargetInstance();
 
-        CachingProvider cachingProvider = HazelcastServerCachingProvider.createCachingProvider(targetInstance);
+        CachingProvider cachingProvider;
+        if (TestUtils.isMemberNode(targetInstance)) {
+            cachingProvider = HazelcastServerCachingProvider.createCachingProvider(targetInstance);
+        } else {
+            cachingProvider = HazelcastClientCachingProvider.createCachingProvider(targetInstance);
+        }
         CacheManager cacheManager = cachingProvider.getCacheManager();
 
         cache = cacheManager.getCache(basename);
