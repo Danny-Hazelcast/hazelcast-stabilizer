@@ -164,12 +164,11 @@ public class CachePutGetTest {
         System.out.println(basename + ": Put Latency Histogram");
         putHisto.outputPercentileDistribution(System.out, 1.0);
         double putsPerSec = putHisto.getTotalCount() / (durationMs/1000);
+        System.out.println(basename+":avg put/sec ="+putsPerSec);
 
         System.out.println(basename + ": Get Latency Histogram");
         getHisto.outputPercentileDistribution(System.out, 1.0);
         double getPerSec = getHisto.getTotalCount() / (durationMs/1000);
-
-        log.info(basename+":avg put/sec ="+putsPerSec);
-        log.info(basename+":avg get/Sec ="+getPerSec);
+        System.out.println(basename+":avg get/Sec ="+getPerSec);
     }
 }
