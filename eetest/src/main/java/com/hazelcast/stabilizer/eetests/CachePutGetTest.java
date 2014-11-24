@@ -9,8 +9,6 @@ import com.hazelcast.core.Partition;
 import com.hazelcast.core.PartitionService;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
-import com.hazelcast.monitor.LocalMemoryStats;
-import com.hazelcast.stabilizer.eetests.Utils.MemoryStatsUtil;
 import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
@@ -75,9 +73,6 @@ public class CachePutGetTest {
                     cache.put(i, value);
                 }
             }
-
-            LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
-            log.info(basename+": "+memoryStats);
 
             CacheSimpleConfig cacheConfig = targetInstance.getConfig().getCacheConfig(basename);
             log.info(basename+": "+cacheConfig);

@@ -8,7 +8,6 @@ import com.hazelcast.core.IList;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
 import com.hazelcast.monitor.LocalMemoryStats;
-import com.hazelcast.stabilizer.eetests.Utils.MemoryStatsUtil;
 import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
@@ -128,11 +127,6 @@ public class GetDestroyICacheTest {
 
     @Verify(global = false)
     public void verify() throws Exception {
-
-        if ( TestUtils.isMemberNode(targetInstance) ){
-            LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
-            log.info(basename+": "+memoryStats);
-        }
 
         IList<Counter> counters = targetInstance.getList(basename);
         Counter total = new Counter();

@@ -2,21 +2,16 @@ package com.hazelcast.stabilizer.eetests;
 
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
-import com.hazelcast.config.CacheConfig;
 import com.hazelcast.config.CacheSimpleConfig;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IList;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
-import com.hazelcast.monitor.LocalMemoryStats;
-import com.hazelcast.stabilizer.eetests.Utils.MemoryStatsUtil;
 import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
-import org.HdrHistogram.IntCountsHistogram;
 
 import javax.cache.Cache;
 import javax.cache.CacheManager;
@@ -58,9 +53,6 @@ public class CachePutTest {
         cache = cacheManager.getCache(basename);
 
         if ( TestUtils.isMemberNode(targetInstance) ){
-            LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
-            log.info(basename+": "+memoryStats);
-
             CacheSimpleConfig cacheConfig = targetInstance.getConfig().getCacheConfig(basename);
             log.info(basename+": "+cacheConfig);
             log.info(basename+": "+cacheConfig.getInMemoryFormat());
@@ -97,9 +89,5 @@ public class CachePutTest {
 
     @Verify(global = false)
     public void verify() throws Exception {
-        if ( TestUtils.isMemberNode(targetInstance) ){
-            LocalMemoryStats memoryStats = MemoryStatsUtil.getMemoryStats(targetInstance);
-            log.info(basename+": "+memoryStats);
-        }
     }
 }
