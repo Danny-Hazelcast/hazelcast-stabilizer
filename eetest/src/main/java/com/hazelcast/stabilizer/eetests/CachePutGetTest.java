@@ -5,6 +5,7 @@ import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.CacheSimpleConfig;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
+import com.hazelcast.core.IMap;
 import com.hazelcast.core.Member;
 import com.hazelcast.core.Partition;
 import com.hazelcast.core.PartitionService;
@@ -165,6 +166,6 @@ public class CachePutGetTest {
         System.out.println(basename + ": Get Latency Histogram");
         getHisto.outputPercentileDistribution(System.out, 1.0);
         double getPerSec = getHisto.getTotalCount() / (durationMs/1000);
-        System.out.println(basename+":avg get/Sec ="+getPerSec);
+        System.out.println(basename+":avg get/sec ="+getPerSec);
     }
 }
