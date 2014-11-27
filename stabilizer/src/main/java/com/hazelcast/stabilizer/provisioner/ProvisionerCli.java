@@ -48,7 +48,7 @@ public class ProvisionerCli {
     ).withRequiredArg().ofType(String.class);
 
     private final OptionSpec<Boolean> enterpriseEnabledSpec = parser.accepts("enterpriseEnabled",
-            "use hazelcast enterprise edition jars")
+            "Use Hazelcast Enterprise. Enterprise JARs have to be available in a local Maven Repository.")
             .withRequiredArg().ofType(Boolean.class).defaultsTo(false);
 
     private final Provisioner provisioner;
