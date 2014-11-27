@@ -178,6 +178,10 @@ public class TestCaseRunner {
     }
 
     private void startTestCase() throws TimeoutException {
+        if (coordinator.monitorPerformance) {
+            coordinator.performanceMonitor.start();
+        }
+
         WorkerJvmSettings workerJvmSettings = coordinator.workerJvmSettings;
         RunCommand runCommand = new RunCommand(testCase.id);
         runCommand.clientOnly = workerJvmSettings.clientWorkerCount > 0;
@@ -198,13 +202,14 @@ public class TestCaseRunner {
             Utils.sleepSeconds(period);
             final int elapsed = period * k;
             final float percentage = (100f * elapsed) / seconds;
-            String msg = format("Running %s, %6.2f%% complete", secondsToHuman(elapsed), percentage);
+            String msg = format("Running %s %6.2f%% complete", secondsToHuman(elapsed), percentage);
 
             if (coordinator.monitorPerformance) {
                 if (coordinator.operationCount < 0) {
                     msg += ", performance not available";
                 } else {
-                    msg += Utils.formatDouble(coordinator.performance, 14) + " ops/s";
+                    msg += Utils.formatDouble(coordinator.performance, 14)
+                            + " ops/s "+Utils.formatLong(coordinator.operationCount, 14)+ " ops";
                 }
             }
 
