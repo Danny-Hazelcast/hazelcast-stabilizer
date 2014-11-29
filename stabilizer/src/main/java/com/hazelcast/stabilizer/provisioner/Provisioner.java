@@ -44,7 +44,7 @@ public class Provisioner {
     private final static String STABILIZER_HOME = Utils.getStablizerHome().getAbsolutePath();
     private final static String CONF_DIR = STABILIZER_HOME + "/conf";
 
-    private final File agentsFile = new File("agents.txt");
+    private File agentsFile;
     //big number of threads, but they are used to offload ssh tasks. So there is no load on this machine..
     private final ExecutorService executor = Executors.newFixedThreadPool(10);
 
@@ -56,7 +56,10 @@ public class Provisioner {
     public Provisioner() {
     }
 
-    void init() throws Exception {
+    void init(String agents) throws Exception {
+
+        agentsFile = new File(agents);
+
         if (!agentsFile.exists()) {
             agentsFile.createNewFile();
         }

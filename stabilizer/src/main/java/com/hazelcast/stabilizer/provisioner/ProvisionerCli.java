@@ -17,6 +17,10 @@ public class ProvisionerCli {
     public final OptionSpec restartSpec = parser.accepts("restart",
             "Restarts all agents");
 
+    public final OptionSpec<String> agentsSpec = parser.accepts("agents",
+            "specify an agents.txt file "
+    ).withRequiredArg().defaultsTo("agents.txt").ofType(String.class);
+
     public final OptionSpec<String> downloadSpec = parser.accepts("download",
             "Download all the files from the workers directory. " +
             "To delete all worker directories, run with --clean"
@@ -67,8 +71,16 @@ public class ProvisionerCli {
             System.exit(0);
         }
 
+
+
         provisioner.props.init(getPropertiesFile());
-        provisioner.init();
+
+        if (options.has(agentsSpec)) {
+            String agents = options.valueOf(downloadSpec);
+            provisioner.init(agents);
+        }else{
+            provisioner.init("agents.txt");
+        }
 
         if (options.has(restartSpec)) {
             provisioner.restart();
