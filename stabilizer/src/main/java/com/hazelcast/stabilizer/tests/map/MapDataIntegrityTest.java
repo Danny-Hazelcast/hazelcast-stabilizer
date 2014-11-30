@@ -31,6 +31,7 @@ public class MapDataIntegrityTest {
     public int totalIntegritiyKeys=10000;
     public int totalStressKeys=1000;
     public int valueSize=1000;
+    public boolean mapLoad=false;
     public String basename = this.getClass().getCanonicalName();
 
     private String id;
@@ -52,7 +53,7 @@ public class MapDataIntegrityTest {
         Random random = new Random();
         random.nextBytes(value);
 
-        if(TestUtils.isMemberNode(targetInstance)){
+        if(mapLoad && TestUtils.isMemberNode(targetInstance)){
 
             PartitionService partitionService = targetInstance.getPartitionService();
             final Set<Partition> partitionSet = partitionService.getPartitions();
@@ -120,8 +121,7 @@ public class MapDataIntegrityTest {
     @Verify(global = false)
     public void verify() throws Exception {
         if(TestUtils.isMemberNode(targetInstance)){
-            log.info(id + ": cluster size 1=" + targetInstance.getCluster().getMembers().size());
-            log.info(id + ": cluster size 2=" + targetInstance.getCluster().getMembers().size());
+            log.info(id + ": cluster size =" + targetInstance.getCluster().getMembers().size());
         }
     }
 }
