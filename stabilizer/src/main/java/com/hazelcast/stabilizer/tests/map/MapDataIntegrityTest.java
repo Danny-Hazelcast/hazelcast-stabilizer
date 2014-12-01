@@ -16,6 +16,8 @@ import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -41,8 +43,8 @@ public class MapDataIntegrityTest {
     private IMap<Integer, byte[]> stressMap;
     private byte[] value;
 
-    private int integrityMapSizeErrorCount =0;
-    private int integrityMapNullValueCount =0;
+    MapIntegrityThread[] integrityThreads;
+
 
     @Setup
     public void setup(TestContext testContex) throws Exception {
@@ -51,6 +53,8 @@ public class MapDataIntegrityTest {
         id=testContex.getTestId();
         integrityMap = targetInstance.getMap(basename+"Integrity");
         stressMap = targetInstance.getMap(basename+"Stress");
+
+        integrityThreads = new MapIntegrityThread[MapIntegrityThreadCount];
 
         value = new byte[valueSize];
         Random random = new Random();
@@ -86,7 +90,8 @@ public class MapDataIntegrityTest {
     public void run() {
         ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
         for(int i=0; i<MapIntegrityThreadCount; i++){
-            spawner.spawn( new MapIntegrityThread() );
+            integrityThreads[i]=new MapIntegrityThread();
+            spawner.spawn( integrityThreads[i] );
         }
         for(int i=0; i<stressThreadCount; i++){
             spawner.spawn( new StressThread() );
@@ -96,7 +101,8 @@ public class MapDataIntegrityTest {
 
     private class MapIntegrityThread implements Runnable {
         Random random = new Random();
-
+        int nullValueCount=0;
+        int sizeErrorCount=0;
         public void run() {
             while (!testContext.isStopped()) {
 
@@ -108,10 +114,10 @@ public class MapDataIntegrityTest {
                     assertEquals(id + ": integrityMap=" + integrityMap.getName() + " map size ", totalIntegritiyKeys, actualSize);
                 }else{
                     if(val==null){
-                        integrityMapNullValueCount++;
+                        nullValueCount++;
                     }
                     if(actualSize != totalIntegritiyKeys){
-                        integrityMapSizeErrorCount++;
+                        sizeErrorCount++;
                     }
                 }
             }
@@ -136,11 +142,18 @@ public class MapDataIntegrityTest {
         }
 
         log.info( id + ": integrityMap=" + integrityMap.getName() + " size=" + integrityMap.size());
-        log.info( id + ": integrityMapSizeErrorCount=" + integrityMapSizeErrorCount);
-        log.info( id + ": integrityMapNullValueCount=" + integrityMapNullValueCount);
+        int totalErrorCount=0;
+        int totalNullValueCount=0;
+        for(int i=0; i<integrityThreads.length; i++){
+            log.info( id + ": integrityMapSizeErrorCount=" + integrityThreads[i].sizeErrorCount);
+            log.info( id + ": integrityMapNullValueCount=" + integrityThreads[i].nullValueCount);
+
+            totalErrorCount += integrityThreads[i].sizeErrorCount;
+            totalNullValueCount += integrityThreads[i].nullValueCount;
+        }
 
         assertEquals(id + ": (verify) integrityMap=" + integrityMap.getName() + " map size ", totalIntegritiyKeys, integrityMap.size());
-        assertEquals(id + ": (verify) integrityMapSizeErrorCount=", 0, integrityMapSizeErrorCount);
-        assertEquals(id + ": (verify) integrityMapNullValueCount=", 0, integrityMapNullValueCount);
+        assertEquals(id + ": (verify) integrityMapSizeErrorCount=", 0, totalErrorCount);
+        assertEquals(id + ": (verify) integrityMapNullValueCount=", 0, totalNullValueCount);
     }
 }
