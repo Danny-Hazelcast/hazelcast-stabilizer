@@ -123,6 +123,8 @@ public class MapDataIntegrityTest {
         if(TestUtils.isMemberNode(targetInstance)){
             log.info(id + ": cluster size =" + targetInstance.getCluster().getMembers().size());
         }
+
+        log.info(id + ": integrityMap=" + integrityMap.getName() + " size=" + integrityMap.size());
         assertEquals(id + ": (verify) integrityMap=" + integrityMap.getName() + " map size ", totalIntegritiyKeys, integrityMap.size());
     }
 }
