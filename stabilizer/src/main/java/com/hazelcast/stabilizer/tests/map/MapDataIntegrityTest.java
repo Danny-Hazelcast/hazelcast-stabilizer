@@ -15,7 +15,6 @@ import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
-import org.junit.Assert;
 
 import java.util.Random;
 import java.util.Set;
@@ -31,7 +30,8 @@ public class MapDataIntegrityTest {
     public int totalIntegritiyKeys=10000;
     public int totalStressKeys=1000;
     public int valueSize=1000;
-    public boolean mapLoad=false;
+    public boolean mapLoad=true;
+    public boolean doRunAsserts = true;
     public String basename = this.getClass().getCanonicalName();
 
     private String id;
@@ -97,12 +97,12 @@ public class MapDataIntegrityTest {
         public void run() {
             while (!testContext.isStopped()) {
 
-                assertEquals(id + ": integrityMap=" + integrityMap.getName() + " map size ", totalIntegritiyKeys, integrityMap.size());
-
                 int key = random.nextInt(totalIntegritiyKeys);
                 byte[] val = integrityMap.get(key);
-
-                assertNotNull(id + ": integrityMap=" + integrityMap.getName() + " key " + key + " == null" , val);
+                if(doRunAsserts){
+                    assertNotNull(id + ": integrityMap=" + integrityMap.getName() + " key " + key + " == null" , val);
+                    assertEquals(id + ": integrityMap=" + integrityMap.getName() + " map size ", totalIntegritiyKeys, integrityMap.size());
+                }
             }
         }
     }
@@ -123,5 +123,6 @@ public class MapDataIntegrityTest {
         if(TestUtils.isMemberNode(targetInstance)){
             log.info(id + ": cluster size =" + targetInstance.getCluster().getMembers().size());
         }
+        assertEquals(id + ": (verify) integrityMap=" + integrityMap.getName() + " map size ", totalIntegritiyKeys, integrityMap.size());
     }
 }
