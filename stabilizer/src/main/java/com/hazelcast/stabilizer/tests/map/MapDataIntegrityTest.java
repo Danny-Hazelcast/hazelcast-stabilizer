@@ -41,6 +41,9 @@ public class MapDataIntegrityTest {
     private IMap<Integer, byte[]> stressMap;
     private byte[] value;
 
+    private int integrityMapSizeErrorCount =0;
+    private int integrityMapNullValueCount =0;
+
     @Setup
     public void setup(TestContext testContex) throws Exception {
         this.testContext = testContex;
@@ -99,9 +102,17 @@ public class MapDataIntegrityTest {
 
                 int key = random.nextInt(totalIntegritiyKeys);
                 byte[] val = integrityMap.get(key);
+                int actualSize= integrityMap.size();
                 if(doRunAsserts){
                     assertNotNull(id + ": integrityMap=" + integrityMap.getName() + " key " + key + " == null" , val);
-                    assertEquals(id + ": integrityMap=" + integrityMap.getName() + " map size ", totalIntegritiyKeys, integrityMap.size());
+                    assertEquals(id + ": integrityMap=" + integrityMap.getName() + " map size ", totalIntegritiyKeys, actualSize);
+                }else{
+                    if(val==null){
+                        integrityMapNullValueCount++;
+                    }
+                    if(actualSize != totalIntegritiyKeys){
+                        integrityMapSizeErrorCount++;
+                    }
                 }
             }
         }
@@ -124,7 +135,12 @@ public class MapDataIntegrityTest {
             log.info(id + ": cluster size =" + targetInstance.getCluster().getMembers().size());
         }
 
-        log.info(id + ": integrityMap=" + integrityMap.getName() + " size=" + integrityMap.size());
+        log.info( id + ": integrityMap=" + integrityMap.getName() + " size=" + integrityMap.size());
+        log.info( id + ": integrityMapSizeErrorCount=" + integrityMapSizeErrorCount);
+        log.info( id + ": integrityMapNullValueCount=" + integrityMapNullValueCount);
+
         assertEquals(id + ": (verify) integrityMap=" + integrityMap.getName() + " map size ", totalIntegritiyKeys, integrityMap.size());
+        assertEquals(id + ": (verify) integrityMapSizeErrorCount=", 0, integrityMapSizeErrorCount);
+        assertEquals(id + ": (verify) integrityMapNullValueCount=", 0, integrityMapNullValueCount);
     }
 }
