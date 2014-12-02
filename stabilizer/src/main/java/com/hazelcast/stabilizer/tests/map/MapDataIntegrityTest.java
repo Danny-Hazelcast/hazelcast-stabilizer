@@ -145,12 +145,11 @@ public class MapDataIntegrityTest {
         int totalErrorCount=0;
         int totalNullValueCount=0;
         for(int i=0; i<integrityThreads.length; i++){
-            log.info( id + ": integrityMapSizeErrorCount=" + integrityThreads[i].sizeErrorCount);
-            log.info( id + ": integrityMapNullValueCount=" + integrityThreads[i].nullValueCount);
-
             totalErrorCount += integrityThreads[i].sizeErrorCount;
             totalNullValueCount += integrityThreads[i].nullValueCount;
         }
+        log.info( id + ": total integrityMapSizeErrorCount=" + totalErrorCount);
+        log.info( id + ": total integrityMapNullValueCount=" + totalNullValueCount);
 
         assertEquals(id + ": (verify) integrityMap=" + integrityMap.getName() + " map size ", totalIntegritiyKeys, integrityMap.size());
         assertEquals(id + ": (verify) integrityMapSizeErrorCount=", 0, totalErrorCount);
