@@ -44,4 +44,22 @@
         <in-memory-format>OBJECT</in-memory-format>
     </map>
 
+    <serialization>
+        <portable-version>1</portable-version>
+        <data-serializable-factories>
+            <data-serializable-factory factory-id="2000">
+                com.hazelcast.stabilizer.tests.backpressure.SyntheticSerializableFactory
+            </data-serializable-factory>
+        </data-serializable-factories>  <portable-factories>
+            <portable-factory factory-id="10000000">
+                com.hazelcast.stabilizer.tests.backpressure.SyntheticRequestPortableFactory
+            </portable-factory>
+        </portable-factories>
+    </serialization>
+
+    <cache name="maxCache*">
+        <max-size policy="ENTRY_COUNT" size="1000"/>
+        <eviction-policy>LFU</eviction-policy>
+    </cache>
+
 </hazelcast>
