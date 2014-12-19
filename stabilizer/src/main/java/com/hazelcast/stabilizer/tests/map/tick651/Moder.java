@@ -37,44 +37,32 @@ public class Moder {
     public int keyCount = 3;
     public String basename;
 
-    private IMap<Integer, List<Byte[]>> map;
+    private IMap<Integer, List<byte[]>> map;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
+    private String id;
 
-    private List<Byte[]> values = new ArrayList<Byte[]>();
+    private List<byte[]> values = new ArrayList<byte[]>();
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
         map = targetInstance.getMap(basename);
+        id = testContext.getTestId();
 
         Random random = new Random();
 
         for(int i=0; i<100; i++){
-            Byte[] b = new Byte[ 1000 + random.nextInt(1000)];
+            byte[] b = new byte[ 1000 + random.nextInt(1000)];
+            random.nextBytes(b);
             values.add(b);
         }
     }
 
     @Warmup(global = true)
     public void warmup() throws InterruptedException {
-
-        Random random = new Random();
-
-
-        for(int i=0; i<keyCount; i++){
-            List<Byte[]> list = new ArrayList();
-
-            int max = 100+random.nextInt(100);
-            for(int j= 0; j<max; j++){
-                int idx = random.nextInt(values.size());
-                list.add(values.get(idx));
-            }
-
-            map.put(i, list);
-        }
 
     }
 
@@ -94,20 +82,22 @@ public class Moder {
         @Override
         public void run() {
 
-            List<Byte[]> list = new ArrayList();
+            List<byte[]> list = new ArrayList();
 
             while (!testContext.isStopped()) {
                     int key = random.nextInt(keyCount);
 
                     list.clear();
 
-                    int max = 100+random.nextInt(100);
+                    int max = 10+random.nextInt(100);
                     for(int j= 0; j<max; j++){
                         int idx = random.nextInt(values.size());
                         list.add(values.get(idx));
                     }
 
                     map.put(key, list);
+
+                    log.info(id+": "+list.size());
             }
         }
 

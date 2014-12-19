@@ -49,6 +49,7 @@ public class Consumer {
     public int keyCount = 3;
     public String basename;
 
+    private String id;
     private IMap<Integer, List<Byte[]>> map;
     private TestContext testContext;
     private HazelcastInstance targetInstance;
@@ -58,6 +59,7 @@ public class Consumer {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
         map = targetInstance.getMap(basename);
+        id = testContext.getTestId();
     }
 
     @Warmup(global = false)
@@ -82,7 +84,9 @@ public class Consumer {
         public void run() {
             while (!testContext.isStopped()) {
                     int key = random.nextInt(keyCount);
-                    map.get(key);
+                    List<Byte[]> res =map.get(key);
+
+                    log.info(id+": "+res.size());
             }
         }
 
