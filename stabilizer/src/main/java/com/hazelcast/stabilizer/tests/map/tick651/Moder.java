@@ -16,6 +16,8 @@
 package com.hazelcast.stabilizer.tests.map.tick651;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IAtomicLong;
+import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
@@ -34,16 +36,18 @@ public class Moder {
     private final static ILogger log = Logger.getLogger(Moder.class);
 
     public int threadCount = 10;
-    public int keyCount = 3;
     public String basename;
 
-    private IMap<Integer, List<byte[]>> map;
+    private IMap<Object, List<byte[]>> map;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
     private String id;
 
+    private Object[] keys;
+
     private List<byte[]> values = new ArrayList<byte[]>();
+
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
@@ -61,6 +65,14 @@ public class Moder {
             random.nextBytes(b);
             values.add(b);
         }
+
+
+        IAtomicLong total = targetInstance.getAtomicLong(basename+"total");
+        while(total.get()==0){
+            Thread.sleep(2000);
+        }
+        IList list = targetInstance.getList(basename + "keys");
+        keys = list.toArray();
     }
 
     @Warmup(global = true)
@@ -87,7 +99,6 @@ public class Moder {
             List<byte[]> list = new ArrayList();
 
             while (!testContext.isStopped()) {
-                    int key = random.nextInt(keyCount);
 
                     list.clear();
 
@@ -97,7 +108,9 @@ public class Moder {
                         list.add(values.get(idx));
                     }
 
-                    map.put(key, list);
+                    int idx = random.nextInt(keys.length);
+
+                    map.put(keys[idx], list);
 
                     log.info(id+": "+list.size());
             }

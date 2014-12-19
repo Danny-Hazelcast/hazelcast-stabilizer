@@ -17,32 +17,38 @@ package com.hazelcast.stabilizer.tests.map.tick651;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IAtomicLong;
-import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
+import com.hazelcast.core.Partition;
+import com.hazelcast.core.PartitionService;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
 import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
+import com.hazelcast.stabilizer.tests.map.helpers.KeyUtils;
+import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
-public class Consumer {
+public class Owner {
 
-    private final static ILogger log = Logger.getLogger(Consumer.class);
+    private final static ILogger log = Logger.getLogger(Owner.class);
 
-    public int threadCount = 10;
+    public int threadCount = 1;
+    public int keyCount = 3;
     public String basename;
 
-    private String id;
+    private IMap<Integer, List<byte[]>> map;
 
-    private Object[] keys;
-    private IMap<Object, List<byte[]>> map;
     private TestContext testContext;
     private HazelcastInstance targetInstance;
+    private String id;
+
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
@@ -51,17 +57,24 @@ public class Consumer {
 
         targetInstance = testContext.getTargetInstance();
         map = targetInstance.getMap(basename);
-
         log.info(id+": mapName="+map.getName());
 
+        PartitionService partitionService = targetInstance.getPartitionService();
+        final Set<Partition> partitionSet = partitionService.getPartitions();
+        for (Partition partition : partitionSet) {
+            while (partition.getOwner() == null) {
+                Thread.sleep(1000);
+            }
 
-        IAtomicLong total = targetInstance.getAtomicLong(basename+"total");
-        while(total.get()==0){
-            Thread.sleep(2000);
+            long key=0;
+            for(int i=0; i<keyCount; i++){
+                key = TestUtils.nextKeyOwnedBy(key, targetInstance);
+                targetInstance.getList(basename+"keys").add((int)key);
+            }
+
+            IAtomicLong total = targetInstance.getAtomicLong(basename+"total");
+            total.set(keyCount);
         }
-        IList list = targetInstance.getList(basename + "keys");
-        keys = list.toArray();
-
     }
 
     @Warmup(global = true)
@@ -84,14 +97,14 @@ public class Consumer {
 
         @Override
         public void run() {
+
             while (!testContext.isStopped()) {
 
-                int idx = random.nextInt(keys.length);
-                List<byte[]> res =map.get(keys[idx]);
-
-                if(res!=null){
-                   log.info(id+": "+res.size());
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
                 }
+                log.info(id+": local key set"+map.localKeySet());
             }
         }
 
