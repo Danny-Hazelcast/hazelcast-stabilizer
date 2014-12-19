@@ -48,9 +48,11 @@ public class Moder {
     @Setup
     public void setup(TestContext testContext) throws Exception {
         this.testContext = testContext;
+        id = testContext.getTestId();
+
         targetInstance = testContext.getTargetInstance();
         map = targetInstance.getMap(basename);
-        id = testContext.getTestId();
+        log.info(id+": mapName="+map.getName());
 
         Random random = new Random();
 

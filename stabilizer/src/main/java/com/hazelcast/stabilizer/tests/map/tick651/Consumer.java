@@ -50,19 +50,22 @@ public class Consumer {
     public String basename;
 
     private String id;
-    private IMap<Integer, List<Byte[]>> map;
+    private IMap<Integer, List<byte[]>> map;
     private TestContext testContext;
     private HazelcastInstance targetInstance;
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
         this.testContext = testContext;
+        id = testContext.getTestId();
+
         targetInstance = testContext.getTargetInstance();
         map = targetInstance.getMap(basename);
-        id = testContext.getTestId();
+
+        log.info(id+": mapName="+map.getName());
     }
 
-    @Warmup(global = false)
+    @Warmup(global = true)
     public void warmup() throws InterruptedException {
 
     }
@@ -84,7 +87,7 @@ public class Consumer {
         public void run() {
             while (!testContext.isStopped()) {
                 int key = random.nextInt(keyCount);
-                List<Byte[]> res =map.get(key);
+                List<byte[]> res =map.get(key);
 
                 if(res!=null){
                    log.info(id+": "+res.size());
