@@ -83,10 +83,12 @@ public class Consumer {
         @Override
         public void run() {
             while (!testContext.isStopped()) {
-                    int key = random.nextInt(keyCount);
-                    List<Byte[]> res =map.get(key);
+                int key = random.nextInt(keyCount);
+                List<Byte[]> res =map.get(key);
 
-                    log.info(id+": "+res.size());
+                if(res!=null){
+                   log.info(id+": "+res.size());
+                }
             }
         }
 
