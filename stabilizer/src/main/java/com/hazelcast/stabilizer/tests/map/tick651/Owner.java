@@ -105,9 +105,9 @@ public class Owner {
 
                 sleepMs(5000);
 
-                //for(Object o : map.localKeySet()){
-                //    log.info(id+": local key = "+o);
-                //}
+                for(Object o : map.localKeySet()){
+                    log.info(id+": local key = "+o);
+                }
             }
         }
     }
