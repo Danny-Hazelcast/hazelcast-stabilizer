@@ -94,7 +94,13 @@ public class Consumer {
                 List<byte[]> res =map.get(keys[idx]);
 
                 if(res!=null){
-                   log.info(id+": "+res.size());
+
+
+                    log.info(id+": key="+keys[idx]);
+                    for(byte[] b : res){
+                        log.info(id+": "+b);
+                    }
+                    log.info(id+": =====================");
                 }
             }
         }
