@@ -128,12 +128,14 @@ public class Owner {
         public void run() {
             while (!testContext.isStopped()) {
 
-                int mapIdx = random.nextInt(keyCount);
-                List<byte[]> list = map.get(keys[mapIdx]);
+                int keyIdx = random.nextInt(keyCount);
+                List<byte[]> list = map.get(keys[keyIdx]);
 
                 int listIdx = random.nextInt(list.size());
                 int valuesIdx = random.nextInt(values.size());
                 list.set(listIdx, values.get(valuesIdx));
+
+                map.set(keys[keyIdx], list);
             }
         }
     }
