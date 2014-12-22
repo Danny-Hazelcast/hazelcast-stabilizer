@@ -94,15 +94,15 @@ public class Consumer {
                 int idx = random.nextInt(keys.length);
                 List<byte[]> res =map.get(keys[idx]);
 
+                /*
                 if(res!=null){
-
-
                     log.info(id+": key="+keys[idx]);
                     for(byte[] b : res){
                         log.info(id+": "+ Arrays.toString(b));
                     }
                     log.info(id+": =====================");
                 }
+                */
             }
         }
     }
