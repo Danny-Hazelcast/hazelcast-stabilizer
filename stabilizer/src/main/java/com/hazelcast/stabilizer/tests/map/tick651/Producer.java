@@ -32,9 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Moder {
+public class Producer {
 
-    private final static ILogger log = Logger.getLogger(Moder.class);
+    private final static ILogger log = Logger.getLogger(Producer.class);
 
     public int threadCount = 10;
     public String basename;

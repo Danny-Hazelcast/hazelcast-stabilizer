@@ -27,7 +27,6 @@ import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
-import com.hazelcast.stabilizer.tests.map.helpers.KeyUtils;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
@@ -36,13 +35,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import static com.hazelcast.stabilizer.tests.utils.TestUtils.sleepMs;
-
 public class Owner {
 
     private final static ILogger log = Logger.getLogger(Owner.class);
 
-    public int threadCount = 1;
+    public int threadCount = 3;
     public int keyCount = 3;
     public String basename;
 
@@ -53,6 +50,15 @@ public class Owner {
     private String id;
 
 
+    public int maxValues=500;
+    public int minValueSz=10;
+    public int maxValueSz=1000;
+
+    public int maxListSZ=50;
+
+    private Object[] keys;
+    private List<byte[]> values = new ArrayList<byte[]>();
+
     @Setup
     public void setup(TestContext testContext) throws Exception {
         this.testContext = testContext;
@@ -61,6 +67,8 @@ public class Owner {
         targetInstance = testContext.getTargetInstance();
         map = targetInstance.getMap(basename);
         log.info(id+": mapName="+map.getName());
+
+        keys = new Object[keyCount];
 
         final PartitionService partitionService = targetInstance.getPartitionService();
         final Set<Partition> partitionSet = partitionService.getPartitions();
@@ -73,10 +81,8 @@ public class Owner {
         long key=0;
         for(int i=0; i<keyCount; i++){
             key = TestUtils.nextKeyOwnedBy(key, targetInstance);
-
             targetInstance.getList(basename+"keys").add(key);
-
-            log.info(id+": key = "+key);
+            keys[i]=key;
             key++;
         }
 
@@ -84,9 +90,25 @@ public class Owner {
         total.set(keyCount);
     }
 
-    @Warmup(global = true)
+    @Warmup(global = false)
     public void warmup() throws InterruptedException {
 
+        Random random = new Random();
+        for(int i=0; i<maxValues; i++){
+            byte[] b = new byte[ minValueSz + random.nextInt(maxValueSz)];
+            random.nextBytes(b);
+            values.add(b);
+        }
+
+        for(int i=0; i<keys.length; i++){
+            List<byte[]> list = new ArrayList();
+
+            for(int j=0; j<maxListSZ; j++){
+                int idx = random.nextInt(values.size());
+                list.add( values.get(idx) );
+            }
+            map.put(keys[i], list);
+        }
     }
 
     @Run
@@ -99,15 +121,19 @@ public class Owner {
     }
 
     private class Worker implements Runnable {
+
+        private final Random random = new Random();
+
         @Override
         public void run() {
             while (!testContext.isStopped()) {
 
-                sleepMs(5000);
+                int mapIdx = random.nextInt(keyCount);
+                List<byte[]> list = map.get(keys[mapIdx]);
 
-                for(Object o : map.localKeySet()){
-                    log.info(id+": local key = "+o);
-                }
+                int listIdx = random.nextInt(list.size());
+                int valuesIdx = random.nextInt(values.size());
+                list.set(listIdx, values.get(valuesIdx));
             }
         }
     }
