@@ -70,6 +70,8 @@ public class Owner {
             for(int i=0; i<keyCount; i++){
                 key = TestUtils.nextKeyOwnedBy(key, targetInstance);
                 targetInstance.getList(basename+"keys").add((int)key);
+
+                log.info(id+": key "+key);
             }
 
             IAtomicLong total = targetInstance.getAtomicLong(basename+"total");
@@ -104,7 +106,8 @@ public class Owner {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
                 }
-                log.info(id+": local key set"+map.localKeySet());
+
+                log.info(id+": local key set"+map.localKeySet().toArray());
             }
         }
 

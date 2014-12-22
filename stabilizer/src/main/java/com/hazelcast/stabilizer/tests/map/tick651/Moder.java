@@ -73,6 +73,9 @@ public class Moder {
         }
         IList list = targetInstance.getList(basename + "keys");
         keys = list.toArray();
+
+
+        log.info(id+": keys"+keys);
     }
 
     @Warmup(global = true)
