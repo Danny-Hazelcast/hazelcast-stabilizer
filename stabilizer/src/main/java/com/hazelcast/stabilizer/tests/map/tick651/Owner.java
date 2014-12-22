@@ -59,24 +59,24 @@ public class Owner {
         map = targetInstance.getMap(basename);
         log.info(id+": mapName="+map.getName());
 
-        PartitionService partitionService = targetInstance.getPartitionService();
+        final PartitionService partitionService = targetInstance.getPartitionService();
         final Set<Partition> partitionSet = partitionService.getPartitions();
         for (Partition partition : partitionSet) {
             while (partition.getOwner() == null) {
                 Thread.sleep(1000);
             }
-
-            long key=0;
-            for(int i=0; i<keyCount; i++){
-                key = TestUtils.nextKeyOwnedBy(key, targetInstance);
-                targetInstance.getList(basename+"keys").add((int)key);
-
-                log.info(id+": key "+key);
-            }
-
-            IAtomicLong total = targetInstance.getAtomicLong(basename+"total");
-            total.set(keyCount);
         }
+
+        long key=0;
+        for(int i=0; i<keyCount; i++){
+            key = TestUtils.nextKeyOwnedBy(key, targetInstance);
+            targetInstance.getList(basename+"keys").add((int)key);
+
+            log.info(id+": key "+key);
+        }
+
+        IAtomicLong total = targetInstance.getAtomicLong(basename+"total");
+        total.set(keyCount);
     }
 
     @Warmup(global = true)
@@ -107,7 +107,9 @@ public class Owner {
                 } catch (InterruptedException e) {
                 }
 
-                log.info(id+": local key set"+map.localKeySet().toArray());
+                for(int k : map.localKeySet()){
+                    log.info(id+": local key = "+k);
+                }
             }
         }
 

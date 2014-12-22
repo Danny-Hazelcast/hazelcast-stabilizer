@@ -62,7 +62,9 @@ public class Consumer {
         IList list = targetInstance.getList(basename + "keys");
         keys = list.toArray();
 
-        log.info(id+": keys"+keys);
+        for(Object k : keys){
+            log.info(id+": key = "+k);
+        }
     }
 
     @Warmup(global = true)
