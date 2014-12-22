@@ -25,6 +25,7 @@ import com.hazelcast.logging.Logger;
 import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
+import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
 import com.hazelcast.stabilizer.tests.map.helpers.KeyUtils;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
@@ -35,6 +36,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import static com.hazelcast.stabilizer.tests.utils.TestUtils.sleepMs;
+
 public class Owner {
 
     private final static ILogger log = Logger.getLogger(Owner.class);
@@ -43,7 +46,7 @@ public class Owner {
     public int keyCount = 3;
     public String basename;
 
-    private IMap<Integer, List<byte[]>> map;
+    private IMap<Object, List<byte[]>> map;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
@@ -70,7 +73,8 @@ public class Owner {
         long key=0;
         for(int i=0; i<keyCount; i++){
             key = TestUtils.nextKeyOwnedBy(key, targetInstance);
-            targetInstance.getList(basename+"keys").add((int)key);
+
+            targetInstance.getList(basename+"keys").add(key);
 
             log.info(id+": key = "+key);
             key++;
@@ -94,26 +98,24 @@ public class Owner {
         spawner.awaitCompletion();
     }
 
-
     private class Worker implements Runnable {
-        private final Random random = new Random();
-
         @Override
         public void run() {
-
             while (!testContext.isStopped()) {
 
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                }
+                sleepMs(5000);
 
-                for(int k : map.localKeySet()){
-                    log.info(id+": local key = "+k);
-                }
+                //for(Object o : map.localKeySet()){
+                //    log.info(id+": local key = "+o);
+                //}
             }
         }
-
     }
 
+    @Verify(global = false)
+    public void verify() throws Exception {
+        for(Object o : map.localKeySet()){
+            log.info(id+": local key = "+o);
+        }
+    }
 }

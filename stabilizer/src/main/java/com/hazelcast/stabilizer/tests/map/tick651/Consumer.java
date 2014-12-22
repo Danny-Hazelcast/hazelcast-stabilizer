@@ -24,6 +24,7 @@ import com.hazelcast.logging.Logger;
 import com.hazelcast.stabilizer.tests.TestContext;
 import com.hazelcast.stabilizer.tests.annotations.Run;
 import com.hazelcast.stabilizer.tests.annotations.Setup;
+import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
@@ -97,7 +98,13 @@ public class Consumer {
                 }
             }
         }
+    }
 
+    @Verify(global = false)
+    public void verify() throws Exception {
+        for(Object o : map.localKeySet()){
+            log.info(id+": local key = "+o);
+        }
     }
 
 }
