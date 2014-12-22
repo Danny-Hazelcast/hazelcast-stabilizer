@@ -72,7 +72,8 @@ public class Owner {
             key = TestUtils.nextKeyOwnedBy(key, targetInstance);
             targetInstance.getList(basename+"keys").add((int)key);
 
-            log.info(id+": key "+key);
+            log.info(id+": key = "+key);
+            key++;
         }
 
         IAtomicLong total = targetInstance.getAtomicLong(basename+"total");
