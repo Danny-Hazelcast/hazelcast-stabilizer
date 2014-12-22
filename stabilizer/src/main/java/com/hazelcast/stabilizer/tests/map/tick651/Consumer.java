@@ -28,6 +28,7 @@ import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -98,7 +99,7 @@ public class Consumer {
 
                     log.info(id+": key="+keys[idx]);
                     for(byte[] b : res){
-                        log.info(id+": "+b);
+                        log.info(id+": "+ Arrays.toString(b));
                     }
                     log.info(id+": =====================");
                 }

@@ -40,7 +40,7 @@ public class Owner {
     private final static ILogger log = Logger.getLogger(Owner.class);
 
     public int threadCount = 3;
-    public int keyCount = 3;
+    public int keyCount = 1;
     public String basename;
 
     private IMap<Object, List<byte[]>> map;
@@ -51,10 +51,10 @@ public class Owner {
 
 
     public int maxValues=500;
-    public int minValueSz=10;
-    public int maxValueSz=1000;
+    public int minValueSz=1;
+    public int maxValueSz=3;
 
-    public int maxListSZ=50;
+    public int maxListSZ=3;
 
     private Object[] keys;
     private List<byte[]> values = new ArrayList<byte[]>();
