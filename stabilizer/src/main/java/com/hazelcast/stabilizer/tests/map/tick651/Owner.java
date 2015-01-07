@@ -115,9 +115,9 @@ public class Owner {
         public void run() {
             while (!testContext.isStopped()) {
 
-                int keyIdx = random.nextInt(keyCount);
+                Object key = keys[random.nextInt(keyCount)];
 
-                Set<String> set = map.get(keys[keyIdx]);
+                Set<String> set = map.get(key);
 
                 if(random.nextDouble() < 0.5){
                     String s = set.iterator().next();
@@ -126,7 +126,7 @@ public class Owner {
                     set.add(UUID.randomUUID().toString());
                 }
 
-                map.set(keys[keyIdx], set);
+                map.set(key, set);
             }
         }
     }
@@ -135,6 +135,11 @@ public class Owner {
     public void verify() throws Exception {
         for(Object o : map.localKeySet()){
             log.info(id+": local key = "+o);
+        }
+
+        for(int i=0; i<keys.length; i++){
+            Set<String> set = map.get(keys[i]);
+            log.info(id+": set @"+keys[i]+" size="+set.size());
         }
     }
 }
