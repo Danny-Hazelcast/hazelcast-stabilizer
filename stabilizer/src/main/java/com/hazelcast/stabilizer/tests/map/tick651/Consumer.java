@@ -31,6 +31,8 @@ import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 public class Consumer {
 
@@ -38,13 +40,15 @@ public class Consumer {
 
     public int threadCount = 10;
     public String basename;
+    public boolean modifying=true;
 
     private String id;
 
     private Object[] keys;
-    private IMap<Object, List<byte[]>> map;
+    private IMap<Object, Set<String>> map;
     private TestContext testContext;
     private HazelcastInstance targetInstance;
+
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
@@ -92,23 +96,24 @@ public class Consumer {
             while (!testContext.isStopped()) {
 
                 int idx = random.nextInt(keys.length);
-                List<byte[]> res =map.get(keys[idx]);
+                Set<String> set =map.get(keys[idx]);
 
-                /*
-                if(res!=null){
-                    log.info(id+": key="+keys[idx]);
-                    for(byte[] b : res){
-                        log.info(id+": "+ Arrays.toString(b));
+                if(modifying){
+                    if(random.nextDouble() < 0.5){
+                        String s = set.iterator().next();
+                        set.remove(s);
+                    }else{
+                        set.add(UUID.randomUUID().toString());
                     }
-                    log.info(id+": =====================");
+                    map.set(keys[idx], set);
                 }
-                */
             }
         }
     }
 
     @Verify(global = false)
     public void verify() throws Exception {
+
         for(Object o : map.localKeySet()){
             log.info(id+": local key = "+o);
         }

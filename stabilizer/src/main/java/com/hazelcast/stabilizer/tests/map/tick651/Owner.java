@@ -30,34 +30,28 @@ import com.hazelcast.stabilizer.tests.annotations.Warmup;
 import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 
 public class Owner {
 
     private final static ILogger log = Logger.getLogger(Owner.class);
 
-    public int threadCount = 3;
-    public int keyCount = 1;
+    public int threadCount = 10;
+    public int keyCount = 10;
     public String basename;
 
-    private IMap<Object, List<byte[]>> map;
+    private IMap<Object, Set<String>> map;
 
     private TestContext testContext;
     private HazelcastInstance targetInstance;
     private String id;
 
 
-    public int maxValues=500;
-    public int minValueSz=1;
-    public int maxValueSz=3;
-
-    public int maxListSZ=3;
-
+    public int maxSetSize = 1000;
     private Object[] keys;
-    private List<byte[]> values = new ArrayList<byte[]>();
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
@@ -93,21 +87,14 @@ public class Owner {
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
 
-        Random random = new Random();
-        for(int i=0; i<maxValues; i++){
-            byte[] b = new byte[ minValueSz + random.nextInt(maxValueSz)];
-            random.nextBytes(b);
-            values.add(b);
-        }
-
         for(int i=0; i<keys.length; i++){
-            List<byte[]> list = new ArrayList();
+            Set<String> set = new HashSet<String>();
 
-            for(int j=0; j<maxListSZ; j++){
-                int idx = random.nextInt(values.size());
-                list.add( values.get(idx) );
+            for(int j=0; j< maxSetSize; j++){
+                String s = UUID.randomUUID().toString();
+                set.add(s);
             }
-            map.put(keys[i], list);
+            map.put(keys[i], set);
         }
     }
 
@@ -129,13 +116,17 @@ public class Owner {
             while (!testContext.isStopped()) {
 
                 int keyIdx = random.nextInt(keyCount);
-                List<byte[]> list = map.get(keys[keyIdx]);
 
-                int listIdx = random.nextInt(list.size());
-                int valuesIdx = random.nextInt(values.size());
-                list.set(listIdx, values.get(valuesIdx));
+                Set<String> set = map.get(keys[keyIdx]);
 
-                map.set(keys[keyIdx], list);
+                if(random.nextDouble() < 0.5){
+                    String s = set.iterator().next();
+                    set.remove(s);
+                }else{
+                    set.add(UUID.randomUUID().toString());
+                }
+
+                map.set(keys[keyIdx], set);
             }
         }
     }
