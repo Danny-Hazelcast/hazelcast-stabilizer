@@ -84,7 +84,7 @@ public class Tick651 {
                 int key = random.nextInt(keyCount);
                 Set<String> set =map.get(key);
 
-                if(set==null){
+                if(set==null || set.isEmpty()){
                     set = new HashSet<String>();
 
                     for(int j=0; j< maxSetSize; j++){
