@@ -48,6 +48,8 @@ public class ClientCode {
     private TestContext testContext;
     private HazelcastInstance targetInstance;
 
+    private long sets=0;
+    private long gets=0;
 
     @Setup
     public void setup(TestContext testContext) throws Exception {
@@ -80,14 +82,27 @@ public class ClientCode {
     @Run
     public void run() {
         ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
+
+        Worker[] workers = new Worker[threadCount];
+
         for (int k = 0; k < threadCount; k++) {
-            spawner.spawn(new Worker());
+            workers[k]=new Worker();
+            spawner.spawn(workers[k]);
         }
         spawner.awaitCompletion();
+
+        for (int k = 0; k < threadCount; k++) {
+            gets += workers[k].gets;
+            sets += workers[k].sets;
+        }
+
     }
 
     private class Worker implements Runnable {
         private final Random random = new Random();
+
+        public long gets=0;
+        public long sets=0;
 
         @Override
         public void run() {
@@ -95,7 +110,7 @@ public class ClientCode {
 
                 Object key = keys[random.nextInt(keys.length)];
                 Set<String> set = map.get(key);
-
+                gets++;
                 if(modifying){
 
                     if(set==null || set.isEmpty()){
@@ -115,11 +130,16 @@ public class ClientCode {
                     }
 
                     map.set(key, set);
+                    sets++;
                 }
             }
         }
     }
 
     @Verify(global = false)
-    public void verify() throws Exception { }
+    public void verify() throws Exception {
+
+        log.info(id+": sets="+sets+" gets="+gets);
+
+    }
 }
