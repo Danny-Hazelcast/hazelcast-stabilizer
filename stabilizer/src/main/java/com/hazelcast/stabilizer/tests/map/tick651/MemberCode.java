@@ -35,22 +35,23 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-public class Owner {
+import static com.hazelcast.stabilizer.tests.utils.TestUtils.sleepMs;
 
-    private final static ILogger log = Logger.getLogger(Owner.class);
+public class MemberCode {
+
+    private final static ILogger log = Logger.getLogger(MemberCode.class);
 
     public int threadCount = 10;
+    public boolean keyOwner=true;
     public int keyCount = 10;
+    public int maxValueSize = 1000;
+    public boolean modifying=false;
     public String basename;
 
     private IMap<Object, Set<String>> map;
-
     private TestContext testContext;
     private HazelcastInstance targetInstance;
     private String id;
-
-
-    public int maxSetSize = 1000;
     private Object[] keys;
 
     @Setup
@@ -68,7 +69,7 @@ public class Owner {
         final Set<Partition> partitionSet = partitionService.getPartitions();
         for (Partition partition : partitionSet) {
             while (partition.getOwner() == null) {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             }
         }
 
@@ -80,22 +81,13 @@ public class Owner {
             key++;
         }
 
-        IAtomicLong total = targetInstance.getAtomicLong(basename+"total");
-        total.set(keyCount);
+        IAtomicLong total = targetInstance.getAtomicLong(basename+"owners");
+        total.getAndIncrement();
     }
 
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
 
-        for(int i=0; i<keys.length; i++){
-            Set<String> set = new HashSet<String>();
-
-            for(int j=0; j< maxSetSize; j++){
-                String s = UUID.randomUUID().toString();
-                set.add(s);
-            }
-            map.put(keys[i], set);
-        }
     }
 
     @Run
@@ -115,18 +107,33 @@ public class Owner {
         public void run() {
             while (!testContext.isStopped()) {
 
-                Object key = keys[random.nextInt(keyCount)];
+                if(modifying){
 
-                Set<String> set = map.get(key);
+                    Object key = keys[random.nextInt(keyCount)];
+                    Set<String> set = map.get(key);
 
-                if(random.nextDouble() < 0.5){
-                    String s = set.iterator().next();
-                    set.remove(s);
+
+                    if(set==null || set.isEmpty()){
+                        set = new HashSet<String>();
+
+                        for(int j=0; j< maxValueSize; j++){
+                            String s = UUID.randomUUID().toString();
+                            set.add(s);
+                        }
+                    }
+
+                    if(random.nextDouble() < 0.5){
+                        String s = set.iterator().next();
+                        set.remove(s);
+                    }else{
+                        set.add(UUID.randomUUID().toString());
+                    }
+
+                    map.set(key, set);
                 }else{
-                    set.add(UUID.randomUUID().toString());
-                }
 
-                map.set(key, set);
+                    sleepMs(100 + random.nextInt(3000));
+                }
             }
         }
     }

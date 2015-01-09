@@ -28,22 +28,21 @@ import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-public class Consumer {
+public class ClientCode {
 
-    private final static ILogger log = Logger.getLogger(Consumer.class);
+    private final static ILogger log = Logger.getLogger(ClientCode.class);
 
     public int threadCount = 10;
     public String basename;
     public boolean modifying=true;
+    public int maxValueSize=1000;
 
     private String id;
-
     private Object[] keys;
     private IMap<Object, Set<String>> map;
     private TestContext testContext;
@@ -61,9 +60,9 @@ public class Consumer {
         log.info(id+": mapName="+map.getName());
 
 
-        IAtomicLong total = targetInstance.getAtomicLong(basename+"total");
-        while(total.get()==0){
-            Thread.sleep(2000);
+        IAtomicLong owners = targetInstance.getAtomicLong(basename+"owners");
+        while(owners.get()==0){
+            Thread.sleep(250);
         }
         IList list = targetInstance.getList(basename + "keys");
         keys = list.toArray();
@@ -87,7 +86,6 @@ public class Consumer {
         spawner.awaitCompletion();
     }
 
-
     private class Worker implements Runnable {
         private final Random random = new Random();
 
@@ -95,28 +93,33 @@ public class Consumer {
         public void run() {
             while (!testContext.isStopped()) {
 
-                int idx = random.nextInt(keys.length);
-                Set<String> set =map.get(keys[idx]);
+                Object key = keys[random.nextInt(keys.length)];
+                Set<String> set = map.get(key);
 
                 if(modifying){
+
+                    if(set==null || set.isEmpty()){
+                        set = new HashSet<String>();
+
+                        for(int j=0; j< maxValueSize; j++){
+                            String s = UUID.randomUUID().toString();
+                            set.add(s);
+                        }
+                    }
+
                     if(random.nextDouble() < 0.5){
                         String s = set.iterator().next();
                         set.remove(s);
                     }else{
                         set.add(UUID.randomUUID().toString());
                     }
-                    map.set(keys[idx], set);
+
+                    map.set(key, set);
                 }
             }
         }
     }
 
     @Verify(global = false)
-    public void verify() throws Exception {
-
-        for(Object o : map.localKeySet()){
-            log.info(id+": local key = "+o);
-        }
-    }
-
+    public void verify() throws Exception { }
 }
