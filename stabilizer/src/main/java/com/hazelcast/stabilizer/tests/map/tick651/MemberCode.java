@@ -17,6 +17,7 @@ package com.hazelcast.stabilizer.tests.map.tick651;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IAtomicLong;
+import com.hazelcast.core.IList;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.Partition;
 import com.hazelcast.core.PartitionService;
@@ -73,16 +74,28 @@ public class MemberCode {
             }
         }
 
-        long key=0;
-        for(int i=0; i<keyCount; i++){
-            key = TestUtils.nextKeyOwnedBy(key, targetInstance);
-            targetInstance.getList(basename+"keys").add(key);
-            keys[i]=key;
-            key++;
+
+        if(keyOwner){
+            long key=0;
+            for(int i=0; i<keyCount; i++){
+                key = TestUtils.nextKeyOwnedBy(key, targetInstance);
+                targetInstance.getList(basename+"keys").add(key);
+                keys[i]=key;
+                key++;
+            }
+            IAtomicLong total = targetInstance.getAtomicLong(basename+"owners");
+            total.getAndIncrement();
+
+        }else{
+            IAtomicLong owners = targetInstance.getAtomicLong(basename+"owners");
+            while(owners.get()==0){
+                Thread.sleep(250);
+            }
+            IList list = targetInstance.getList(basename + "keys");
+            keys = list.toArray();
         }
 
-        IAtomicLong total = targetInstance.getAtomicLong(basename+"owners");
-        total.getAndIncrement();
+
     }
 
     @Warmup(global = false)
