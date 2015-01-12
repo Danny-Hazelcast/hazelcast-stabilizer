@@ -45,7 +45,7 @@ public class ClientCode {
 
     private String id;
     private Object[] keys;
-    private IMap<Object, Set<String>> map;
+    private IMap<Object, Set<Object>> map;
     private TestContext testContext;
     private HazelcastInstance targetInstance;
 
@@ -110,14 +110,14 @@ public class ClientCode {
             while (!testContext.isStopped()) {
 
                 Object key = keys[random.nextInt(keys.length)];
-                Set<String> set = map.get(key);
+                Set<Object> set = map.get(key);
                 gets++;
 
                 int round=0;
                 if(modifying){
 
                     if(set==null || set.isEmpty()){
-                        set = new HashSet<String>();
+                        set = new HashSet<Object>();
 
                         for(int j=0; j< maxValueSize; j++){
                             String s = UUID.randomUUID().toString();
@@ -126,17 +126,14 @@ public class ClientCode {
                     }
 
                     if(random.nextDouble() < 0.5){
-                        String s = set.iterator().next();
+                        Object s = set.iterator().next();
                         set.remove(s);
                     }else{
 
+                        /*
                         byte[] a = new byte[100];
                         random.nextBytes(a);
-
                         String s;
-
-
-
                         switch (round){
 
                             case 0:
@@ -164,12 +161,21 @@ public class ClientCode {
                             break;
                         }
                         round= ++round % 5;
-
                         set.add(s);
 
-                        //set.add(UUID.randomUUID().toString());
+
+                        */
+
+
                     }
 
+                    if(random.nextDouble()<0.001){
+                        byte[] a = new byte[100];
+                        random.nextBytes(a);
+                        set.add(a);
+                    } else {
+                        set.add(UUID.randomUUID().toString());
+                    }
                     map.set(key, set);
                     sets++;
                 }
