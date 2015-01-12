@@ -126,6 +126,12 @@ public class ClientCode {
                         String s = set.iterator().next();
                         set.remove(s);
                     }else{
+
+                        byte[] a = new byte[100];
+                        random.nextBytes(a);
+
+                        set.add((String)((Object)a));
+
                         set.add(UUID.randomUUID().toString());
                     }
 
