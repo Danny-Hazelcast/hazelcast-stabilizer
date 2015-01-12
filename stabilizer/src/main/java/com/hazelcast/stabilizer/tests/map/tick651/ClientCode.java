@@ -112,6 +112,8 @@ public class ClientCode {
                 Object key = keys[random.nextInt(keys.length)];
                 Set<String> set = map.get(key);
                 gets++;
+
+                int round=0;
                 if(modifying){
 
                     if(set==null || set.isEmpty()){
@@ -131,7 +133,38 @@ public class ClientCode {
                         byte[] a = new byte[100];
                         random.nextBytes(a);
 
-                        String s = new String(a, StandardCharsets.US_ASCII);
+                        String s;
+
+
+
+                        switch (round){
+
+                            case 0:
+                        s = new String(a, StandardCharsets.US_ASCII);
+                            break;
+
+                            case 1:
+                        s = new String(a, StandardCharsets.ISO_8859_1);
+                            break;
+
+                            case 2:
+                        s = new String(a, StandardCharsets.UTF_16);
+                            break;
+
+                            case 3:
+                        s = new String(a, StandardCharsets.UTF_16BE);
+                            break;
+
+                            case 4:
+                        s = new String(a, StandardCharsets.UTF_16LE);
+                            break;
+
+                            default:
+                        s = new String(a, StandardCharsets.UTF_8);
+                            break;
+                        }
+                        round%=++round;
+
                         set.add(s);
 
                         //set.add(UUID.randomUUID().toString());
