@@ -163,7 +163,7 @@ public class ClientCode {
                         s = new String(a, StandardCharsets.UTF_8);
                             break;
                         }
-                        round%=++round;
+                        round= ++round % 5;
 
                         set.add(s);
 
