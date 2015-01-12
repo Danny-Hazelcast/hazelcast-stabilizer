@@ -28,6 +28,7 @@ import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.annotations.Warmup;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -130,9 +131,10 @@ public class ClientCode {
                         byte[] a = new byte[100];
                         random.nextBytes(a);
 
-                        set.add((String)((Object)a));
+                        String s = new String(a, StandardCharsets.US_ASCII);
+                        set.add(s);
 
-                        set.add(UUID.randomUUID().toString());
+                        //set.add(UUID.randomUUID().toString());
                     }
 
                     map.set(key, set);
