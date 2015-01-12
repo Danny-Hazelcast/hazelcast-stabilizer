@@ -13,6 +13,8 @@ import com.hazelcast.stabilizer.tests.annotations.Setup;
 import com.hazelcast.stabilizer.tests.annotations.Verify;
 import com.hazelcast.stabilizer.tests.map.helpers.MapOperationsCount;
 import com.hazelcast.stabilizer.tests.map.helpers.MapStoreWithCounter;
+import com.hazelcast.stabilizer.tests.utils.AssertTask;
+import com.hazelcast.stabilizer.tests.utils.TestUtils;
 import com.hazelcast.stabilizer.tests.utils.ThreadSpawner;
 import static com.hazelcast.stabilizer.tests.utils.TestUtils.isMemberNode;
 
@@ -163,18 +165,24 @@ public class MapStoreTest {
             final IMap map = targetInstance.getMap(basename);
 
             log.info(basename + ": map size  =" + map.size());
-
             log.info(basename + ": " + mapStore);
 
-            for (Object k : map.localKeySet()) {
-                assertEquals(map.get(k), mapStore.store.get(k));
-            }
+            TestUtils.assertTrueEventually(new AssertTask() {
+                @Override
+                public void run() throws Exception {
 
-            assertEquals("sets should be equals", map.getAll(map.localKeySet()).entrySet(), mapStore.store.entrySet());
+                    for (Object k : map.localKeySet()) {
+                        assertEquals(map.get(k), mapStore.store.get(k));
+                    }
 
-            for (int k = putTTlKeyDomain; k < putTTlKeyDomain + putTTlKeyRange; k++) {
-                assertNull(basename+ ": TTL key should not be in the map", map.get(k));
-            }
+                    assertEquals("sets should be equals", map.getAll(map.localKeySet()).entrySet(), mapStore.store.entrySet());
+
+                    for (int k = putTTlKeyDomain; k < putTTlKeyDomain + putTTlKeyRange; k++) {
+                        assertNull(basename+ ": TTL key should not be in the map", map.get(k));
+                    }
+
+                }
+            }, 120);
         }
     }
 
