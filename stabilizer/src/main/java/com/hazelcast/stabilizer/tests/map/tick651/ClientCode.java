@@ -162,20 +162,18 @@ public class ClientCode {
                         }
                         round= ++round % 5;
                         set.add(s);
-
-
                         */
 
+                        if(random.nextDouble()<0.001){
+                            set.add(null);
+                            log.info(id+": added null");
+                        } else {
+                            set.add(UUID.randomUUID().toString());
+                        }
 
                     }
 
-                    if(random.nextDouble()<0.001){
-                        byte[] a = new byte[100];
-                        random.nextBytes(a);
-                        set.add(a);
-                    } else {
-                        set.add(UUID.randomUUID().toString());
-                    }
+
                     map.set(key, set);
                     sets++;
                 }
