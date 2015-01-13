@@ -161,10 +161,11 @@ public class ClientCode {
                         round= ++round % 5;
                         set.add(s);
 
-
                         set.add(null);
                         set.add(java.lang.Double.TYPE);
                         set.add(int.class);
+
+                        set.add(a);
 
                         log.info(id + ": added null");
 
