@@ -164,7 +164,7 @@ public class ClientCode {
                         set.add(null);
                         set.add(java.lang.Double.TYPE);
                         set.add(int.class);
-
+                        set.add(round);
                         set.add(a);
 
                         log.info(id + ": added null");
