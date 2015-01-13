@@ -128,7 +128,7 @@ public class ClientCode {
                         set.remove(s);
                     }else{
 
-                        /*
+
                         byte[] a = new byte[100];
                         random.nextBytes(a);
                         String s;
@@ -160,19 +160,16 @@ public class ClientCode {
                         }
                         round= ++round % 5;
                         set.add(s);
-                        */
 
-                        if(random.nextDouble()<1){
-                            set.add(null);
-                            //set.add(java.lang.Double.TYPE);
-                            //set.add(int.class);
 
-                            log.info(id + ": added null");
-                        } else {
-                            set.add(UUID.randomUUID().toString());
-                        }
+                        set.add(null);
+                        set.add(java.lang.Double.TYPE);
+                        set.add(int.class);
+
+                        log.info(id + ": added null");
+
+                        set.add(UUID.randomUUID().toString());
                     }
-
                     map.set(key, set);
                     sets++;
                 }
