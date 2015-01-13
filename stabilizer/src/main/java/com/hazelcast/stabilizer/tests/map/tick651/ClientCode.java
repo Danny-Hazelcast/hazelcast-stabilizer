@@ -96,7 +96,6 @@ public class ClientCode {
             gets += workers[k].gets;
             sets += workers[k].sets;
         }
-
     }
 
     private class Worker implements Runnable {
@@ -115,7 +114,6 @@ public class ClientCode {
 
                 int round=0;
                 if(modifying){
-
                     if(set==null || set.isEmpty()){
                         set = new HashSet<Object>();
 
@@ -125,7 +123,7 @@ public class ClientCode {
                         }
                     }
 
-                    if(random.nextDouble() < 0.5){
+                    if(random.nextDouble() < 0.3){
                         Object s = set.iterator().next();
                         set.remove(s);
                     }else{
@@ -164,15 +162,13 @@ public class ClientCode {
                         set.add(s);
                         */
 
-                        if(random.nextDouble()<0.001){
+                        if(random.nextDouble()<1){
                             set.add(null);
                             log.info(id+": added null");
                         } else {
                             set.add(UUID.randomUUID().toString());
                         }
-
                     }
-
 
                     map.set(key, set);
                     sets++;
@@ -183,8 +179,6 @@ public class ClientCode {
 
     @Verify(global = false)
     public void verify() throws Exception {
-
         log.info(id+": sets="+sets+" gets="+gets);
-
     }
 }
