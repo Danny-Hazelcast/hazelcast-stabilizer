@@ -123,7 +123,7 @@ public class ClientCode {
                         }
                     }
 
-                    if(random.nextDouble() < 0.3){
+                    if(random.nextDouble() < 0.1){
                         Object s = set.iterator().next();
                         set.remove(s);
                     }else{
@@ -164,7 +164,10 @@ public class ClientCode {
 
                         if(random.nextDouble()<1){
                             set.add(null);
-                            log.info(id+": added null");
+                            set.add(java.lang.Double.TYPE);
+                            set.add(int.class);
+
+                            log.info(id + ": added null");
                         } else {
                             set.add(UUID.randomUUID().toString());
                         }
