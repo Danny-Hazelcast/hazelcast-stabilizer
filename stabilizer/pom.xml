@@ -83,6 +83,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.jclouds.labs</groupId>
+            <artifactId>azurecompute</artifactId>
+            <version>${jclouds.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
             <version>3.0</version>
@@ -141,6 +147,61 @@
             <version>1.9.5</version>
             <scope>test</scope>
         </dependency>
+
+
+
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-management</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-management-compute</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-management-network</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-management-sql</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-management-storage</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-management-websites</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-media</artifactId>
+            <version>0.6.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-servicebus</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-serviceruntime</artifactId>
+            <version>0.6.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.3.6</version>
+        </dependency>
+
     </dependencies>
 
     <build>
