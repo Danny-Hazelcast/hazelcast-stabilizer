@@ -39,15 +39,16 @@ public class ComputeServiceBuilder {
         String cloudProvider = props.get("CLOUD_PROVIDER");
         String identity = props.get("CLOUD_IDENTITY");
         String credential = props.get("CLOUD_CREDENTIAL");
+        String endpointName = props.get("END_POINT");
 
-        if (log.isDebugEnabled()) {
-            log.debug("Using CLOUD_PROVIDER: " + cloudProvider);
-        }
+        log.info("Using CLOUD_PROVIDER: " + cloudProvider);
+
 
         ContextBuilder contextBuilder = newContextBuilder(cloudProvider);
 
         return contextBuilder.overrides(newOverrideProperties())
                 .credentials(identity, credential)
+                .endpoint(endpointName)
                 .modules(getModules())
                 .buildView(ComputeServiceContext.class)
                 .getComputeService();
