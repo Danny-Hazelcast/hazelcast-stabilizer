@@ -3,8 +3,12 @@ package com.hazelcast.stabilizer.provisioner;
 import com.google.inject.AbstractModule;
 import com.hazelcast.stabilizer.Utils;
 import com.hazelcast.stabilizer.common.StabilizerProperties;
+import com.microsoft.windowsazure.management.models.LocationsListResponse;
 import org.apache.log4j.Logger;
 import org.jclouds.ContextBuilder;
+import org.jclouds.azurecompute.AzureComputeApi;
+import org.jclouds.azurecompute.compute.AzureComputeServiceAdapter;
+import org.jclouds.azurecompute.domain.Location;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
@@ -54,6 +58,55 @@ public class ComputeServiceBuilder {
                 .getComputeService();
     }
 
+
+
+
+
+
+
+    static String uri = "https://management.core.windows.net/";
+    static String subscriptionId = "3da94ed7-c058-4d83-8ddd-21b629af04b9";
+    static String keyStoreLocation = "/Users/danny/.jclouds/azure.p12";
+    static String keyStorePassword = "1qazxsw2";
+    static String cloudProvider = "azurecompute";
+
+    public static void main(String[] args){
+
+
+
+
+        ContextBuilder contextBuilder = ContextBuilder.newBuilder(cloudProvider);
+        AzureComputeApi api  = contextBuilder
+                .credentials(keyStoreLocation, keyStorePassword)
+                .endpoint(uri + subscriptionId)
+                .buildApi(AzureComputeApi.class);
+
+        List<Location> locations = api.getLocationApi().list();
+        for(Location l : locations){
+            System.out.println(l);
+        }
+
+        List imaglist = api.getImageApi().list();
+        for(Object o : imaglist){
+            System.out.println(o);
+        }
+
+        api.getVirtualMachineApiForDeploymentInService(
+
+                "HiDeploy" , "Compute"
+        ).start("Hiname");
+}
+
+
+
+
+
+
+
+
+
+
+
     private ContextBuilder newContextBuilder(String cloudProvider) {
         try {
             return ContextBuilder.newBuilder(cloudProvider);
@@ -81,6 +134,16 @@ public class ComputeServiceBuilder {
                     "To create a public/private key execute [ssh-keygen -t rsa -C \"your_email@example.com\"]");
         }
     }
+
+
+    static private Properties newOverrideProperties2() {
+        //http://javadocs.jclouds.cloudbees.net/org/jclouds/compute/config/ComputeServiceProperties.html
+        Properties properties = new Properties();
+        properties.setProperty(POLL_INITIAL_PERIOD, "50");
+        properties.setProperty(POLL_MAX_PERIOD, "1000");
+        return properties;
+    }
+
 
     private Properties newOverrideProperties() {
         //http://javadocs.jclouds.cloudbees.net/org/jclouds/compute/config/ComputeServiceProperties.html

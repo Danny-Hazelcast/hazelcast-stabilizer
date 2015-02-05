@@ -30,7 +30,7 @@ public class AzureProvisioner {
 
 
 
-    /*
+
     public static void main(String[] args)
             throws IOException, URISyntaxException, ServiceException, ParserConfigurationException, SAXException {
         Configuration config = ManagementConfiguration.configure(
@@ -45,10 +45,12 @@ public class AzureProvisioner {
         computClient.getHostedServicesOperations();
 
         VirtualMachineCreateParameters vmcp = new VirtualMachineCreateParameters();
+        vmcp.
 
 
         VirtualMachineOperations vmo =  computClient.getVirtualMachinesOperations();
 
+        vmo.create("abc", )
 
         // create a management client to call the API
         ManagementClient client = ManagementService.create(config);
@@ -62,7 +64,7 @@ public class AzureProvisioner {
             System.out.println(locations.get(i).getDisplayName());
         }
     }
-    */
+
 
 
 }
