@@ -23,8 +23,8 @@ import com.hazelcast.stabilizer.test.annotations.Teardown;
 import com.hazelcast.stabilizer.tests.helpers.KeyLocality;
 import com.hazelcast.stabilizer.tests.helpers.KeyUtils;
 import com.hazelcast.stabilizer.test.utils.ExceptionReporter;
-import com.hazelcast.stabilizer.test.utils.PropertyBindingSupport;
 import com.hazelcast.stabilizer.test.utils.ThreadSpawner;
+import com.hazelcast.stabilizer.utils.ReflectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,8 +62,8 @@ public class SyntheticTest {
 
     //props
     public boolean syncInvocation = true;
-    public int syncBackupCount = 0;
-    public int asyncBackupCount = 1;
+    public byte syncBackupCount = 0;
+    public byte asyncBackupCount = 1;
     public long backupDelayNanos = 1000 * 1000;
     public boolean randomizeBackupDelay = true;
     public int threadCount = 10;
@@ -71,6 +71,7 @@ public class SyntheticTest {
     public int performanceUpdateFrequency = 1000;
     public KeyLocality keyLocality = KeyLocality.Random;
     public int syncFrequency = 1;
+    public String serviceName;
 
     private AtomicLong operations = new AtomicLong();
     private TestContext context;
@@ -119,7 +120,7 @@ public class SyntheticTest {
                 HazelcastClientProxy hazelcastClientProxy = (HazelcastClientProxy) targetInstance;
                 operationService = null;
                 PartitionServiceProxy partitionService = (PartitionServiceProxy) hazelcastClientProxy.client.getPartitionService();
-                clientPartitionService = PropertyBindingSupport.getField(partitionService, "partitionService");
+                clientPartitionService = ReflectionUtils.getObjectFromField(partitionService, "partitionService");
                 clientInvocationService = hazelcastClientProxy.client.getInvocationService();
             } else {
                 clientInvocationService = null;
@@ -173,7 +174,7 @@ public class SyntheticTest {
                 int partitionId = nextPartitionId();
 
                 ICompletableFuture f = invoke(partitionId);
-                latency.started();
+                //latency.started();
 
                 if (syncInvocation) {
                     if (syncFrequency == 1) {
@@ -191,7 +192,7 @@ public class SyntheticTest {
                 } else {
                     f.andThen(this);
                 }
-                latency.done();
+                //latency.done();
 
                 iteration++;
                 if (iteration % logFrequency == 0) {
@@ -216,7 +217,7 @@ public class SyntheticTest {
                 f = clientInvocationService.invokeOnTarget(request, target);
             } else {
                 SyntheticOperation operation = new SyntheticOperation(syncBackupCount, asyncBackupCount, getBackupDelayNanos());
-                f = operationService.invokeOnPartition(null, operation, partitionId);
+                f = operationService.invokeOnPartition(serviceName, operation, partitionId);
             }
             return f;
         }
@@ -231,6 +232,10 @@ public class SyntheticTest {
         }
 
         private long getBackupDelayNanos() {
+            if (syncBackupCount == 0 && asyncBackupCount == 0) {
+                return 0;
+            }
+
             if (!randomizeBackupDelay) {
                 return backupDelayNanos;
             }
