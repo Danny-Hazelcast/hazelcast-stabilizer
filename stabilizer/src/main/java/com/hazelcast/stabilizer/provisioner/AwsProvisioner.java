@@ -82,6 +82,7 @@ public class AwsProvisioner {
     private String awsKeyName;
     private String awsAmi;
     private String awsBoxId;
+    private String subNetId;
 
     private String elbProtocol;
     private int elbPortIn;
@@ -105,6 +106,7 @@ public class AwsProvisioner {
         awsAmi = props.get("AWS_AMI");
         awsBoxId = props.get("AWS_BOXID");
         securityGroup = props.get("SECURITY_GROUP");
+        subNetId = props.get("SUBNET_ID", "default");
 
 
         credentials = new PropertiesCredentials(credentialsFile);
@@ -149,7 +151,9 @@ public class AwsProvisioner {
                 .withMinCount(instanceCount)
                 .withMaxCount(instanceCount)
                 .withKeyName(awsKeyName)
+                .withSubnetId(subNetId)
                 .withSecurityGroups(securityGroup);
+
 
         RunInstancesResult runInstancesResult = ec2.runInstances(runInstancesRequest);
 
@@ -226,6 +230,7 @@ public class AwsProvisioner {
 
     public boolean waiteForInstanceStatus(Instance i){
 
+        /*
         DescribeInstanceStatusRequest describeStatusRequest = new DescribeInstanceStatusRequest().withInstanceIds(i.getInstanceId());
         int counter=0;
         while ( counter++ < MAX_SLEEPING_ITTERATIONS ) {
@@ -241,9 +246,9 @@ public class AwsProvisioner {
                 }
             }
         }
+        */
 
 
-        /*
         DescribeInstancesRequest describeInstancesRequest = new DescribeInstancesRequest().withInstanceIds(i.getInstanceId());
         int counter=0;
         while ( counter++ < MAX_SLEEPING_ITTERATIONS ) {
@@ -255,14 +260,14 @@ public class AwsProvisioner {
                 for ( Instance j : r.getInstances() ) {
 
                     log.warning("Time out Waiting for Instance Status id=" + j.getInstanceId() + " " + j.getPublicIpAddress() + ", " + j.getState().getName());
-                    if ( j.getPublicIpAddress() != null  && j.getState().getName().equals(AWS_RUNNING_STATUS) ) {
+                    if ( j.getPublicIpAddress() != null  && j.getState().getName().equals(AWS_RUNNING_STATE) ) {
 
                         return true;
                     }
                 }
             }
         }
-        */
+
 
         return false;
     }
