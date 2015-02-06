@@ -58,7 +58,7 @@
     </serialization>
 
 
-    <map name="m">
+    <map name="m*">
         <storage-type>OFFHEAP</storage-type>
     </map>
 

@@ -24,7 +24,7 @@ public class LoadMaps {
 
     public int totalMaps = 10;
     public int totalKeys = 10;
-    public int valueSize = 10;
+    public int valueByteArraySize = 10;
 
     public String baseMapName = this.getClass().getCanonicalName();
 
@@ -40,7 +40,7 @@ public class LoadMaps {
         targetInstance = testContext.getTargetInstance();
         id=testContex.getTestId();
 
-        value = new byte[valueSize];
+        value = new byte[valueByteArraySize];
         Random random = new Random();
         random.nextBytes(value);
 
