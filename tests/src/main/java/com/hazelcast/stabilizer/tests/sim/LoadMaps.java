@@ -26,7 +26,7 @@ public class LoadMaps {
     public int totalKeys = 10;
     public int valueSize = 10;
 
-    public String basename = this.getClass().getCanonicalName();
+    public String baseMapName = this.getClass().getCanonicalName();
 
     private String id;
     private TestContext testContext;
@@ -61,7 +61,7 @@ public class LoadMaps {
 
             for(int i=0; i< totalMaps; i++){
 
-                IMap map = targetInstance.getMap(basename+i);
+                IMap map = targetInstance.getMap(baseMapName+i);
 
                 for(int k=0; k< totalKeys; k++){
                     Partition partition = partitionService.getPartition(i);
@@ -89,7 +89,7 @@ public class LoadMaps {
         }
 
         for(int i=0; i< totalMaps; i++){
-            IMap map = targetInstance.getMap(basename+i);
+            IMap map = targetInstance.getMap(baseMapName+i);
 
             log.info(id + ": mapName=" + map.getName() + " size=" + map.size());
 
