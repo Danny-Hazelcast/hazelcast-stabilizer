@@ -98,8 +98,8 @@ public class AwsProvisioner {
 
         elbProtocol = props.get("ELB_PROTOCOL");
 
-        elbPortIn = Integer.parseInt(props.get("ELB_PORT_IN"));
-        elbPortOut = Integer.parseInt(props.get("ELB_PORT_OUT"));
+        elbPortIn = Integer.parseInt(props.get("ELB_PORT_IN", "0"));
+        elbPortOut = Integer.parseInt(props.get("ELB_PORT_OUT", "0"));
         elbAzs = props.get("ELB_AZS");
 
         awsKeyName = props.get("AWS_KEY_NAME");
