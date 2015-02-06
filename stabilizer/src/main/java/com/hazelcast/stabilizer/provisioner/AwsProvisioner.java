@@ -151,8 +151,8 @@ public class AwsProvisioner {
                 .withMinCount(instanceCount)
                 .withMaxCount(instanceCount)
                 .withKeyName(awsKeyName)
-                .withSubnetId(subNetId)
-                .withSecurityGroups(securityGroup);
+                .withSubnetId(subNetId);
+                //.withSecurityGroups(securityGroup);
 
 
         RunInstancesResult runInstancesResult = ec2.runInstances(runInstancesRequest);
