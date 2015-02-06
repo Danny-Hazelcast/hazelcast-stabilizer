@@ -129,20 +129,20 @@ public class AwsProvisioner {
     }
 
 
-    public List<Instance> checkAgentsFileCreateInstancesIfNeeded(int totalInstancesWanted){
+    public void createInstancesifNeeded(int totalInstancesWanted){
         List agents = AgentsFile.load(agentsFile);
 
         if(totalInstancesWanted <= agents.size()){
             log.info("Currently decreasing instances is not supported");
-            return Collections.EMPTY_LIST;
+            return;
         }
-        int instanceCount= totalInstancesWanted - agents.size();
+        int instanceCount = totalInstancesWanted - agents.size();
 
-        return createInstances(instanceCount);
+        createInstances(instanceCount);
     }
 
 
-    public List<Instance> createInstances(int instanceCount){
+    private List<Instance> createInstances(int instanceCount){
 
         RunInstancesRequest runInstancesRequest = new RunInstancesRequest();
 

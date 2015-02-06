@@ -35,6 +35,11 @@ public class ProvisionerCli {
             "Cleans the workers directories.");
 
 
+    public final OptionSpec<Integer> createAws = parser.accepts("createAws",
+            "create aws specfic instances"
+    ).withRequiredArg().ofType(Integer.class);
+
+
     public final OptionSpec<String> makeLBSpec = parser.accepts("makeLB",
             "takes the name of a load balancer to create.  Makes an AWS load balancer with a given name, if it dose not exist (AWS only)."
     ).withRequiredArg().ofType(String.class);
@@ -133,6 +138,10 @@ public class ProvisionerCli {
             String name = options.valueOf(withKeySpec);
             AwsProvisioner aws = new AwsProvisioner();
             aws.findAwsInstanceWithKeyName(name);
+        }else if (options.has(createAws)) {
+                int count = options.valueOf(createAws);
+                AwsProvisioner aws = new AwsProvisioner();
+                aws.createInstancesifNeeded(count);
         } else {
             parser.printHelpOn(System.out);
         }
