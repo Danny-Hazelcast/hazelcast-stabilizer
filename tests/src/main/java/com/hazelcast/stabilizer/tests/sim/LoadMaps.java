@@ -97,6 +97,6 @@ public class LoadMaps {
 
             }
         }
-
+        log.info(id + ": valueByteArraySize="+valueByteArraySize);
     }
 }
