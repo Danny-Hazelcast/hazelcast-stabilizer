@@ -19,7 +19,7 @@ import java.util.Set;
 import static com.hazelcast.stabilizer.test.utils.TestUtils.sleepMs;
 import static com.hazelcast.stabilizer.tests.helpers.HazelcastTestUtils.isMemberNode;
 
-public class LoadMaps {
+public class LoadMaps  {
     private final static ILogger log = Logger.getLogger(LoadMaps.class);
 
 
@@ -75,7 +75,7 @@ public class LoadMaps {
                 IMap map = targetInstance.getMap(baseMapName+i);
 
                 for(int k=0; k< totalKeys; k++){
-                    Partition partition = partitionService.getPartition(i);
+                    Partition partition = partitionService.getPartition(k);
                     if (localMember.equals(partition.getOwner())) {
                         map.put(k, value);
                     }
