@@ -27,7 +27,7 @@ public class Performance {
     public String baseMapName= System.getProperty("baseMapName", "m");
     public int totalMaps =  Integer.parseInt(System.getProperty("totalMaps", "10"));
     public int totalKeys = Integer.parseInt(System.getProperty("totalKeys", "10"));
-    public int valueByteArraySize = Integer.parseInt(System.getProperty("valueByteArraySize", "10"));
+    public int valueByteArraySize = Integer.parseInt(System.getProperty("valueByteArraySize", "5000"));
 
     public double putProb=Double.parseDouble(System.getProperty("putProb", "1.0"));
     public double getProb=Double.parseDouble(System.getProperty("getProb", "0.0"));

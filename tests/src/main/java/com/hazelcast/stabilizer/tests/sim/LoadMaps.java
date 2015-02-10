@@ -24,7 +24,7 @@ public class LoadMaps {
 
     public int totalMaps = 10;
     public int totalKeys = 10;
-    public int valueByteArraySize = 10;
+    public int valueByteArraySize = 5000;
 
     public String baseMapName = this.getClass().getCanonicalName();
 
