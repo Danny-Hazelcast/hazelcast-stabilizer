@@ -78,11 +78,13 @@
             <version>${tomcat.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.hdrhistogram</groupId>
-            <artifactId>HdrHistogram</artifactId>
-            <version>${hdr-histogram.version}</version>
-        </dependency>
+
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>${metrics.version}</version>
+            </dependency>
+
 
     </dependencies>
 </project>
