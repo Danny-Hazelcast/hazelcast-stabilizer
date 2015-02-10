@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 
 public class Performance {
 
-    public File cvsDir = new File( System.getProperty("cvsDir", "/Users/danny") );
+    public File cvsDir = new File( System.getProperty("cvsDir", "/home/ec2-user/") );
 
     public String clientHzFile = System.getProperty("clientHzFile", "client-hazelcast.xml");
     public String baseMapName= System.getProperty("baseMapName", "m");
@@ -29,8 +29,8 @@ public class Performance {
     public int totalKeys = Integer.parseInt(System.getProperty("totalKeys", "10"));
     public int valueByteArraySize = Integer.parseInt(System.getProperty("valueByteArraySize", "10"));
 
-    public double putProb=Double.parseDouble(System.getProperty("putProb", "0.5"));
-    public double getProb=Double.parseDouble(System.getProperty("getProb", "0.5"));
+    public double putProb=Double.parseDouble(System.getProperty("putProb", "1.0"));
+    public double getProb=Double.parseDouble(System.getProperty("getProb", "0.0"));
     public double setProb=Double.parseDouble(System.getProperty("setProb", "0.0"));
 
     public int threadCount = Integer.parseInt(System.getProperty("threadCount", "8"));;
