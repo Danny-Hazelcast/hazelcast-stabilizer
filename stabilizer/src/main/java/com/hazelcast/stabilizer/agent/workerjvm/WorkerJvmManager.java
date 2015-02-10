@@ -209,7 +209,7 @@ public class WorkerJvmManager {
             WorkerJvm workerJvm = entry.getKey();
             CommandFuture future = entry.getValue();
             try {
-                Object result = future.get(30, TimeUnit.SECONDS);
+                Object result = future.get(30, TimeUnit.DAYS);
                 results.add(result);
             } catch (TimeoutException e) {
                 if(!future.getCommand().ignoreTimeout()) {
