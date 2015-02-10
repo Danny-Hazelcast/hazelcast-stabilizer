@@ -7,10 +7,6 @@
         <name>workers</name>
     </group>
 
-    <native-memory enabled="true">
-        <size value="20" unit="GIGABYTES"/>
-    </native-memory>
-
     <network>
         <port port-count="200" auto-increment="true">5701</port>
         <join>
