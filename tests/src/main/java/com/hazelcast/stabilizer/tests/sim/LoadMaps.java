@@ -47,6 +47,11 @@ public class LoadMaps {
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
 
+
+    }
+
+
+    public void loadDataToMaps() throws InterruptedException {
         Random random = new Random();
         random.nextBytes(value);
 
@@ -77,12 +82,16 @@ public class LoadMaps {
                 }
 
             }
-
+            log.info(id + ": LOADED");
         }
     }
 
-        @Run
-    public void run() {
+
+    @Run
+    public void run() throws InterruptedException {
+
+        loadDataToMaps();
+
         while (!testContext.isStopped()) {
             sleepMs(2000);
         }
