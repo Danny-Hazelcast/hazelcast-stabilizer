@@ -59,13 +59,13 @@
 
 
     <map name="m*">
-        <storage-type>OFFHEAP</storage-type>
+        <in-memory-format>NATIVE</in-memory-format>
     </map>
 
 
     <map name="x*">
+        <in-memory-format>NATIVE</in-memory-format>
         <backup-count>0</backup-count>
-        <storage-type>OFFHEAP</storage-type>
     </map>
 
 
