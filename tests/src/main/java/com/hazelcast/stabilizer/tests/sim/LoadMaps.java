@@ -72,7 +72,7 @@ public class LoadMaps  {
 
             for(int i=0; i< totalMaps; i++){
 
-                IMap map = targetInstance.getMap(baseMapName+i);
+                IMap map = targetInstance.getMap(baseMapName + i);
 
                 for(int k=0; k< totalKeys; k++){
                     Partition partition = partitionService.getPartition(k);
@@ -83,7 +83,19 @@ public class LoadMaps  {
 
             }
             log.info(id + ": LOADED");
+
+            printInfo();
         }
+    }
+
+    public void printInfo(){
+
+        for(int i=0; i< totalMaps; i++){
+            IMap map = targetInstance.getMap(baseMapName+i);
+            log.info(id + ": mapName=" + map.getName() + " size=" + map.size());
+        }
+        log.info(id + ": valueByteArraySize="+valueByteArraySize);
+
     }
 
 
@@ -101,17 +113,7 @@ public class LoadMaps  {
     public void verify() throws Exception {
         if(isMemberNode(targetInstance)){
             log.info(id + ": cluster size =" + targetInstance.getCluster().getMembers().size());
-        }
-
-        for(int i=0; i< totalMaps; i++){
-            IMap map = targetInstance.getMap(baseMapName+i);
-
-            log.info(id + ": mapName=" + map.getName() + " size=" + map.size());
-
-            for(int k=0; k< totalKeys; k++){
-
-            }
-        }
-        log.info(id + ": valueByteArraySize="+valueByteArraySize);
+        }  
     }
+
 }
