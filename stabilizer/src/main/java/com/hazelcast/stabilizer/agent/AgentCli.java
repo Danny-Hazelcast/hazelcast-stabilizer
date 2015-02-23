@@ -17,7 +17,7 @@ public class AgentCli {
 
     private final OptionSpec<String> cloudCredentialSpec = parser.accepts("cloudCredential",
             "Cloud credential")
-            .withRequiredArg().ofType(String.class);
+            .withOptionalArg().defaultsTo("ABC").ofType(String.class);
     private final OptionSpec<String> cloudProviderSpec = parser.accepts("cloudProvider",
             "Cloud provider")
             .withRequiredArg().ofType(String.class);
