@@ -9,7 +9,6 @@ import com.hazelcast.stabilizer.probes.probes.impl.DisabledProbe;
 import com.hazelcast.stabilizer.test.annotations.RunWithWorker;
 import com.hazelcast.stabilizer.test.annotations.Teardown;
 import com.hazelcast.stabilizer.test.annotations.Warmup;
-import com.hazelcast.stabilizer.test.exceptions.IllegalTestException;
 import com.hazelcast.stabilizer.test.TestContext;
 import com.hazelcast.stabilizer.test.annotations.Name;
 import com.hazelcast.stabilizer.test.annotations.Performance;
@@ -17,7 +16,7 @@ import com.hazelcast.stabilizer.test.annotations.Receive;
 import com.hazelcast.stabilizer.test.annotations.Run;
 import com.hazelcast.stabilizer.test.annotations.Setup;
 import com.hazelcast.stabilizer.test.annotations.Verify;
-import com.hazelcast.stabilizer.test.utils.TestUtils;
+import com.hazelcast.stabilizer.worker.selector.OperationSelectorBuilder;
 import com.hazelcast.stabilizer.worker.tasks.AbstractWorkerTask;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +24,7 @@ import org.mockito.Mockito;
 
 import java.util.Map;
 
+import static com.hazelcast.stabilizer.utils.CommonUtils.sleepMillis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -155,7 +155,7 @@ public class TestContainerTest {
             @Override
             public void run() {
                 super.run();
-                TestUtils.sleepMs(50);
+                sleepMillis(50);
                 testContext.stop();
             }
         }.start();
@@ -165,20 +165,18 @@ public class TestContainerTest {
     }
 
     private static class RunWithBaseWorkerTest {
-        static enum Operation {
+        private enum Operation {
             NOP
         }
+
+        private static final OperationSelectorBuilder<Operation> builder = new OperationSelectorBuilder<Operation>()
+                .addDefaultOperation(Operation.NOP);
 
         boolean runWithWorkerCalled;
 
         @RunWithWorker
         AbstractWorkerTask<Operation> createBaseWorker() {
-            return new AbstractWorkerTask<Operation>() {
-                @Override
-                protected OperationSelector<Operation> createOperationSelector() {
-                    return new OperationSelector<Operation>().addOperationRemainingProbability(Operation.NOP);
-                }
-
+            return new AbstractWorkerTask<Operation>(builder) {
                 @Override
                 protected void doRun(Operation operation) {
                     runWithWorkerCalled = true;

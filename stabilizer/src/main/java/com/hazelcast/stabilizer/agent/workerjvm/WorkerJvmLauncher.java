@@ -1,8 +1,9 @@
 package com.hazelcast.stabilizer.agent.workerjvm;
 
-import com.hazelcast.stabilizer.Utils;
 import com.hazelcast.stabilizer.agent.Agent;
 import com.hazelcast.stabilizer.agent.SpawnWorkerFailedException;
+import com.hazelcast.stabilizer.common.StabilizerProperties;
+import com.hazelcast.stabilizer.provisioner.Bash;
 import com.hazelcast.stabilizer.worker.ClientWorker;
 import com.hazelcast.stabilizer.worker.MemberWorker;
 import org.apache.log4j.Logger;
@@ -19,9 +20,12 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.hazelcast.stabilizer.Utils.getHostAddress;
-import static com.hazelcast.stabilizer.Utils.getStablizerHome;
-import static com.hazelcast.stabilizer.Utils.writeText;
+import static com.hazelcast.stabilizer.utils.CommonUtils.getHostAddress;
+import static com.hazelcast.stabilizer.utils.CommonUtils.sleepSeconds;
+import static com.hazelcast.stabilizer.utils.FileUtils.ensureExistingDirectory;
+import static com.hazelcast.stabilizer.utils.FileUtils.getStablizerHome;
+import static com.hazelcast.stabilizer.utils.FileUtils.readObject;
+import static com.hazelcast.stabilizer.utils.FileUtils.writeText;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
@@ -34,8 +38,11 @@ public class WorkerJvmLauncher {
     private final static File STABILIZER_HOME = getStablizerHome();
     private final static String CLASSPATH_SEPARATOR = System.getProperty("path.separator");
     private final static AtomicLong WORKER_ID_GENERATOR = new AtomicLong();
+    private final static String WORKERS_PATH = getStablizerHome().getAbsolutePath() + "/workers";
 
     private final WorkerJvmSettings settings;
+    private final StabilizerProperties props = new StabilizerProperties();
+    private final Bash bash = new Bash(props);
     private final Agent agent;
     private final ConcurrentMap<String, WorkerJvm> workerJVMs;
     private File hzFile;
@@ -89,6 +96,7 @@ public class WorkerJvmLauncher {
         return tmpXmlFile;
     }
 
+    @SuppressWarnings("unused")
     private String getJavaHome(String javaVendor, String javaVersion) {
         String javaHome = System.getProperty("java.home");
         if (javaHomePrinted.compareAndSet(false, true)) {
@@ -101,7 +109,7 @@ public class WorkerJvmLauncher {
     private WorkerJvm startWorkerJvm(String mode) throws IOException {
         String workerId = "worker-" + getHostAddress() + "-" + WORKER_ID_GENERATOR.incrementAndGet() + "-" + mode;
         File workerHome = new File(testSuiteDir, workerId);
-        Utils.ensureExistingDirectory(workerHome);
+        ensureExistingDirectory(workerHome);
 
         String javaHome = getJavaHome(settings.javaVendor, settings.javaVersion);
 
@@ -124,8 +132,26 @@ public class WorkerJvmLauncher {
         new WorkerJvmProcessOutputGobbler(process.getInputStream(), new FileOutputStream(logFile)).start();
         workerJvm.process = process;
         workerJvm.mode = WorkerJvm.Mode.valueOf(mode.toUpperCase());
+        copyResourcesToWorkerId(workerId);
         workerJVMs.put(workerId, workerJvm);
         return workerJvm;
+    }
+
+    private void copyResourcesToWorkerId(String workerId) throws IOException {
+        final String testSuiteId = agent.getTestSuite().id;
+        File uploadDirectory = new File(WORKERS_PATH + "/" + testSuiteId + "/upload/");
+        if (!uploadDirectory.exists()) {
+            log.debug("Skip copying upload directory to workers since no upload directory was found");
+            return;
+        }
+        String cpCommand = format("cp -rfv %s/%s/upload/* %s/%s/%s/",
+                WORKERS_PATH,
+                testSuiteId,
+                WORKERS_PATH,
+                testSuiteId,
+                workerId);
+        bash.execute(cpCommand);
+        log.info(format("Finished copying '+%s+' to worker", WORKERS_PATH));
     }
 
     private void generateWorkerStartScript(String mode, WorkerJvm workerJvm) {
@@ -139,7 +165,7 @@ public class WorkerJvmLauncher {
         //sb.append(" > sysout.log");
         sb.append("\n");
 
-        Utils.writeText(sb.toString(), startScript);
+        writeText(sb.toString(), startScript);
     }
 
     private String getClasspath() {
@@ -252,7 +278,7 @@ public class WorkerJvmLauncher {
                 return;
             }
 
-            Utils.sleepSeconds(1);
+            sleepSeconds(1);
         }
 
         workerTimeout(workerTimeoutSec, todo);
@@ -279,7 +305,7 @@ public class WorkerJvmLauncher {
             return null;
         }
 
-        String address = Utils.readObject(file);
+        String address = readObject(file);
         file.delete();
         return address;
     }
