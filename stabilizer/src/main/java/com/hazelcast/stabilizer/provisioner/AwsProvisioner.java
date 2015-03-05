@@ -38,8 +38,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import static com.hazelcast.stabilizer.Utils.appendText;
-import static com.hazelcast.stabilizer.Utils.sleepMillis;
+import static com.hazelcast.stabilizer.utils.CommonUtils.sleepMillis;
+import static com.hazelcast.stabilizer.utils.FileUtils.appendText;
 
 
 /*

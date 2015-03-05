@@ -16,7 +16,6 @@ import com.hazelcast.stabilizer.test.annotations.Warmup;
 import java.util.Random;
 import java.util.Set;
 
-import static com.hazelcast.stabilizer.test.utils.TestUtils.sleepMs;
 import static com.hazelcast.stabilizer.tests.helpers.HazelcastTestUtils.isMemberNode;
 
 public class LoadMaps  {
@@ -105,7 +104,7 @@ public class LoadMaps  {
         loadDataToMaps();
 
         while (!testContext.isStopped()) {
-            sleepMs(2000);
+            Thread.sleep(2000);
         }
     }
 

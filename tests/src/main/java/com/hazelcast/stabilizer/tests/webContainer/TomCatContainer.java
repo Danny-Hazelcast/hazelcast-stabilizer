@@ -14,7 +14,6 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.SimpleFormatter;
 
-import static com.hazelcast.stabilizer.test.utils.TestUtils.sleepMs;
 import static org.junit.Assert.assertEquals;
 
 
@@ -49,7 +48,11 @@ public class TomCatContainer {
     @Run
     public void run() {
         while (!testContext.isStopped()) {
-            sleepMs(2000);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -10,7 +10,8 @@ import com.hazelcast.stabilizer.test.annotations.Warmup;
 import com.hazelcast.stabilizer.test.utils.ThreadSpawner;
 
 
-import com.hazelcast.stabilizer.worker.OperationSelector;
+import com.hazelcast.stabilizer.worker.selector.OperationSelector;
+import com.hazelcast.stabilizer.worker.selector.OperationSelectorBuilder;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
@@ -79,7 +80,8 @@ public class WebClient {
         private String baseRul = "http://"+serverIp+":"+serverPort+"/";
 
         private Random random = new Random();
-        private OperationSelector<RequestType> requestSelector = new OperationSelector<RequestType>();
+        private OperationSelectorBuilder<RequestType> oppBuilder = new OperationSelectorBuilder<RequestType>();
+        private OperationSelector<RequestType> operationSelector = null;
 
         HashMap<Integer, String> putKeyValues = new HashMap();
 
@@ -89,8 +91,11 @@ public class WebClient {
 
             log.info(id+": baseRul="+baseRul + " cookie="+cookieStore);
 
-            requestSelector.addOperation(RequestType.GET_REQUEST, getRequestProb)
-                           .addOperation(RequestType.PUT_REQUEST, postRequestProb);
+            oppBuilder.addOperation(RequestType.GET_REQUEST, getRequestProb)
+                      .addOperation(RequestType.PUT_REQUEST, postRequestProb);
+
+
+            operationSelector = oppBuilder.build();
 
 
             try{
@@ -107,7 +112,7 @@ public class WebClient {
                 try {
                     int key = random.nextInt(maxKeys);
                     String res;
-                    switch ( requestSelector.select() ) {
+                    switch ( operationSelector.select() ) {
                         case PUT_REQUEST:
                             int val = random.nextInt();
                             res = putRequest("key/"+key+"/"+val);
