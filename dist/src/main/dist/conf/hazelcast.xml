@@ -20,6 +20,11 @@
     <partition-group enabled="true" group-type="HOST_AWARE">
     </partition-group>
 
+    <native-memory allocator-type="POOLED" enabled="true">
+        <size unit="GIGABYTES" value="3" />
+        <metadata-space-percentage>5</metadata-space-percentage>
+    </native-memory>
+
     <map name="MapStore*">
         <map-store enabled="true">
             <class-name>com.hazelcast.stabilizer.tests.map.helpers.MapStoreWithCounter</class-name>
