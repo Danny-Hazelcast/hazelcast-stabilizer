@@ -141,10 +141,10 @@ public class LoadCache {
     }
 
     public void printInfo(){
-        for(int i=0; i< totalCaches; i++){
-            ICache cache  = (ICache) cacheManager.getCache(cacheBaseName + i);
+        //for(int i=0; i< totalCaches; i++){
+            ICache cache  = (ICache) cacheManager.getCache(cacheBaseName );
             log.info(id + ": mapName=" + cache.getName() + " size=" + cache.size());
-        }
+        //}
         log.info(id + ": valueByteArraySize="+valueByteArraySize);
     }
 }
