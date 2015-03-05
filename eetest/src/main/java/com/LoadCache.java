@@ -61,7 +61,7 @@ public class LoadCache {
         }
 
         CacheConfig<String, String> config = new CacheConfig<String, String>();
-        config.setName(cacheBaseName+"*");
+        config.setName(cacheBaseName);
         config.setInMemoryFormat(InMemoryFormat.NATIVE);
         CacheEvictionConfig evict = new CacheEvictionConfig();
         evict.setMaxSizePolicy(CacheEvictionConfig.CacheMaxSizePolicy.FREE_NATIVE_MEMORY_SIZE);
@@ -108,7 +108,7 @@ public class LoadCache {
             int i = random.nextInt(totalCaches);
             long k = random.nextLong();
 
-            ICache cache = (ICache) cacheManager.getCache(cacheBaseName + i);
+            ICache cache = (ICache) cacheManager.getCache(cacheBaseName );
             cache.put(k, value);
 
             try {
