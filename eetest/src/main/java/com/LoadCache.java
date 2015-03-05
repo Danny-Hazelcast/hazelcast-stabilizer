@@ -60,6 +60,7 @@ public class LoadCache {
                     hcp, targetInstance, hcp.getDefaultURI(), hcp.getDefaultClassLoader(), null);
         }
 
+        /*
         CacheConfig<String, String> config = new CacheConfig<String, String>();
         config.setName(cacheBaseName+"*");
         config.setInMemoryFormat(InMemoryFormat.NATIVE);
@@ -71,6 +72,8 @@ public class LoadCache {
         try {
             cacheManager.createCache(cacheBaseName, config);
         } catch (CacheException hack) {}
+
+        */
     }
 
     @Warmup(global = false)
@@ -98,9 +101,7 @@ public class LoadCache {
             random.nextBytes(value);
 
             while (!testContext.isStopped()) {
-
                 updateDynamicCaches();
-
             }
         }
 
