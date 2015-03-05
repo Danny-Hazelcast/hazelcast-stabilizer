@@ -27,7 +27,7 @@ public class LoadCache {
     private final static ILogger log = Logger.getLogger(LoadCache.class);
 
     public int threadCount=1;
-    public int totalCaches = 2;
+    public int totalCaches = 3;
     public int valueByteArraySize = 3000;
 
     public String cacheBaseName = this.getClass().getCanonicalName();
