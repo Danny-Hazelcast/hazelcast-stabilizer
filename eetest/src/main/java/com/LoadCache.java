@@ -65,7 +65,7 @@ public class LoadCache {
         config.setInMemoryFormat(InMemoryFormat.NATIVE);
         CacheEvictionConfig evict = new CacheEvictionConfig();
         evict.setMaxSizePolicy(CacheEvictionConfig.CacheMaxSizePolicy.FREE_NATIVE_MEMORY_SIZE);
-        evict.setEvictionPolicy(EvictionPolicy.LRU);
+        //evict.setEvictionPolicy(EvictionPolicy.LRU);
         config.setEvictionConfig(evict);
 
         try {
