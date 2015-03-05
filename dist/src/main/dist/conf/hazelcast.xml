@@ -81,6 +81,9 @@
         <backup-count>0</backup-count>
     </map>
 
+    <cache name="c*">
+        <in-memory-format>NATIVE</in-memory-format>
+    </cache>
 
 
     <cache name="maxCachSmall*">
