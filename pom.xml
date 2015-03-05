@@ -48,11 +48,11 @@
     <modules>
         <module>stabilizer</module>
         <module>archetype</module>
+        <module>eetest</module>
         <module>dist</module>
         <module>visualiser</module>
         <module>probes</module>
         <module>tests</module>
-        <module>eetest</module>
     </modules>
 
     <scm>
