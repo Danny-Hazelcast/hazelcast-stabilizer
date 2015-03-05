@@ -116,14 +116,19 @@ public class LoadCache {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            Byte[] v = (Byte[]) cache.get(k);
+            byte[] v = (byte[]) cache.get(k);
 
+            if ( Arrays.equals(v, value) ){
+                log.info(id + "put get MisMatch");
+            }
+            /*
             i=0;
             for(Byte b: v){
                 if ( value[i++] != b.byteValue() ){
                     log.info(id + "put get MisMatch");
                 }
             }
+            */
         }
     }
 
