@@ -61,11 +61,11 @@ public class LoadCache {
         }
 
         CacheConfig<String, String> config = new CacheConfig<String, String>();
-        config.setName(cacheBaseName);
+        config.setName(cacheBaseName+"*");
         config.setInMemoryFormat(InMemoryFormat.NATIVE);
         CacheEvictionConfig evict = new CacheEvictionConfig();
         evict.setMaxSizePolicy(CacheEvictionConfig.CacheMaxSizePolicy.FREE_NATIVE_MEMORY_SIZE);
-        //evict.setEvictionPolicy(EvictionPolicy.LRU);
+        evict.setEvictionPolicy(EvictionPolicy.LRU);
         config.setEvictionConfig(evict);
 
         try {
@@ -108,7 +108,7 @@ public class LoadCache {
             int i = random.nextInt(totalCaches);
             long k = random.nextLong();
 
-            ICache cache = (ICache) cacheManager.getCache(cacheBaseName );
+            ICache cache = (ICache) cacheManager.getCache(cacheBaseName+i);
             cache.put(k, value);
 
             try {
@@ -141,10 +141,10 @@ public class LoadCache {
     }
 
     public void printInfo(){
-        //for(int i=0; i< totalCaches; i++){
-            ICache cache  = (ICache) cacheManager.getCache(cacheBaseName );
+        for(int i=0; i< totalCaches; i++){
+            ICache cache  = (ICache) cacheManager.getCache(cacheBaseName+i);
             log.info(id + ": mapName=" + cache.getName() + " size=" + cache.size());
-        //}
+        }
         log.info(id + ": valueByteArraySize="+valueByteArraySize);
     }
 }
