@@ -112,24 +112,24 @@ public class LoadCache {
             ICache cache = (ICache) cacheManager.getCache(cacheBaseName+i);
             cache.put(k, value);
 
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            sleepMs(1);
+
             byte[] v = (byte[]) cache.get(k);
 
             if ( Arrays.equals(v, value) ){
                 log.info(id + "put get MisMatch");
+            }else{
+                log.info(id + "SAME");
             }
-            /*
-            i=0;
-            for(Byte b: v){
-                if ( value[i++] != b.byteValue() ){
-                    log.info(id + "put get MisMatch");
-                }
+
+        }
+
+        public void sleepMs(int ms){
+            try {
+                Thread.sleep(ms);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            */
         }
     }
 
