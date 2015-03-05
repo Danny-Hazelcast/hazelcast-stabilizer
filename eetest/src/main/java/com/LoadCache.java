@@ -6,6 +6,8 @@ import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.client.cache.impl.HazelcastClientCacheManager;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.CacheConfig;
+import com.hazelcast.config.CacheEvictionConfig;
+import com.hazelcast.config.EvictionPolicy;
 import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.core.*;
 import com.hazelcast.instance.HazelcastInstanceProxy;
@@ -61,6 +63,10 @@ public class LoadCache {
         CacheConfig<String, String> config = new CacheConfig<String, String>();
         config.setName(cacheBaseName+"*");
         config.setInMemoryFormat(InMemoryFormat.NATIVE);
+        CacheEvictionConfig evict = new CacheEvictionConfig();
+        evict.setMaxSizePolicy(CacheEvictionConfig.CacheMaxSizePolicy.FREE_NATIVE_MEMORY_SIZE);
+        evict.setEvictionPolicy(EvictionPolicy.LRU);
+        config.setEvictionConfig(evict);
 
         try {
             cacheManager.createCache(cacheBaseName, config);
