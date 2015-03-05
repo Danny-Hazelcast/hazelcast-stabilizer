@@ -29,7 +29,7 @@
         <backup-count>1</backup-count>
         <async-backup-count>0</async-backup-count>
         <in-memory-format>NATIVE</in-memory-format>
-        <eviction size="99.9" max-size-policy="USED_NATIVE_MEMORY_PERCENTAGE" eviction-policy="LRU" />
+        <eviction size="99" max-size-policy="USED_NATIVE_MEMORY_PERCENTAGE" eviction-policy="LRU" />
         <statistics-enabled>true</statistics-enabled>
     </cache>
 
