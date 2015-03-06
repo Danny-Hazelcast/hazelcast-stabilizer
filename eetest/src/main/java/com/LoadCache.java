@@ -72,9 +72,11 @@ public class LoadCache {
         evict.setEvictionPolicy(EvictionPolicy.LRU);
         config.setEvictionConfig(evict);
 
+        log.info(id + ": config="+config);
+
         try {
             cacheManager.createCache(cacheBaseName, config);
-        } catch (CacheException hack) {}
+        } catch (CacheException e) {}
 
     }
 
@@ -146,7 +148,9 @@ public class LoadCache {
     public void printInfo(){
         //for(int i=0; i< totalCaches; i++){
             ICache cache  = (ICache) cacheManager.getCache(cacheBaseName);
+
             log.info(id + ": mapName=" + cache.getName() + " size=" + cache.size());
+
         //}
         log.info(id + ": valueByteArraySize="+valueByteArraySize);
     }
