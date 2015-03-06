@@ -32,7 +32,7 @@ public class LoadCache {
     public int totalCaches = 3;
     public int valueByteArraySize = 3000;
 
-    public String cacheBaseName = this.getClass().getCanonicalName();
+    public String cacheBaseName=null;
 
     private CacheManager cacheManager;
 
@@ -72,7 +72,6 @@ public class LoadCache {
         try {
             cacheManager.createCache(cacheBaseName, config);
         } catch (CacheException hack) {}
-
         */
     }
 
@@ -109,7 +108,7 @@ public class LoadCache {
             int i = random.nextInt(totalCaches);
             long k = random.nextLong();
 
-            ICache cache = (ICache) cacheManager.getCache(cacheBaseName+i);
+            ICache cache = (ICache) cacheManager.getCache(cacheBaseName);
             cache.put(k, value);
 
             sleepMs(1);
@@ -143,7 +142,7 @@ public class LoadCache {
 
     public void printInfo(){
         for(int i=0; i< totalCaches; i++){
-            ICache cache  = (ICache) cacheManager.getCache(cacheBaseName+i);
+            ICache cache  = (ICache) cacheManager.getCache(cacheBaseName);
             log.info(id + ": mapName=" + cache.getName() + " size=" + cache.size());
         }
         log.info(id + ": valueByteArraySize="+valueByteArraySize);
