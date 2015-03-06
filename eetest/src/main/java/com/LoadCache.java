@@ -61,10 +61,14 @@ public class LoadCache {
         }
 
 
+        makeCache(cacheBaseName);
+
+        /*
         makeCache(cacheBaseName+"1");
         makeCache(cacheBaseName+"2");
         makeCache(cacheBaseName+"3");
         makeCache(cacheBaseName+"4");
+        */
 
     }
 
@@ -73,7 +77,7 @@ public class LoadCache {
         config.setName(name);
         config.setInMemoryFormat(InMemoryFormat.NATIVE);
         config.setAsyncBackupCount(1);
-        config.setBackupCount(0);
+        config.setBackupCount(1);
         CacheEvictionConfig evict = new CacheEvictionConfig();
         evict.setMaxSizePolicy(CacheEvictionConfig.CacheMaxSizePolicy.FREE_NATIVE_MEMORY_PERCENTAGE);
         evict.setSize(75);
@@ -121,7 +125,7 @@ public class LoadCache {
             int i = random.nextInt(totalCaches);
             long k = random.nextLong();
 
-            ICache cache = (ICache) cacheManager.getCache(cacheBaseName + i);
+            ICache cache = (ICache) cacheManager.getCache(cacheBaseName);
             cache.put(k, value);
 
             sleepMs(1);
@@ -154,12 +158,12 @@ public class LoadCache {
     }
 
     public void printInfo(){
-        for(int i=0; i< totalCaches; i++){
-            ICache cache  = (ICache) cacheManager.getCache(cacheBaseName+i);
+        //for(int i=0; i< totalCaches; i++){
+            ICache cache  = (ICache) cacheManager.getCache(cacheBaseName);
 
             log.info(id + ": mapName=" + cache.getName() + " size=" + cache.size());
 
-        }
+        //}
         log.info(id + ": valueByteArraySize="+valueByteArraySize);
     }
 }
