@@ -61,10 +61,10 @@ public class LoadCache {
         }
 
 
-        makeCache("perm1");
-        makeCache("perm2");
-        makeCache("perm3");
-        makeCache("perm4");
+        makeCache(cacheBaseName+"1");
+        makeCache(cacheBaseName+"2");
+        makeCache(cacheBaseName+"3");
+        makeCache(cacheBaseName+"4");
 
     }
 
