@@ -60,19 +60,20 @@ public class LoadCache {
                     hcp, targetInstance, hcp.getDefaultURI(), hcp.getDefaultClassLoader(), null);
         }
 
-        /*
+
         CacheConfig<String, String> config = new CacheConfig<String, String>();
-        config.setName(cacheBaseName+"*");
+        config.setName("perm");
         config.setInMemoryFormat(InMemoryFormat.NATIVE);
         CacheEvictionConfig evict = new CacheEvictionConfig();
-        evict.setMaxSizePolicy(CacheEvictionConfig.CacheMaxSizePolicy.FREE_NATIVE_MEMORY_SIZE);
+        evict.setMaxSizePolicy(CacheEvictionConfig.CacheMaxSizePolicy.FREE_NATIVE_MEMORY_PERCENTAGE);
+        evict.setSize(75);
         evict.setEvictionPolicy(EvictionPolicy.LRU);
         config.setEvictionConfig(evict);
 
         try {
             cacheManager.createCache(cacheBaseName, config);
         } catch (CacheException hack) {}
-        */
+
     }
 
     @Warmup(global = false)
@@ -141,10 +142,10 @@ public class LoadCache {
     }
 
     public void printInfo(){
-        for(int i=0; i< totalCaches; i++){
+        //for(int i=0; i< totalCaches; i++){
             ICache cache  = (ICache) cacheManager.getCache(cacheBaseName);
             log.info(id + ": mapName=" + cache.getName() + " size=" + cache.size());
-        }
+        //}
         log.info(id + ": valueByteArraySize="+valueByteArraySize);
     }
 }
