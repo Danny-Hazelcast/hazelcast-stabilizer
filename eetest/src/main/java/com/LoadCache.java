@@ -121,9 +121,9 @@ public class LoadCache {
             byte[] v = (byte[]) cache.get(k);
 
             if ( Arrays.equals(v, value) ){
-                log.info(id + "put get MisMatch");
+            //    log.info(id + "put get MisMatch");
             }else{
-                log.info(id + "SAME");
+            //    log.info(id + "SAME");
             }
 
         }
