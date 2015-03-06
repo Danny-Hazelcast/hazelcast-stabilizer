@@ -28,7 +28,7 @@ import java.util.Random;
 public class LoadCache {
     private final static ILogger log = Logger.getLogger(LoadCache.class);
 
-    public int threadCount=1;
+    public int threadCount=10;
     public int totalCaches = 4;
     public int valueByteArraySize = 3000;
 
@@ -80,7 +80,7 @@ public class LoadCache {
         config.setBackupCount(1);
         CacheEvictionConfig evict = new CacheEvictionConfig();
         evict.setMaxSizePolicy(CacheEvictionConfig.CacheMaxSizePolicy.FREE_NATIVE_MEMORY_PERCENTAGE);
-        evict.setSize(75);
+        evict.setSize(99);
         evict.setEvictionPolicy(EvictionPolicy.LRU);
         config.setEvictionConfig(evict);
 
