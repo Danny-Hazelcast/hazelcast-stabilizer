@@ -64,6 +64,8 @@ public class LoadCache {
         CacheConfig<String, String> config = new CacheConfig<String, String>();
         config.setName("perm");
         config.setInMemoryFormat(InMemoryFormat.NATIVE);
+        config.setAsyncBackupCount(1);
+        config.setBackupCount(0);
         CacheEvictionConfig evict = new CacheEvictionConfig();
         evict.setMaxSizePolicy(CacheEvictionConfig.CacheMaxSizePolicy.FREE_NATIVE_MEMORY_PERCENTAGE);
         evict.setSize(75);
