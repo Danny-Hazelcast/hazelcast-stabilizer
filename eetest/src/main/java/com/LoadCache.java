@@ -29,7 +29,7 @@ public class LoadCache {
     private final static ILogger log = Logger.getLogger(LoadCache.class);
 
     public int threadCount=1;
-    public int totalCaches = 3;
+    public int totalCaches = 4;
     public int valueByteArraySize = 3000;
 
     public String cacheBaseName=null;
@@ -61,8 +61,16 @@ public class LoadCache {
         }
 
 
-        CacheConfig<String, String> config = new CacheConfig<String, String>();
-        config.setName("perm");
+        makeCache("perm1");
+        makeCache("perm2");
+        makeCache("perm3");
+        makeCache("perm4");
+
+    }
+
+    public void makeCache(String name){
+        CacheConfig config = new CacheConfig();
+        config.setName(name);
         config.setInMemoryFormat(InMemoryFormat.NATIVE);
         config.setAsyncBackupCount(1);
         config.setBackupCount(0);
@@ -77,8 +85,8 @@ public class LoadCache {
         try {
             cacheManager.createCache(cacheBaseName, config);
         } catch (CacheException e) {}
-
     }
+
 
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
@@ -113,7 +121,7 @@ public class LoadCache {
             int i = random.nextInt(totalCaches);
             long k = random.nextLong();
 
-            ICache cache = (ICache) cacheManager.getCache(cacheBaseName);
+            ICache cache = (ICache) cacheManager.getCache(cacheBaseName + i);
             cache.put(k, value);
 
             sleepMs(1);
@@ -146,12 +154,12 @@ public class LoadCache {
     }
 
     public void printInfo(){
-        //for(int i=0; i< totalCaches; i++){
-            ICache cache  = (ICache) cacheManager.getCache(cacheBaseName);
+        for(int i=0; i< totalCaches; i++){
+            ICache cache  = (ICache) cacheManager.getCache(cacheBaseName+i);
 
             log.info(id + ": mapName=" + cache.getName() + " size=" + cache.size());
 
-        //}
+        }
         log.info(id + ": valueByteArraySize="+valueByteArraySize);
     }
 }
