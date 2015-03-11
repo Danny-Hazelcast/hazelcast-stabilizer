@@ -29,7 +29,7 @@ public class LoadCache {
     private final static ILogger log = Logger.getLogger(LoadCache.class);
 
     public int threadCount=10;
-    public int totalCaches = 4;
+    public int totalCaches=4;
     public int valueByteArraySize = 3000;
 
     public String cacheBaseName=null;
@@ -60,16 +60,9 @@ public class LoadCache {
                     hcp, targetInstance, hcp.getDefaultURI(), hcp.getDefaultClassLoader(), null);
         }
 
-
-        makeCache(cacheBaseName);
-
-        /*
-        makeCache(cacheBaseName+"1");
-        makeCache(cacheBaseName+"2");
-        makeCache(cacheBaseName+"3");
-        makeCache(cacheBaseName+"4");
-        */
-
+        for(int i=0; i<totalCaches; i++){
+            makeCache(cacheBaseName+i);
+        }
     }
 
     public void makeCache(String name){
@@ -88,7 +81,9 @@ public class LoadCache {
 
         try {
             cacheManager.createCache(cacheBaseName, config);
-        } catch (CacheException e) {}
+        } catch (CacheException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -125,27 +120,19 @@ public class LoadCache {
             int i = random.nextInt(totalCaches);
             long k = random.nextLong();
 
-            ICache cache = (ICache) cacheManager.getCache(cacheBaseName);
+            ICache cache = (ICache) cacheManager.getCache(cacheBaseName+i);
             cache.put(k, value);
 
-            sleepMs(1);
 
             byte[] v = (byte[]) cache.get(k);
 
+            /*
             if ( Arrays.equals(v, value) ){
             //    log.info(id + "put get MisMatch");
             }else{
             //    log.info(id + "SAME");
             }
-
-        }
-
-        public void sleepMs(int ms){
-            try {
-                Thread.sleep(ms);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            */
         }
     }
 
@@ -158,12 +145,10 @@ public class LoadCache {
     }
 
     public void printInfo(){
-        //for(int i=0; i< totalCaches; i++){
-            ICache cache  = (ICache) cacheManager.getCache(cacheBaseName);
-
+        for(int i=0; i< totalCaches; i++){
+            ICache cache  = (ICache) cacheManager.getCache(cacheBaseName+i);
             log.info(id + ": mapName=" + cache.getName() + " size=" + cache.size());
-
-        //}
+        }
         log.info(id + ": valueByteArraySize="+valueByteArraySize);
     }
 }
