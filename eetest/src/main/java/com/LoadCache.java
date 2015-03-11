@@ -81,7 +81,7 @@ public class LoadCache {
         log.info(id + ": config="+config);
 
         try {
-            //cacheManager.createCache(cacheBaseName, config);
+            cacheManager.createCache(name, config);
         } catch (CacheException e) {
             //throw new RuntimeException(e);
         }
