@@ -82,7 +82,7 @@ public class LoadCache {
         try {
             cacheManager.createCache(cacheBaseName, config);
         } catch (CacheException e) {
-            throw new RuntimeException(e);
+            //throw new RuntimeException(e);
         }
     }
 
@@ -122,7 +122,6 @@ public class LoadCache {
 
             ICache cache = (ICache) cacheManager.getCache(cacheBaseName+i);
             cache.put(k, value);
-
 
             byte[] v = (byte[]) cache.get(k);
 
