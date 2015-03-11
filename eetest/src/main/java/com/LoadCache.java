@@ -61,7 +61,7 @@ public class LoadCache {
         }
 
         for(int i=0; i<totalCaches; i++){
-        //    makeCache(cacheBaseName+i);
+            makeCache(cacheBaseName+i);
         }
     }
 
