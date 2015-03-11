@@ -62,6 +62,7 @@ public class LoadCache {
 
         for(int i=0; i<totalCaches; i++){
             makeCache(cacheBaseName+i);
+            Thread.sleep(2000);
         }
     }
 
