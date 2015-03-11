@@ -90,6 +90,14 @@ public class LoadCache {
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
 
+        for(int i=0; i<totalCaches; i++){
+            ICache cache;
+            do {
+                Thread.sleep(500);
+                cache = (ICache) cacheManager.getCache(cacheBaseName + i);
+            }while(cache==null);
+        }
+
     }
 
     @Run
