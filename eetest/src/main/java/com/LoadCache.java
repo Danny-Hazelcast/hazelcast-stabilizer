@@ -62,7 +62,6 @@ public class LoadCache {
 
         for(int i=0; i<totalCaches; i++){
             makeCache(cacheBaseName+i);
-            Thread.sleep(2000);
         }
     }
 
@@ -71,7 +70,7 @@ public class LoadCache {
         config.setName(name);
         config.setInMemoryFormat(InMemoryFormat.NATIVE);
         config.setAsyncBackupCount(1);
-        config.setBackupCount(1);
+        config.setBackupCount(0);
         CacheEvictionConfig evict = new CacheEvictionConfig();
         evict.setMaxSizePolicy(CacheEvictionConfig.CacheMaxSizePolicy.FREE_NATIVE_MEMORY_PERCENTAGE);
         evict.setSize(75);
