@@ -73,7 +73,7 @@ public class LoadCache {
         config.setBackupCount(0);
         CacheEvictionConfig evict = new CacheEvictionConfig();
         evict.setMaxSizePolicy(CacheEvictionConfig.CacheMaxSizePolicy.FREE_NATIVE_MEMORY_PERCENTAGE);
-        evict.setSize(75);
+        evict.setSize(85);
         evict.setEvictionPolicy(EvictionPolicy.LRU);
         config.setEvictionConfig(evict);
 
