@@ -23,7 +23,9 @@ import com.hazelcast.stabilizer.test.utils.ThreadSpawner;
 import javax.cache.CacheException;
 import javax.cache.CacheManager;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class LoadCache {
     private final static ILogger log = Logger.getLogger(LoadCache.class);
@@ -108,15 +110,25 @@ public class LoadCache {
     @Run
     public void run() {
         ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
+        Set<Worker> s = new HashSet();
         for (int k = 0; k < threadCount; k++) {
-            spawner.spawn(new Worker());
+            Worker w = new Worker();
+            spawner.spawn(w);
+            s.add(w);
         }
         spawner.awaitCompletion();
+
+        long total=0;
+        for(Worker w : s){
+            total += w.putCount;
+        }
+        log.info(id + ": total puts="+total);
     }
 
 
     private class Worker implements Runnable {
 
+        public long putCount=0;
         public Random random = new Random();
         private byte[] value;
 
@@ -137,6 +149,8 @@ public class LoadCache {
             cache.put(k, value);
 
             byte[] v = (byte[]) cache.get(k);
+
+            putCount++;
 
             /*
             if ( Arrays.equals(v, value) ){
