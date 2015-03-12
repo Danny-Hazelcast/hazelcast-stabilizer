@@ -28,6 +28,7 @@ import java.util.Random;
 public class LoadCache {
     private final static ILogger log = Logger.getLogger(LoadCache.class);
 
+    public boolean createCaches=true;
     public int threadCount=10;
     public int totalCaches=4;
     public int valueByteArraySize = 3000;
@@ -60,6 +61,12 @@ public class LoadCache {
                     hcp, targetInstance, hcp.getDefaultURI(), hcp.getDefaultClassLoader(), null);
         }
 
+        if(createCaches){
+            makeCaches();
+        }
+    }
+
+    public void makeCaches(){
         for(int i=0; i<totalCaches; i++){
             makeCache(cacheBaseName+i);
         }
@@ -81,9 +88,7 @@ public class LoadCache {
 
         try {
             cacheManager.createCache(name, config);
-        } catch (CacheException e) {
-            //throw new RuntimeException(e);
-        }
+        } catch (CacheException e) { }
     }
 
 
