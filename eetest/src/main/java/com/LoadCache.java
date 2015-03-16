@@ -34,6 +34,7 @@ public class LoadCache {
     public int threadCount=10;
     public int totalCaches=4;
     public int valueByteArraySize = 3000;
+    public int progConfigEvectionPer = 60;
 
     public String cacheBaseName=null;
 
@@ -82,7 +83,7 @@ public class LoadCache {
         config.setBackupCount(0);
         CacheEvictionConfig evict = new CacheEvictionConfig();
         evict.setMaxSizePolicy(CacheEvictionConfig.CacheMaxSizePolicy.USED_NATIVE_MEMORY_PERCENTAGE);
-        evict.setSize(99);
+        evict.setSize(progConfigEvectionPer);
         evict.setEvictionPolicy(EvictionPolicy.LRU);
         config.setEvictionConfig(evict);
 
