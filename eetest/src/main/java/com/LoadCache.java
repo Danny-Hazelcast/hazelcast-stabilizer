@@ -88,7 +88,6 @@ public class LoadCache {
 
         try {
             cacheManager.createCache(name, config);
-            log.info(id + ": created config="+config);
         } catch (CacheException e) { }
     }
 
@@ -147,6 +146,7 @@ public class LoadCache {
             ICache cache = (ICache) cacheManager.getCache(cacheBaseName+i);
             cache.put(k, value);
 
+
             byte[] v = (byte[]) cache.get(k);
 
             putCount++;
@@ -173,6 +173,12 @@ public class LoadCache {
         for(int i=0; i< totalCaches; i++){
             ICache cache  = (ICache) cacheManager.getCache(cacheBaseName+i);
             log.info(id + ": mapName=" + cache.getName() + " size=" + cache.size());
+
+            CacheConfig config = (CacheConfig) cache.getConfiguration(CacheConfig.class);
+            log.info(id + ": config="+config);
+            log.info(id + ": getAsyncBackupCount="+config.getAsyncBackupCount());
+            log.info(id + ": EvictionConfig="+config.getEvictionConfig());
+
         }
         log.info(id + ": valueByteArraySize="+valueByteArraySize);
     }
