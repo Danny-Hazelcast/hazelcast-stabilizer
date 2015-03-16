@@ -179,9 +179,11 @@ public class LoadCache {
             log.info(id + ": getAsyncBackupCount="+config.getAsyncBackupCount());
 
             CacheEvictionConfig evictionConfig = config.getEvictionConfig();
-            log.info(id + ": EvictionConfig="+evictionConfig);
-            log.info(id + ": Evictionpolicy="+evictionConfig.getEvictionPolicy());
-            log.info(id + ": maxsizePolicy="+evictionConfig.getMaxSizePolicy());
+            log.info(id + ": evictionConfig="+evictionConfig);
+            log.info(id + ": evictionConfig.getEvictionPolicy()="+evictionConfig.getEvictionPolicy());
+            log.info(id + ": evictionConfig.getMaxSizePolicy()="+evictionConfig.getMaxSizePolicy());
+            log.info(id + ": evictionConfig.getSize()="+evictionConfig.getSize());
+            log.info(id + ": evictionConfig.getEvictionStrategyType()="+evictionConfig.getEvictionStrategyType());
 
         }
         log.info(id + ": valueByteArraySize="+valueByteArraySize);
