@@ -177,7 +177,11 @@ public class LoadCache {
             CacheConfig config = (CacheConfig) cache.getConfiguration(CacheConfig.class);
             log.info(id + ": config="+config);
             log.info(id + ": getAsyncBackupCount="+config.getAsyncBackupCount());
-            log.info(id + ": EvictionConfig="+config.getEvictionConfig());
+
+            CacheEvictionConfig evictionConfig = config.getEvictionConfig();
+            log.info(id + ": EvictionConfig="+evictionConfig);
+            log.info(id + ": Evictionpolicy="+evictionConfig.getEvictionPolicy());
+            log.info(id + ": maxsizePolicy="+evictionConfig.getMaxSizePolicy());
 
         }
         log.info(id + ": valueByteArraySize="+valueByteArraySize);
