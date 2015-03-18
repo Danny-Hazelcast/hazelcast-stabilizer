@@ -19,13 +19,11 @@ import com.hazelcast.stabilizer.test.annotations.Setup;
 import com.hazelcast.stabilizer.test.annotations.Verify;
 import com.hazelcast.stabilizer.test.annotations.Warmup;
 import com.hazelcast.stabilizer.test.utils.ThreadSpawner;
+import javassist.bytecode.ByteArray;
 
 import javax.cache.CacheException;
 import javax.cache.CacheManager;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class LoadCache {
     private final static ILogger log = Logger.getLogger(LoadCache.class);
@@ -33,7 +31,11 @@ public class LoadCache {
     public boolean createCaches=true;
     public int threadCount=10;
     public int totalCaches=4;
+
+    public boolean dynamicValueSizes=false;
     public int valueByteArraySize=3000;
+
+
     public int progConfigEvectionPer=60;
 
     public String cacheBaseName=null;
@@ -120,6 +122,9 @@ public class LoadCache {
         long total=0;
         for(Worker w : s){
             total += w.putCount;
+            if(dynamicValueSizes){
+                log.info(id + ": w.valueSet.size()=" + w.valueSet.size());
+            }
         }
         log.info(id + ": total puts="+total);
     }
@@ -129,36 +134,51 @@ public class LoadCache {
 
         public long putCount=0;
         public Random random = new Random();
-        private byte[] value;
+        public List<byte[]> valueSet = new ArrayList<byte[]>();
+        public Map mapValueSet = new HashMap();
 
-        public void run(){
-            value = new byte[valueByteArraySize];
+        public Worker(){
+            byte[] value = new byte[valueByteArraySize];
             random.nextBytes(value);
+            valueSet.add(value);
 
-            while (!testContext.isStopped()) {
-                updateDynamicCaches();
+            if(dynamicValueSizes){
+                for(int i=0; i<10; i++){
+                    int diff = random.nextInt(valueByteArraySize/2);
+                    value = new byte[valueByteArraySize + diff];
+                    random.nextBytes(value);
+                    valueSet.add(value);
+                    mapValueSet.put(random.nextInt(), value);
+                }
             }
         }
 
-        public void updateDynamicCaches(){
-            int i = random.nextInt(totalCaches);
-            long k = random.nextLong();
+        public void run(){
+            while (!testContext.isStopped()) {
+                int i = random.nextInt(totalCaches);
+                long k = random.nextLong();
+                int valueIdx = random.nextInt(valueSet.size());
 
-            ICache cache = (ICache) cacheManager.getCache(cacheBaseName+i);
-            cache.put(k, value);
+                ICache cache = (ICache) cacheManager.getCache(cacheBaseName+i);
 
 
-            byte[] v = (byte[]) cache.get(k);
+                byte[] putValue = valueSet.get(valueIdx);
 
-            putCount++;
+                if(random.nextDouble()<0.1){
+                    cache.putAsync(k, putValue);
+                }else {
+                    cache.put(k, putValue);
+                }
 
-            /*
-            if ( Arrays.equals(v, value) ){
-            //    log.info(id + "put get MisMatch");
-            }else{
-            //    log.info(id + "SAME");
+                if(random.nextDouble()<0.05){
+                    cache.putAll(mapValueSet);
+                }
+
+                byte[] getValue = (byte[]) cache.get(k);
+
+
+                putCount++;
             }
-            */
         }
     }
 
@@ -167,6 +187,7 @@ public class LoadCache {
         if(isMemberNode(targetInstance)){
             log.info(id + ": cluster size =" + targetInstance.getCluster().getMembers().size());
         }
+
         printInfo();
     }
 
@@ -185,8 +206,6 @@ public class LoadCache {
             log.info(id + ": evictionConfig.getMaxSizePolicy()="+evictionConfig.getMaxSizePolicy());
             log.info(id + ": evictionConfig.getSize()="+evictionConfig.getSize());
             log.info(id + ": evictionConfig.getEvictionStrategyType()="+evictionConfig.getEvictionStrategyType());
-
         }
-        log.info(id + ": valueByteArraySize="+valueByteArraySize);
     }
 }
