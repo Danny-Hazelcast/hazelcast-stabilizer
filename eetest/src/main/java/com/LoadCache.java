@@ -124,6 +124,9 @@ public class LoadCache {
             total += w.putCount;
             if(dynamicValueSizes){
                 log.info(id + ": w.valueSet.size()=" + w.valueSet.size());
+                for(byte[] b : w.valueSet){
+                    log.info(id + ": valuesSet Value v size="+ b.length);
+                }
             }
         }
         log.info(id + ": total puts="+total);
@@ -164,6 +167,9 @@ public class LoadCache {
 
                 byte[] putValue = valueSet.get(valueIdx);
 
+                cache.put(k, putValue);
+
+                /*
                 if(random.nextDouble()<0.1){
                     cache.putAsync(k, putValue);
                 }else {
@@ -173,6 +179,7 @@ public class LoadCache {
                 if(random.nextDouble()<0.05){
                     cache.putAll(mapValueSet);
                 }
+                */
 
                 byte[] getValue = (byte[]) cache.get(k);
 
