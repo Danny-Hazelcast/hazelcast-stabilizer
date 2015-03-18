@@ -33,8 +33,8 @@ public class LoadCache {
     public boolean createCaches=true;
     public int threadCount=10;
     public int totalCaches=4;
-    public int valueByteArraySize = 3000;
-    public int progConfigEvectionPer = 60;
+    public int valueByteArraySize=3000;
+    public int progConfigEvectionPer=60;
 
     public String cacheBaseName=null;
 
