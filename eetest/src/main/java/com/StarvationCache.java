@@ -120,12 +120,10 @@ public class StarvationCache {
         }
 
         public void run(){
-            while (!testContext.isStopped()) {
-                fillCaches(totalACaches, "A");
-                log.info(id + ": HALF WAY");
-                fillCaches(totalBCaches, "B");
-                log.info(id + ": DONE");
-            }
+            fillCaches(totalACaches, "A");
+            log.info(id + ": HALF WAY");
+            fillCaches(totalBCaches, "B");
+            log.info(id + ": DONE");
         }
 
         public void fillCaches(int totalCaches, String postFixName){
