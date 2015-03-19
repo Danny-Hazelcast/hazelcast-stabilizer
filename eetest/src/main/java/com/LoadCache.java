@@ -168,9 +168,9 @@ public class LoadCache {
 
                 byte[] putValue = valueSet.get(valueIdx);
 
-                cache.put(k, putValue);
+                //cache.put(k, putValue);
 
-                /*
+
                 if(random.nextDouble()<0.1){
                     cache.putAsync(k, putValue);
                 }else {
@@ -180,7 +180,7 @@ public class LoadCache {
                 if(random.nextDouble()<0.05){
                     cache.putAll(mapValueSet);
                 }
-                */
+
 
                 byte[] getValue = (byte[]) cache.get(k);
 
