@@ -7,8 +7,6 @@ import com.hazelcast.client.cache.impl.HazelcastClientCacheManager;
 import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
 import com.hazelcast.config.CacheConfig;
 import com.hazelcast.config.CacheEvictionConfig;
-import com.hazelcast.config.EvictionPolicy;
-import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.instance.HazelcastInstanceProxy;
 import com.hazelcast.logging.ILogger;
@@ -20,12 +18,11 @@ import com.hazelcast.stabilizer.test.annotations.Verify;
 import com.hazelcast.stabilizer.test.annotations.Warmup;
 import com.hazelcast.stabilizer.test.utils.ThreadSpawner;
 
-import javax.cache.CacheException;
 import javax.cache.CacheManager;
 import java.util.*;
 
-public class StarveCache {
-    private final static ILogger log = Logger.getLogger(StarveCache.class);
+public class StarvationCache {
+    private final static ILogger log = Logger.getLogger(StarvationCache.class);
 
     public int threadCount=10;
     public int totalACaches=4;
@@ -63,7 +60,6 @@ public class StarveCache {
 
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
-
         warmupCaches(totalACaches, "A");
         warmupCaches(totalBCaches, "B");
     }
@@ -126,14 +122,17 @@ public class StarveCache {
         public void run(){
             while (!testContext.isStopped()) {
                 fillCaches(totalACaches, "A");
+                log.info(id + ": HALF WAY");
                 fillCaches(totalBCaches, "B");
+                log.info(id + ": DONE");
             }
         }
 
         public void fillCaches(int totalCaches, String postFixName){
-            for(int i=0; i<1000000; i++){
+            for(int i=0; i<10000; i++){
                 putinRandomCache(totalCaches, postFixName);
             }
+
         }
 
         public void putinRandomCache(int totalCaches, String postFixName){
