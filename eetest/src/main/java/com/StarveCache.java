@@ -64,6 +64,8 @@ public class StarveCache {
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
 
+        warmupCaches(totalACaches, "A");
+        warmupCaches(totalBCaches, "B");
     }
 
     public void warmupCaches(int totalCaches, String postFixName){
