@@ -146,7 +146,7 @@ public class LoadCache {
             valueSet.add(value);
 
             if(dynamicValueSizes){
-                for(int i=0; i<10; i++){
+                for(int i=0; i<15; i++){
 
                     int diff = 250 + random.nextInt(valueByteArraySize * 2);
                     value = new byte[diff];
