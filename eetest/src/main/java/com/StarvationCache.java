@@ -65,7 +65,6 @@ public class StarvationCache {
     }
 
     public void warmupCaches(int totalCaches, String postFixName){
-
         for(int i=0; i<totalCaches; i++){
             ICache cache = (ICache) cacheManager.getCache(cacheBaseName+postFixName+i);
 
@@ -127,10 +126,9 @@ public class StarvationCache {
         }
 
         public void fillCaches(int totalCaches, String postFixName){
-            for(int i=0; i<10000; i++){
+            for(int i=0; i<100000; i++){
                 putinRandomCache(totalCaches, postFixName);
             }
-
         }
 
         public void putinRandomCache(int totalCaches, String postFixName){
@@ -147,6 +145,7 @@ public class StarvationCache {
 
     @Verify(global = false)
     public void verify() throws Exception {
+
         if(isMemberNode(targetInstance)){
             log.info(id + ": cluster size =" + targetInstance.getCluster().getMembers().size());
         }
