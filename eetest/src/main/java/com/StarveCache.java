@@ -62,7 +62,22 @@ public class StarveCache {
     }
 
     @Warmup(global = false)
-    public void warmup() throws InterruptedException {}
+    public void warmup() throws InterruptedException {
+
+    }
+
+    public void warmupCaches(int totalCaches, String postFixName){
+
+        for(int i=0; i<totalCaches; i++){
+            ICache cache = (ICache) cacheManager.getCache(cacheBaseName+postFixName+i);
+
+            while(cache == null){
+                log.info(id + ": cache "+cacheBaseName+postFixName+i+"==NULL");
+                cache = (ICache) cacheManager.getCache(cacheBaseName+postFixName+i);
+            }
+        }
+    }
+
 
     @Run
     public void run() {
