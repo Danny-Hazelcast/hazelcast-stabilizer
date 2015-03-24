@@ -1,13 +1,10 @@
-package com.hazelcast.stabilizer.tests.webContainer;
+package com.hazelcast.simulator.tests.webContainer;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.Globals;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.ContextConfig;
 import org.apache.catalina.startup.Tomcat;
-
-import java.io.File;
-import java.util.Random;
 
 public class TomcatServer implements ServletContainer {
 

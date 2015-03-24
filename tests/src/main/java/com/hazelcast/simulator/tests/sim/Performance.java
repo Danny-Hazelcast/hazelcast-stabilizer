@@ -1,4 +1,4 @@
-package com.hazelcast.stabilizer.tests.sim;
+package com.hazelcast.simulator.tests.sim;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.CsvReporter;

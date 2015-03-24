@@ -1,4 +1,4 @@
-package com.hazelcast.stabilizer.tests.webContainer;
+package com.hazelcast.simulator.tests.webContainer;
 
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
