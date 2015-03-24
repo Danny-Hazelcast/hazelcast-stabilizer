@@ -103,6 +103,9 @@ public class LoadCache {
             do {
                 Thread.sleep(500);
                 cache = (ICache) cacheManager.getCache(cacheBaseName + i);
+                if(cache==null){
+                    log.info(id + ":  cache="+cacheBaseName+""+i +"  == NULL");
+                }
             }while(cache==null);
             log.info(id + ":  cacheBaseName="+cacheBaseName+""+i);
         }
