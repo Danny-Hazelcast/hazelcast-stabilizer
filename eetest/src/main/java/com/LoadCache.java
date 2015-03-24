@@ -13,12 +13,12 @@ import com.hazelcast.core.*;
 import com.hazelcast.instance.HazelcastInstanceProxy;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
-import com.hazelcast.stabilizer.test.TestContext;
-import com.hazelcast.stabilizer.test.annotations.Run;
-import com.hazelcast.stabilizer.test.annotations.Setup;
-import com.hazelcast.stabilizer.test.annotations.Verify;
-import com.hazelcast.stabilizer.test.annotations.Warmup;
-import com.hazelcast.stabilizer.test.utils.ThreadSpawner;
+import com.hazelcast.simulator.test.TestContext;
+import com.hazelcast.simulator.test.annotations.Run;
+import com.hazelcast.simulator.test.annotations.Setup;
+import com.hazelcast.simulator.test.annotations.Verify;
+import com.hazelcast.simulator.test.annotations.Warmup;
+import com.hazelcast.simulator.test.utils.ThreadSpawner;
 import javassist.bytecode.ByteArray;
 
 import javax.cache.CacheException;
