@@ -54,6 +54,7 @@
         <module>visualiser</module>
         <module>probes</module>
         <module>tests</module>
+        <module>eetest</module>
     </modules>
 
     <scm>
