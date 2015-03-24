@@ -51,7 +51,7 @@ public class AwsProvisioner {
     public static final String AWS_ELB_FILE_NAME = "aws-elb.txt";
 
     private static final int SLEEPING_MS = 1000 * 30;
-    private static final int MAX_SLEEPING_ITERATIONS = 12;
+    private static final int MAX_SLEEPING_ITERATIONS = 2;
     private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(Provisioner.class);
 
     private AmazonEC2 ec2;
@@ -157,7 +157,7 @@ public class AwsProvisioner {
         List<Instance> checkedInstances = new ArrayList<Instance>();
         List<Instance> instances = runInstancesResult.getReservation().getInstances();
         for (Instance instance : instances) {
-            if (waiteForInstanceStatusRunning(instance)) {
+            if (waiteForInstancePublicIp(instance)) {
                 addInstanceToAgentsFile(instance);
                 checkedInstances.add(instance);
             } else {
@@ -216,7 +216,7 @@ public class AwsProvisioner {
         return foundInstances;
     }
 
-    private boolean waiteForInstanceStatusRunning(Instance instance) {
+    private boolean waiteForInstancePublicIp(Instance instance) {
         String instanceId = instance.getInstanceId();
         DescribeInstancesRequest describeInstancesRequest = new DescribeInstancesRequest().withInstanceIds(instanceId);
         int counter = 0;
@@ -226,7 +226,7 @@ public class AwsProvisioner {
             DescribeInstancesResult result = ec2.describeInstances(describeInstancesRequest);
             for (Reservation reservation : result.getReservations()) {
                 for (Instance reserved : reservation.getInstances()) {
-                    if (reserved.getPublicIpAddress() != null && AWS_RUNNING_STATE.equals(reserved.getState().getName())) {
+                    if (reserved.getPublicIpAddress() != null ) {
                         return true;
                     }
                 }
