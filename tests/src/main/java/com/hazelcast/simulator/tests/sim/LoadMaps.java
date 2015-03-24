@@ -7,16 +7,16 @@ import com.hazelcast.core.Partition;
 import com.hazelcast.core.PartitionService;
 import com.hazelcast.logging.ILogger;
 import com.hazelcast.logging.Logger;
-import com.hazelcast.stabilizer.test.TestContext;
-import com.hazelcast.stabilizer.test.annotations.Run;
-import com.hazelcast.stabilizer.test.annotations.Setup;
-import com.hazelcast.stabilizer.test.annotations.Verify;
-import com.hazelcast.stabilizer.test.annotations.Warmup;
+import com.hazelcast.simulator.test.TestContext;
+import com.hazelcast.simulator.test.annotations.Run;
+import com.hazelcast.simulator.test.annotations.Setup;
+import com.hazelcast.simulator.test.annotations.Verify;
+import com.hazelcast.simulator.test.annotations.Warmup;
 
 import java.util.Random;
 import java.util.Set;
 
-import static com.hazelcast.stabilizer.tests.helpers.HazelcastTestUtils.isMemberNode;
+import static com.hazelcast.simulator.tests.helpers.HazelcastTestUtils.isMemberNode;
 
 public class LoadMaps  {
     private final static ILogger log = Logger.getLogger(LoadMaps.class);
