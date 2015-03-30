@@ -228,7 +228,7 @@ public class AwsProvisioner {
             DescribeInstancesResult result = ec2.describeInstances(describeInstancesRequest);
             for (Reservation reservation : result.getReservations()) {
                 for (Instance reserved : reservation.getInstances()) {
-                    if (reserved.getPublicIpAddress() != null && AWS_RUNNING_STATE.equals(reserved.getState().getName())) {
+                    if (reserved.getPublicIpAddress() != null) {
                         return true;
                     }
                 }
