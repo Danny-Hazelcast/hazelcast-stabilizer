@@ -58,8 +58,8 @@ public class Wang {
         targetInstance = testContext.getTargetInstance();
         id=testContex.getTestId();
 
-        oppBuilder.addOperation(Opp.PUT, 0.2);
-        oppBuilder.addOperation(Opp.GET, 0.2);
+        oppBuilder.addOperation(Opp.PUT, 0.3);
+        oppBuilder.addOperation(Opp.GET, 0.1);
         oppBuilder.addOperation(Opp.REMOVE, 0.1);
         oppBuilder.addOperation(Opp.GETALL, 0.2);
         oppBuilder.addOperation(Opp.SIZE, 0.2);
