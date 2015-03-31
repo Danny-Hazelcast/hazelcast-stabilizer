@@ -159,6 +159,9 @@ public class AwsProvisioner {
         List<Instance> checkedInstances = new ArrayList<Instance>();
         List<Instance> instances = runInstancesResult.getReservation().getInstances();
         for (Instance instance : instances) {
+
+            LOGGER.warn("id=" + instance.getInstanceId());
+
             if (waiteForInstanceStatusRunning(instance)) {
                 addInstanceToAgentsFile(instance);
                 checkedInstances.add(instance);
@@ -228,6 +231,7 @@ public class AwsProvisioner {
             DescribeInstancesResult result = ec2.describeInstances(describeInstancesRequest);
             for (Reservation reservation : result.getReservations()) {
                 for (Instance reserved : reservation.getInstances()) {
+                    LOGGER.warn("reserved.getPublicIpAddress()=" + reserved.getPublicIpAddress());
                     if (reserved.getPublicIpAddress() != null) {
                         return true;
                     }
