@@ -1,15 +1,6 @@
 package com.hazelcast.simulator.tests.wang;
 
 
-import com.hazelcast.cache.ICache;
-import com.hazelcast.cache.impl.HazelcastServerCacheManager;
-import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
-import com.hazelcast.client.cache.impl.HazelcastClientCacheManager;
-import com.hazelcast.client.cache.impl.HazelcastClientCachingProvider;
-import com.hazelcast.config.CacheConfig;
-import com.hazelcast.config.CacheEvictionConfig;
-import com.hazelcast.config.EvictionPolicy;
-import com.hazelcast.config.InMemoryFormat;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IMap;
 import com.hazelcast.core.MultiMap;
@@ -25,8 +16,6 @@ import com.hazelcast.simulator.test.utils.ThreadSpawner;
 import com.hazelcast.simulator.worker.selector.OperationSelector;
 import com.hazelcast.simulator.worker.selector.OperationSelectorBuilder;
 
-import javax.cache.CacheException;
-import javax.cache.CacheManager;
 import java.util.*;
 
 public class Wang {
@@ -37,18 +26,20 @@ public class Wang {
         GET,
         REMOVE,
         GETALL,
-        SIZE
+        SIZE,
+        MAP_VALUES
     }
 
     public int threadCount=10;
-    public int totalMaps=95;
+    public int totalMaps=90;
     public int totalMultiMaps=45;
     public int maxKeysPerMap=100000;
 
     public boolean dynamicValueSizes=true;
     public int valueByteArraySize=3000;
 
-    public String baseName=null;
+    public String mapbaseName="map";
+    public String mmbaseName="multi";
 
     private String id;
     private TestContext testContext;
@@ -67,21 +58,22 @@ public class Wang {
         targetInstance = testContext.getTargetInstance();
         id=testContex.getTestId();
 
-        oppBuilder.addOperation(Opp.PUT, 0.4);
+        oppBuilder.addOperation(Opp.PUT, 0.2);
         oppBuilder.addOperation(Opp.GET, 0.2);
         oppBuilder.addOperation(Opp.REMOVE, 0.1);
         oppBuilder.addOperation(Opp.GETALL, 0.2);
-        oppBuilder.addOperation(Opp.SIZE, 0.1);
+        oppBuilder.addOperation(Opp.SIZE, 0.2);
+        oppBuilder.addOperation(Opp.MAP_VALUES, 0.1);
     }
 
     @Warmup(global = false)
     public void warmup() throws InterruptedException {
         for(int i=0; i<totalMaps; i++){
-            Map m = targetInstance.getMap(baseName+i);
+            Map m = targetInstance.getMap(mapbaseName+i);
         }
 
         for(int i=0; i<totalMultiMaps; i++){
-            MultiMap m = targetInstance.getMultiMap(baseName+i);
+            MultiMap m = targetInstance.getMultiMap(mmbaseName+i);
         }
     }
 
@@ -138,7 +130,7 @@ public class Wang {
             while (!testContext.isStopped()) {
 
                 int i = random.nextInt(totalMaps);
-                IMap m = targetInstance.getMap(baseName+i);
+                IMap m = targetInstance.getMap(mapbaseName+i);
 
                 int k = random.nextInt(maxKeysPerMap);
                 byte[] v = valueSet.get(random.nextInt(valueSet.size()));
@@ -170,6 +162,9 @@ public class Wang {
                         }
                         m.getAll(getKeySet);
                         break;
+
+                    case MAP_VALUES:
+                        Collection c = m.values();
                 }
 
             }

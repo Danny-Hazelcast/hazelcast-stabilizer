@@ -51,8 +51,8 @@ public class AwsProvisioner {
     // the file which will hole the public domain name of the created load balance
     public static final String AWS_ELB_FILE_NAME = "aws-elb.txt";
 
-    private static final int SLEEPING_MS = 1000 * 30;
-    private static final int MAX_SLEEPING_ITERATIONS = 12;
+    private static final int SLEEPING_MS = 1000 * 5;
+    private static final int MAX_SLEEPING_ITERATIONS = 3;
     private static final Logger LOGGER = Logger.getLogger(Provisioner.class);
 
     private AmazonEC2 ec2;
