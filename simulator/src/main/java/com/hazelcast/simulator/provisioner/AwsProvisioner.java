@@ -161,13 +161,15 @@ public class AwsProvisioner {
         for (Instance instance : instances) {
 
             LOGGER.warn("id=" + instance.getInstanceId());
+            LOGGER.warn(instance.getPublicIpAddress()+","+ instance.getPrivateIpAddress());
 
-            if (waiteForInstanceStatusRunning(instance)) {
+
+            //if (waiteForInstanceStatusRunning(instance)) {
                 addInstanceToAgentsFile(instance);
                 checkedInstances.add(instance);
-            } else {
-                LOGGER.warn("Timeout waiting for running status id=" + instance.getInstanceId());
-            }
+            //} else {
+            //    LOGGER.warn("Timeout waiting for running status id=" + instance.getInstanceId());
+            //}
         }
         return checkedInstances;
     }
