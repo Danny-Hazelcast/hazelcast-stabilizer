@@ -31,10 +31,10 @@ public class Wang {
         MAP_VALUES
     }
 
-    public int threadCount=10;
+    public int threadCount=1;
     public int totalMaps=10;
     public int totalMultiMaps=0;
-    public int maxKeysPerMap=10000;
+    public int maxKeysPerMap=100000;
 
     public int phaseItterations=100;
 
@@ -131,16 +131,25 @@ public class Wang {
 
         public void run(){
 
-            mapSizePhase();
-            //putPhase();
+            //mapSizePhase();
+            putPhase();
             //putGetPhase();
             //getAllPhase();
             //mapValuesPhase();
 
+            log.info(id + "OPPSPhase");
 
             while (!testContext.isStopped()) {
 
-                mapSizePhase();
+                int mapNumber = random.nextInt(totalMaps);
+                IMap m = targetInstance.getMap(mapbaseName+mapNumber);
+
+                if(random.nextBoolean()){
+                    m.values();
+                }else{
+                    m.size();
+                }
+                //mapSizePhase();
                 //phaseRandom();
 
             }
@@ -214,6 +223,8 @@ public class Wang {
                 m.size();
             }
         }
+
+
 
 
         public void phaseRandom(){
