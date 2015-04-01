@@ -131,10 +131,11 @@ public class Wang {
 
         public void run(){
 
-            putPhase();
-            putGetPhase();
-            getAllPhase();
+            //putPhase();
+            //putGetPhase();
+            //getAllPhase();
             mapValuesPhase();
+
 
             while (!testContext.isStopped()) {
 
@@ -198,6 +199,17 @@ public class Wang {
                 IMap m = targetInstance.getMap(mapbaseName+mapNumber);
 
                 m.values();
+            }
+        }
+
+        public void mapSizePhase(){
+            log.info(id + "mapValuesPhase");
+            for(int i=0; i<phaseItterations; i++){
+
+                int mapNumber = random.nextInt(totalMaps);
+                IMap m = targetInstance.getMap(mapbaseName+mapNumber);
+
+                m.size();
             }
         }
 
