@@ -131,9 +131,9 @@ public class Wang {
 
         public void run(){
 
-            //mapSizePhase();
-            putPhase();
-            putGetPhase();
+            mapSizePhase();
+            //putPhase();
+            //putGetPhase();
             //getAllPhase();
             //mapValuesPhase();
 
