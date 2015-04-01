@@ -31,8 +31,8 @@ public class Wang {
         MAP_VALUES
     }
 
-    public int threadCount=1;
-    public int totalMaps=10;
+    public int threadCount=10;
+    public int totalMaps=1;
     public int totalMultiMaps=0;
     public int maxKeysPerMap=100000;
 
