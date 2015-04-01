@@ -51,7 +51,7 @@ public class AwsProvisioner {
     // the file which will hole the public domain name of the created load balance
     public static final String AWS_ELB_FILE_NAME = "aws-elb.txt";
 
-    private static final int SLEEPING_MS = 1000 * 5;
+    private static final int SLEEPING_SEC = 5;
     private static final int MAX_SLEEPING_ITERATIONS = 3;
     private static final Logger LOGGER = Logger.getLogger(Provisioner.class);
 
@@ -163,13 +163,12 @@ public class AwsProvisioner {
             LOGGER.warn("id=" + instance.getInstanceId());
             LOGGER.warn(instance.getPublicIpAddress()+","+ instance.getPrivateIpAddress());
 
-
-            //if (waiteForInstanceStatusRunning(instance)) {
+            if (waiteForInstanceStatusRunning(instance)) {
                 addInstanceToAgentsFile(instance);
                 checkedInstances.add(instance);
-            //} else {
-            //    LOGGER.warn("Timeout waiting for running status id=" + instance.getInstanceId());
-            //}
+            } else {
+                LOGGER.warn("Timeout waiting for running status id=" + instance.getInstanceId());
+            }
         }
         return checkedInstances;
     }
@@ -228,12 +227,11 @@ public class AwsProvisioner {
         DescribeInstancesRequest describeInstancesRequest = new DescribeInstancesRequest().withInstanceIds(instanceId);
         int counter = 0;
         while (counter++ < MAX_SLEEPING_ITERATIONS) {
-            sleepSeconds(SLEEPING_MS);
+            sleepSeconds(SLEEPING_SEC);
 
             DescribeInstancesResult result = ec2.describeInstances(describeInstancesRequest);
             for (Reservation reservation : result.getReservations()) {
                 for (Instance reserved : reservation.getInstances()) {
-                    LOGGER.warn("reserved.getPublicIpAddress()=" + reserved.getPublicIpAddress());
                     if (reserved.getPublicIpAddress() != null) {
                         return true;
                     }
@@ -242,6 +240,7 @@ public class AwsProvisioner {
         }
         return false;
     }
+
 
     private void addInstanceToAgentsFile(Instance instance) {
         String instanceId = instance.getInstanceId();

@@ -19,6 +19,7 @@ import com.hazelcast.simulator.worker.selector.OperationSelectorBuilder;
 import java.util.*;
 
 public class Wang {
+
     private final static ILogger log = Logger.getLogger(Wang.class);
 
     private enum Opp {
@@ -34,6 +35,8 @@ public class Wang {
     public int totalMaps=90;
     public int totalMultiMaps=45;
     public int maxKeysPerMap=100000;
+
+    public int phaseItterations=10000;
 
     public boolean dynamicValueSizes=true;
     public int valueByteArraySize=3000;
@@ -127,46 +130,116 @@ public class Wang {
         }
 
         public void run(){
+
+            putPhase();
+            putGetPhase();
+            getAllPhase();
+            mapValuesPhase();
+
             while (!testContext.isStopped()) {
 
-                int i = random.nextInt(totalMaps);
+                phaseRandom();
+
+            }
+        }
+
+
+        public void putPhase(){
+            log.info(id + "putPhase");
+
+            for(int i=0; i<totalMaps; i++){
                 IMap m = targetInstance.getMap(mapbaseName+i);
+                for(int k=0; k<maxKeysPerMap; k++){
+                    byte[] v = valueSet.get(random.nextInt(valueSet.size()));
+                    m.put(k, v);
+                }
+            }
+        }
+
+
+        public void putGetPhase(){
+            log.info(id + "putGetPhase");
+            for(int i=0; i<phaseItterations; i++){
+                int mapNumber = random.nextInt(totalMaps);
+                IMap m = targetInstance.getMap(mapbaseName+mapNumber);
 
                 int k = random.nextInt(maxKeysPerMap);
                 byte[] v = valueSet.get(random.nextInt(valueSet.size()));
 
-
-
-                switch (opp.select()) {
-                    case SIZE:
-                        m.size();
-                        break;
-
-                    case PUT:
-                        m.put(k, v);
-                        break;
-
-                    case GET:
-                        m.get(k);
-                        break;
-
-                    case REMOVE:
-                        m.remove(k);
-                        break;
-
-                    case GETALL:
-                        getKeySet.clear();
-                        int getSetMax = 50 + random.nextInt(100);
-                        for(i=0; i<getSetMax; i++){
-                            getKeySet.add(random.nextInt(maxKeysPerMap));
-                        }
-                        m.getAll(getKeySet);
-                        break;
-
-                    case MAP_VALUES:
-                        Collection c = m.values();
+                if(random.nextBoolean()){
+                    m.put(k, v);
+                }else {
+                    m.get(k);
                 }
+            }
+        }
 
+        public void getAllPhase(){
+            log.info(id + "putALLPhase");
+            for(int i=0; i<phaseItterations; i++){
+
+                int mapNumber = random.nextInt(totalMaps);
+                IMap m = targetInstance.getMap(mapbaseName+mapNumber);
+
+                getKeySet.clear();
+                int getSetMax = 50 + random.nextInt(100);
+                for(int j=0; j<getSetMax; j++){
+                    getKeySet.add(random.nextInt(maxKeysPerMap));
+                }
+                m.getAll(getKeySet);
+            }
+        }
+
+        public void mapValuesPhase(){
+            log.info(id + "mapValuesPhase");
+            for(int i=0; i<phaseItterations; i++){
+
+                int mapNumber = random.nextInt(totalMaps);
+                IMap m = targetInstance.getMap(mapbaseName+mapNumber);
+
+                m.values();
+            }
+        }
+
+
+        public void phaseRandom(){
+            log.info(id + "phaseRandom");
+
+            int i = random.nextInt(totalMaps);
+            IMap m = targetInstance.getMap(mapbaseName+i);
+
+            int k = random.nextInt(maxKeysPerMap);
+            byte[] v = valueSet.get(random.nextInt(valueSet.size()));
+
+
+            switch (opp.select()) {
+                case SIZE:
+                    m.size();
+                    break;
+
+                case PUT:
+                    m.put(k, v);
+                    break;
+
+                case GET:
+                    m.get(k);
+                    break;
+
+                case REMOVE:
+                    m.remove(k);
+                    break;
+
+                case GETALL:
+                    getKeySet.clear();
+                    int getSetMax = 50 + random.nextInt(100);
+                    for(i=0; i<getSetMax; i++){
+                        getKeySet.add(random.nextInt(maxKeysPerMap));
+                    }
+                    m.getAll(getKeySet);
+                    break;
+
+                case MAP_VALUES:
+                    Collection c = m.values();
             }
         }
     }
