@@ -205,7 +205,7 @@ public class Wang {
         }
 
         public void mapSizePhase(){
-            log.info(id + "mapValuesPhase");
+            log.info(id + "mapSizePhase");
             for(int i=0; i<phaseItterations; i++){
 
                 int mapNumber = random.nextInt(totalMaps);
