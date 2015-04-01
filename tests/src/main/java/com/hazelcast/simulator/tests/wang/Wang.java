@@ -32,11 +32,11 @@ public class Wang {
     }
 
     public int threadCount=10;
-    public int totalMaps=90;
-    public int totalMultiMaps=45;
-    public int maxKeysPerMap=100000;
+    public int totalMaps=10;
+    public int totalMultiMaps=0;
+    public int maxKeysPerMap=10000;
 
-    public int phaseItterations=10000;
+    public int phaseItterations=100;
 
     public boolean dynamicValueSizes=true;
     public int valueByteArraySize=3000;
@@ -143,7 +143,6 @@ public class Wang {
             }
         }
 
-
         public void putPhase(){
             log.info(id + "putPhase");
 
@@ -176,7 +175,7 @@ public class Wang {
         }
 
         public void getAllPhase(){
-            log.info(id + "putALLPhase");
+            log.info(id + "getALLPhase");
             for(int i=0; i<phaseItterations; i++){
 
                 int mapNumber = random.nextInt(totalMaps);
