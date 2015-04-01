@@ -31,6 +31,7 @@ public class Wang {
         MAP_VALUES
     }
 
+    public boolean serverMode=true;
     public int threadCount=10;
     public int totalMaps=1;
     public int totalMultiMaps=0;
@@ -137,6 +138,7 @@ public class Wang {
             //getAllPhase();
             //mapValuesPhase();
 
+            /*
             log.info(id + "OPPSPhase");
 
             while (!testContext.isStopped()) {
@@ -152,6 +154,29 @@ public class Wang {
                 //mapSizePhase();
                 //phaseRandom();
 
+            }
+            */
+
+            while (!testContext.isStopped()) {
+
+                int mapNumber = random.nextInt(totalMaps);
+                IMap m = targetInstance.getMap(mapbaseName+mapNumber);
+
+                if(serverMode){
+
+                    int k = random.nextInt(maxKeysPerMap);
+                    byte[] v = valueSet.get(random.nextInt(valueSet.size()));
+                    m.put(k, v);
+
+                }else{
+
+                    if(random.nextBoolean()){
+                        m.values();
+                    }else{
+                        m.size();
+                    }
+
+                }
             }
         }
 
