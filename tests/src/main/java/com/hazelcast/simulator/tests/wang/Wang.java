@@ -131,15 +131,17 @@ public class Wang {
 
         public void run(){
 
+            mapSizePhase();
             //putPhase();
             //putGetPhase();
             //getAllPhase();
-            mapValuesPhase();
+            //mapValuesPhase();
 
 
             while (!testContext.isStopped()) {
 
-                phaseRandom();
+                mapSizePhase();
+                //phaseRandom();
 
             }
         }
