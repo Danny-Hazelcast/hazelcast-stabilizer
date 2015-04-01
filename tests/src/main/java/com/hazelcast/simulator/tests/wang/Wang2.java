@@ -18,9 +18,9 @@ import com.hazelcast.simulator.worker.selector.OperationSelectorBuilder;
 
 import java.util.*;
 
-public class Wang {
+public class Wang2 {
 
-    private final static ILogger log = Logger.getLogger(Wang.class);
+    private final static ILogger log = Logger.getLogger(Wang2.class);
 
     private enum Opp {
         PUT,
@@ -131,8 +131,8 @@ public class Wang {
 
         public void run(){
 
-            putPhase();
-            putGetPhase();
+            //putPhase();
+            //putGetPhase();
             getAllPhase();
             mapValuesPhase();
 
@@ -159,7 +159,7 @@ public class Wang {
 
         public void putGetPhase(){
             log.info(id + "putGetPhase");
-
+            
             for(int i=0; i<phaseItterations; i++){
                 int mapNumber = random.nextInt(totalMaps);
                 IMap m = targetInstance.getMap(mapbaseName+mapNumber);
