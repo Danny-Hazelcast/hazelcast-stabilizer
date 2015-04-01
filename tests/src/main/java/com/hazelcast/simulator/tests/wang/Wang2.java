@@ -36,7 +36,7 @@ public class Wang2 {
     public int totalMultiMaps=45;
     public int maxKeysPerMap=100000;
 
-    public int phaseItterations=10000;
+    public int phaseItterations=100;
 
     public boolean dynamicValueSizes=true;
     public int valueByteArraySize=3000;
@@ -176,7 +176,7 @@ public class Wang2 {
         }
 
         public void getAllPhase(){
-            log.info(id + "putALLPhase");
+            log.info(id + "getALLPhase");
             for(int i=0; i<phaseItterations; i++){
 
                 int mapNumber = random.nextInt(totalMaps);
