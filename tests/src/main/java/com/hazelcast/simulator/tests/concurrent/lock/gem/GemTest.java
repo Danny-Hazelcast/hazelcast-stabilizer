@@ -103,7 +103,7 @@ public class GemTest {
                     long ts = l.timeStamp.get();
 
                     if (ts + timeoutMillis < now) {
-                        System.out.println(l.lockRef.get() + " is locked for " + TimeUnit.MILLISECONDS.toMinutes(now - ts) + " mins!");
+                        log.info(id+": "+l.lockRef.get() + " is locked for " + TimeUnit.MILLISECONDS.toMinutes(now - ts) + " mins!");
                     }
                 }
                 try {
