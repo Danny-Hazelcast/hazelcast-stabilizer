@@ -15,12 +15,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.hazelcast.simulator.tests.helpers.HazelcastTestUtils.isMemberNode;
 
-public class GemClient {
-    private static final ILogger log = Logger.getLogger(GemClient.class);
+
+public class GemTest {
+    private static final ILogger log = Logger.getLogger(GemTest.class);
 
     public String id;
-    public String mapBaseName = this.getClass().getSimpleName();
+    public String mapBaseName = "gemMap";
     public int lockerThreadsCount = 3;
     public int maxKeys = 100;
     public String keyPreFix = "A";
@@ -47,6 +49,13 @@ public class GemClient {
     @Run
     public void run() {
         ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
+
+        BlockedChecker  blockedChecker = new BlockedChecker(lockers);
+        blockedChecker.start();
+
+        InfoThread infoThread = new InfoThread();
+        infoThread.start();
+
         for(Locker l : lockers){
             spawner.spawn(l);
         }
@@ -80,10 +89,10 @@ public class GemClient {
         }
     }
 
-    private class blockedChecker extends Thread {
+    private class BlockedChecker extends Thread {
         private List<Locker> lockers;
 
-        public blockedChecker(List<Locker> lockers){
+        public BlockedChecker(List<Locker> lockers){
             this.lockers = lockers;
         }
 
@@ -106,13 +115,21 @@ public class GemClient {
         }
     }
 
-    private class infoThread extends Thread {
+    private class InfoThread extends Thread {
         public void run() {
             while (!testContext.isStopped()) {
 
-                Set<Member> members = targetInstance.getCluster().getMembers();
-                System.out.println(id+": cluster sz="+members.size());
-                System.out.println(id+": LocalEndpoint=" + targetInstance.getLocalEndpoint());
+                if (isMemberNode(targetInstance)) {
+                    Set<Member> members = targetInstance.getCluster().getMembers();
+                    log.info(id + ": cluster sz=" + members.size());
+                    log.info(id + ": LocalEndpoint=" + targetInstance.getLocalEndpoint());
+
+                    Collection<Client> clients = targetInstance.getClientService().getConnectedClients();
+                    log.info(id+ ": connected clients=" + clients.size());
+                    for (Client client : clients) {
+                        log.info(id+": "+client);
+                    }
+                }
 
                 try {
                     Thread.sleep(10 * 1000);
