@@ -131,6 +131,9 @@ public class GemTest {
                     }
                 }
 
+                IMap map = targetInstance.getMap(mapBaseName);
+                log.info(id+": map sz="+map.size());
+
                 try {
                     Thread.sleep(10 * 1000);
                 } catch (InterruptedException e) {
