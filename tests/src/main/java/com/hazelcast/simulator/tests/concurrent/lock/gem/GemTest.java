@@ -27,6 +27,8 @@ public class GemTest {
     public long timeoutMillis = TimeUnit.SECONDS.toMillis(30);
 
     private List<Locker> lockers = new ArrayList();
+    private BlockedChecker  blockedChecker;
+    private InfoThread infoThread;
     private HazelcastInstance targetInstance;
     private TestContext testContext;
 
@@ -42,28 +44,27 @@ public class GemTest {
         for(int i=0; i<lockerThreadsCount; i++){
             lockers.add(new Locker(i));
         }
+        blockedChecker = new BlockedChecker(lockers);
+        infoThread = new InfoThread();
     }
 
     @Run
     public void run() {
         ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
-
-        BlockedChecker  blockedChecker = new BlockedChecker(lockers);
-        blockedChecker.start();
-
-        InfoThread infoThread = new InfoThread();
-        infoThread.start();
-
         for(Locker l : lockers){
             spawner.spawn(l);
         }
+        blockedChecker.start();
+        infoThread.start();
         spawner.awaitCompletion();
     }
 
     private class Locker implements Runnable {
         Random random = new Random();
         AtomicLong progressTime = new AtomicLong(System.currentTimeMillis());
+        AtomicLong itteration = new AtomicLong(0);
         String name;
+
 
         public Locker(int i){
             name = this.getClass().getSimpleName()+""+i;
@@ -73,6 +74,7 @@ public class GemTest {
             while (!testContext.isStopped()) {
                 long now = System.currentTimeMillis();
                 progressTime.set(now);
+                itteration.incrementAndGet();
 
                 String key = keyPreFix + random.nextInt(maxKeys);
                 ILock lock = targetInstance.getLock(key);
@@ -105,7 +107,7 @@ public class GemTest {
                     long ts = l.progressTime.get();
 
                     if (ts + 30 < now) {
-                        log.warning(id+": "+l.name+" blocked for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec!");
+                        log.warning(id + ": " + l.name + " blocked at "+l.itteration.get()+" for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec!");
                     }
                 }
                 try {
@@ -133,7 +135,7 @@ public class GemTest {
                 }
 
                 IMap map = targetInstance.getMap(mapBaseName);
-                log.info(id+": map sz="+map.size());
+                log.info(id+": map "+map.getName()+" sz="+map.size());
 
                 try {
                     Thread.sleep(10 * 1000);
