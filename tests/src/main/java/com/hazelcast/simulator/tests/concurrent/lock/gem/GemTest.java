@@ -37,15 +37,17 @@ public class GemTest {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
         id = testContext.getTestId();
-    }
 
-    @Warmup(global = true)
-    public void warmup() throws Exception {
         for(int i=0; i<lockerThreadsCount; i++){
             lockers.add(new Locker(i));
         }
         blockedChecker = new BlockedChecker(lockers);
         infoThread = new InfoThread();
+    }
+
+    @Warmup(global = true)
+    public void warmup() throws Exception {
+
     }
 
     @Run
