@@ -67,6 +67,8 @@ public class AgentsClient {
     public void start() {
         awaitAgentsReachable();
 
+
+        /*
         // starts a poke thread which will repeatedly poke the agents to make sure they are not going to terminate themselves
         pokeThread = new Thread() {
             public void run() {
@@ -84,6 +86,8 @@ public class AgentsClient {
             }
         };
         pokeThread.start();
+        */
+
     }
 
     private void awaitAgentsReachable() {
