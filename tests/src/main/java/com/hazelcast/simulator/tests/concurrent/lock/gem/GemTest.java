@@ -6,14 +6,12 @@ import com.hazelcast.logging.Logger;
 import com.hazelcast.simulator.test.TestContext;
 import com.hazelcast.simulator.test.annotations.Run;
 import com.hazelcast.simulator.test.annotations.Setup;
-import com.hazelcast.simulator.test.annotations.Verify;
 import com.hazelcast.simulator.test.annotations.Warmup;
 import com.hazelcast.simulator.utils.ThreadSpawner;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.hazelcast.simulator.tests.helpers.HazelcastTestUtils.isMemberNode;
 
@@ -42,7 +40,7 @@ public class GemTest {
     @Warmup(global = true)
     public void warmup() throws Exception {
         for(int i=0; i<lockerThreadsCount; i++){
-            lockers.add(new Locker());
+            lockers.add(new Locker(i));
         }
     }
 
@@ -64,19 +62,23 @@ public class GemTest {
 
     private class Locker implements Runnable {
         Random random = new Random();
-        AtomicLong timeStamp = new AtomicLong(System.currentTimeMillis());
-        AtomicReference<ILock> lockRef = new AtomicReference();
+        AtomicLong progressTime = new AtomicLong(System.currentTimeMillis());
+        String name;
+
+        public Locker(int i){
+            name = this.getClass().getSimpleName()+""+i;
+        }
 
         public void run() {
             while (!testContext.isStopped()) {
+                long now = System.currentTimeMillis();
+                progressTime.set(now);
+
                 String key = keyPreFix + random.nextInt(maxKeys);
                 ILock lock = targetInstance.getLock(key);
                 try {
                     lock.lock();
                     try {
-                        long now = System.currentTimeMillis();
-                        lockRef.set(lock);
-                        timeStamp.set(now);
                         IMap m = targetInstance.getMap(mapBaseName);
                         m.put(key, now);
                     } finally {
@@ -100,10 +102,10 @@ public class GemTest {
             while (!testContext.isStopped()) {
                 long now = System.currentTimeMillis();
                 for(Locker l : lockers){
-                    long ts = l.timeStamp.get();
+                    long ts = l.progressTime.get();
 
-                    if (ts + timeoutMillis < now) {
-                        log.info(id+": "+l.lockRef.get() + " is locked for " + TimeUnit.MILLISECONDS.toMinutes(now - ts) + " mins!");
+                    if (ts + 30 < now) {
+                        log.warning(id+": "+l.name+" blocked for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec!");
                     }
                 }
                 try {
@@ -118,7 +120,6 @@ public class GemTest {
     private class InfoThread extends Thread {
         public void run() {
             while (!testContext.isStopped()) {
-
                 if (isMemberNode(targetInstance)) {
                     Set<Member> members = targetInstance.getCluster().getMembers();
                     log.info(id + ": cluster sz=" + members.size());
@@ -141,10 +142,5 @@ public class GemTest {
                 }
             }
         }
-    }
-
-    @Verify(global = false)
-    public void verify() throws Exception {
-
     }
 }
