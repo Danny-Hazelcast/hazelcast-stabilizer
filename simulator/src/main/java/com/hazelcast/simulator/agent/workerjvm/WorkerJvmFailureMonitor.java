@@ -70,8 +70,8 @@ public class WorkerJvmFailureMonitor {
         List<Failure> failures = new LinkedList<Failure>();
         detectOomeFailure(jvm, failures);
         detectExceptions(jvm, failures);
-        detectInactivity(jvm, failures);
-        detectUnexpectedExit(jvm, failures);
+        //detectInactivity(jvm, failures);
+        //detectUnexpectedExit(jvm, failures);
         for (Failure failure : failures) {
             publish(failure);
         }
