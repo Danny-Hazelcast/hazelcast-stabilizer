@@ -20,11 +20,12 @@ public class GemTest {
     private static final ILogger log = Logger.getLogger(GemTest.class);
 
     public String id;
-    public String mapBaseName = "gemMap";
+    public String mapBaseName = "lockMap";
     public int lockerThreadsCount = 3;
     public int maxKeys = 100;
     public String keyPreFix = "A";
-    public long timeoutMillis = TimeUnit.SECONDS.toMillis(30);
+    public long failStuckMillis = TimeUnit.SECONDS.toMillis(300);
+    public long reportStuckMillis = TimeUnit.SECONDS.toMillis(30);
 
     private List<Locker> lockers = new ArrayList();
     private BlockedChecker  blockedChecker;
@@ -45,11 +46,6 @@ public class GemTest {
         infoThread = new InfoThread();
     }
 
-    @Warmup(global = true)
-    public void warmup() throws Exception {
-
-    }
-
     @Run
     public void run() {
         ThreadSpawner spawner = new ThreadSpawner(testContext.getTestId());
@@ -66,7 +62,6 @@ public class GemTest {
         AtomicLong progressTime = new AtomicLong(System.currentTimeMillis());
         AtomicLong itteration = new AtomicLong(0);
         String name;
-
 
         public Locker(int i){
             name = this.getClass().getSimpleName()+""+i;
@@ -108,8 +103,11 @@ public class GemTest {
                 for(Locker l : lockers){
                     long ts = l.progressTime.get();
 
-                    if (ts + 30 < now) {
-                        log.warning(id + ": " + l.name + " blocked at "+l.itteration.get()+" for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec!");
+                    if (ts + reportStuckMillis < now) {
+                        log.warning(id + ": " + l.name + " blocked at "+l.itteration.get()+" for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec");
+                    }
+                    if (ts + failStuckMillis < now) {
+                        throw new IllegalStateException(id + ": " + l.name + " blocked at "+l.itteration.get()+" for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec!");
                     }
                 }
                 try {
