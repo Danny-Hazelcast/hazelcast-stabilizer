@@ -106,7 +106,7 @@ public class GemTest {
                     if (ts + TimeUnit.SECONDS.toMillis(reportStuckSecs) < now) {
                         log.warning(id + ": " + l.name + " blocked at "+l.itteration.get()+" for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec");
                     }
-                    if (ts + TimeUnit.SECONDS.toMillis(failStuckSec) < now) {
+                    if (ts + TimeUnit.SECONDS.toMillis(failStuckSecs) < now) {
                         throw new IllegalStateException(id + ": " + l.name + " blocked at "+l.itteration.get()+" for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec!");
                     }
                 }
