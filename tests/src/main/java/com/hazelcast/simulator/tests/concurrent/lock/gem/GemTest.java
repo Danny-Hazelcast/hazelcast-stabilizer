@@ -6,7 +6,6 @@ import com.hazelcast.logging.Logger;
 import com.hazelcast.simulator.test.TestContext;
 import com.hazelcast.simulator.test.annotations.Run;
 import com.hazelcast.simulator.test.annotations.Setup;
-import com.hazelcast.simulator.test.annotations.Warmup;
 import com.hazelcast.simulator.utils.ThreadSpawner;
 
 import java.util.*;
@@ -52,7 +51,8 @@ public class GemTest {
         for(Locker l : lockers){
             spawner.spawn(l);
         }
-        blockedChecker.start();
+        spawner.spawn(blockedChecker);
+
         infoThread.start();
         spawner.awaitCompletion();
     }
@@ -90,7 +90,7 @@ public class GemTest {
         }
     }
 
-    private class BlockedChecker extends Thread {
+    private class BlockedChecker implements Runnable {
         private List<Locker> lockers;
 
         public BlockedChecker(List<Locker> lockers){
