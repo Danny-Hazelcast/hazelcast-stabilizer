@@ -24,8 +24,8 @@ public class GemTest {
     public int lockerThreadsCount = 3;
     public int maxKeys = 100;
     public String keyPreFix = "A";
-    public long failStuckMillis = TimeUnit.SECONDS.toMillis(300);
     public long reportStuckMillis = TimeUnit.SECONDS.toMillis(30);
+    public long failStuckMillis = TimeUnit.SECONDS.toMillis(301);
 
     private List<Locker> lockers = new ArrayList();
     private BlockedChecker  blockedChecker;
