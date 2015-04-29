@@ -9,6 +9,7 @@ import com.hazelcast.simulator.test.annotations.Setup;
 import com.hazelcast.simulator.utils.ThreadSpawner;
 
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -26,6 +27,8 @@ public class GemTest {
     public long reportStuckSecs = 30;
     public long failStuckSecs = 310;
 
+    private CountDownLatch lockerEnd;
+
     private List<Locker> lockers = new ArrayList();
     private BlockedChecker  blockedChecker;
     private InfoThread infoThread;
@@ -37,6 +40,8 @@ public class GemTest {
         this.testContext = testContext;
         targetInstance = testContext.getTargetInstance();
         id = testContext.getTestId();
+
+        lockerEnd = new CountDownLatch(lockerThreadsCount);
 
         for(int i=0; i<lockerThreadsCount; i++){
             lockers.add(new Locker(i));
@@ -87,6 +92,7 @@ public class GemTest {
                     log.warning(e);
                 }
             }
+            lockerEnd.countDown();
         }
     }
 
@@ -98,7 +104,7 @@ public class GemTest {
         }
 
         public void run() {
-            while (!testContext.isStopped()) {
+            while (lockerEnd.getCount()!=0) {
                 long now = System.currentTimeMillis();
                 for(Locker l : lockers){
                     long ts = l.progressTime.get();
