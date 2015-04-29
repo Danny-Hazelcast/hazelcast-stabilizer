@@ -113,7 +113,8 @@ public class GemTest {
                         log.warning(id + ": " + l.name + " blocked at "+l.itteration.get()+" for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec");
                     }
                     if (ts + TimeUnit.SECONDS.toMillis(failStuckSecs) < now) {
-                        throw new IllegalStateException(id + ": " + l.name + " blocked at "+l.itteration.get()+" for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec!");
+                        //throw new IllegalStateException(id + ": " + l.name + " blocked at "+l.itteration.get()+" for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec!");
+                        log.severe(id + ": " + l.name + " blocked at "+l.itteration.get()+" for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec");
                     }
                 }
                 try {
@@ -127,7 +128,7 @@ public class GemTest {
 
     private class InfoThread extends Thread {
         public void run() {
-            while (!testContext.isStopped()) {
+            while (lockerEnd.getCount()!=0) {
                 if (isMemberNode(targetInstance)) {
                     Set<Member> members = targetInstance.getCluster().getMembers();
                     log.info(id + ": cluster sz=" + members.size());
