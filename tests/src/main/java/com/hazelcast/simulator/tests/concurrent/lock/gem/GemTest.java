@@ -23,8 +23,8 @@ public class GemTest {
     public int lockerThreadsCount = 3;
     public int maxKeys = 100;
     public String keyPreFix = "A";
-    public long reportStuckMillis = TimeUnit.SECONDS.toMillis(30);
-    public long failStuckMillis = TimeUnit.SECONDS.toMillis(301);
+    public long reportStuckSecs = 30;
+    public long failStuckSecs = 310;
 
     private List<Locker> lockers = new ArrayList();
     private BlockedChecker  blockedChecker;
@@ -103,15 +103,15 @@ public class GemTest {
                 for(Locker l : lockers){
                     long ts = l.progressTime.get();
 
-                    if (ts + reportStuckMillis < now) {
+                    if (ts + TimeUnit.SECONDS.toMillis(reportStuckSecs) < now) {
                         log.warning(id + ": " + l.name + " blocked at "+l.itteration.get()+" for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec");
                     }
-                    if (ts + failStuckMillis < now) {
+                    if (ts + TimeUnit.SECONDS.toMillis(failStuckSec) < now) {
                         throw new IllegalStateException(id + ": " + l.name + " blocked at "+l.itteration.get()+" for " + TimeUnit.MILLISECONDS.toSeconds(now - ts) + " sec!");
                     }
                 }
                 try {
-                    Thread.sleep(5 * 1000);
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(5));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -138,7 +138,7 @@ public class GemTest {
                 log.info(id+": map "+map.getName()+" sz="+map.size());
 
                 try {
-                    Thread.sleep(10 * 1000);
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(30));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
