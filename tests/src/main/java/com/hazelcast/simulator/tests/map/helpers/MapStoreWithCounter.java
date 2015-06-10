@@ -2,11 +2,7 @@ package com.hazelcast.simulator.tests.map.helpers;
 
 import com.hazelcast.core.MapStore;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -16,6 +12,7 @@ public class MapStoreWithCounter implements MapStore<Object, Object> {
 
     private static int minDelayMs;
     private static int maxDelayMs;
+    private static int maxKeys;
 
     private final Random random = new Random();
     private final Map<Object, Object> store = new ConcurrentHashMap<Object, Object>();
@@ -26,9 +23,10 @@ public class MapStoreWithCounter implements MapStore<Object, Object> {
     public MapStoreWithCounter() {
     }
 
-    public static void setMinMaxDelayMs(int minDelayMs, int maxDelayMs) {
+    public static void setMinMaxDelayMs(int minDelayMs, int maxDelayMs, int keyCount) {
         MapStoreWithCounter.minDelayMs = minDelayMs;
         MapStoreWithCounter.maxDelayMs = maxDelayMs;
+        MapStoreWithCounter.maxKeys = keyCount;
     }
 
     public Object get(Object key) {
@@ -89,7 +87,13 @@ public class MapStoreWithCounter implements MapStore<Object, Object> {
     @Override
     public Set<Object> loadAllKeys() {
         delay();
-        return store.keySet();
+
+        Set keys = new HashSet(maxKeys);
+        for(int i=0; i<maxKeys; i++){
+            keys.add(i);
+        }
+
+        return keys;
     }
 
     private void delay() {
