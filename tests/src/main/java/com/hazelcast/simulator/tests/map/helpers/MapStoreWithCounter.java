@@ -1,6 +1,8 @@
 package com.hazelcast.simulator.tests.map.helpers;
 
 import com.hazelcast.core.MapStore;
+import com.hazelcast.logging.ILogger;
+import com.hazelcast.logging.Logger;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,6 +11,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.hazelcast.simulator.utils.CommonUtils.sleepMillis;
 
 public class MapStoreWithCounter implements MapStore<Object, Object> {
+
+    private static final ILogger LOGGER = Logger.getLogger(MapStoreWithCounter.class);
+
 
     private static int minDelayMs;
     private static int maxDelayMs;
@@ -74,6 +79,9 @@ public class MapStoreWithCounter implements MapStore<Object, Object> {
 
     @Override
     public Map<Object, Object> loadAll(Collection<Object> keys) {
+
+
+        LOGGER.info("start loadAll()");
         Map<Object, Object> result = new HashMap<Object, Object>();
         for (Object key : keys) {
             final Object v = load(key);
@@ -81,6 +89,8 @@ public class MapStoreWithCounter implements MapStore<Object, Object> {
                 result.put(key, v);
             }
         }
+
+        LOGGER.info("end loadAll()");
         return result;
     }
 
@@ -88,10 +98,12 @@ public class MapStoreWithCounter implements MapStore<Object, Object> {
     public Set<Object> loadAllKeys() {
         delay();
 
+        LOGGER.info("start loadAllKeys()");
         Set keys = new HashSet(maxKeys);
         for(int i=0; i<maxKeys; i++){
             keys.add(i);
         }
+        LOGGER.info("end loadAllKeys()");
 
         return keys;
     }
