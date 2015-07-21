@@ -8,6 +8,10 @@ import java.io.ObjectOutput;
 public class SampleValue implements Externalizable {
     private int id;
 
+    public SampleValue( ) {
+    }
+
+
     public SampleValue(int id) {
         this.id = id;
     }
