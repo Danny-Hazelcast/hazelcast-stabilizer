@@ -41,7 +41,7 @@ public class TestSuite implements Serializable {
 
     private static final long serialVersionUID = 4945217305644718622L;
 
-    private final String id = new SimpleDateFormat("yyyy-MM-dd__HH_mm_ss").format(new Date());
+    private final String id = "testA";
     private final List<TestCase> testCaseList = new LinkedList<TestCase>();
 
     private int durationSeconds;
