@@ -33,6 +33,30 @@ public final class ThrottlingLogger {
         return new ThrottlingLogger(delegate, maximumRateMs);
     }
 
+    public void finest(String message) {
+        log(Level.FINEST, message);
+    }
+
+    public void finer(String message) {
+        log(Level.FINER, message);
+    }
+
+    public void fine(String message) {
+        log(Level.FINE, message);
+    }
+
+    public void info(String message) {
+        log(Level.INFO, message);
+    }
+
+    public void warn(String message) {
+        log(Level.WARNING, message);
+    }
+
+    public void severe(String message) {
+        log(Level.SEVERE, message);
+    }
+
     public void log(Level level, String message) {
         if (!delegate.isLoggable(level)) {
             return;
