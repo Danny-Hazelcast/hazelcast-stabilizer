@@ -40,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.hazelcast.simulator.tests.icache.helpers.CacheUtils.createCacheManager;
 import static com.hazelcast.simulator.utils.CommonUtils.sleepMillis;
+import static com.hazelcast.simulator.utils.CommonUtils.sleepSeconds;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -87,8 +88,10 @@ public class ExpiryTest {
 
         config.setName(basename);
 
-        operationSelectorBuilder.addOperation(Operation.PUT, putProb).addOperation(Operation.PUT_ASYNC, putAsyncProb)
-                .addOperation(Operation.GET, getProb).addOperation(Operation.GET_ASYNC, getAsyncProb);
+        operationSelectorBuilder.addOperation(Operation.PUT, putProb)
+                                .addOperation(Operation.PUT_ASYNC, putAsyncProb)
+                                .addOperation(Operation.GET, getProb)
+                                .addOperation(Operation.GET_ASYNC, getAsyncProb);
     }
 
     @Warmup(global = true)
@@ -98,6 +101,9 @@ public class ExpiryTest {
 
     @Verify(global = true)
     public void globalVerify() throws Exception {
+
+        sleepSeconds(30);
+
         Counter totalCounter = new Counter();
         for (Counter counter : results) {
             totalCounter.add(counter);
