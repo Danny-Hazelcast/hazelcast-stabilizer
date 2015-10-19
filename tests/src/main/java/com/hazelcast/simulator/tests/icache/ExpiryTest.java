@@ -102,7 +102,7 @@ public class ExpiryTest {
     @Verify(global = true)
     public void globalVerify() throws Exception {
 
-        sleepSeconds(30);
+        sleepSeconds(32);
 
         Counter totalCounter = new Counter();
         for (Counter counter : results) {
