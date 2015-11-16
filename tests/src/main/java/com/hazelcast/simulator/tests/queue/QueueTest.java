@@ -129,14 +129,6 @@ public class QueueTest {
                 while (!testContext.isStopped()) {
                     long item = fromQueue.take();
                     toQueue.put(item + 1);
-
-                    iteration++;
-                    if (logFrequency > 0 && iteration % logFrequency == 0) {
-                        LOGGER.info(String.format(
-                                "%s iteration: %d, fromQueue size: %d, toQueue size: %d",
-                                Thread.currentThread().getName(), iteration, fromQueue.size(), toQueue.size()
-                        ));
-                    }
                 }
 
                 toQueue.put(0L);

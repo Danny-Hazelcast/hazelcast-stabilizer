@@ -140,7 +140,6 @@ public class MapPredicateTest {
 
         @Override
         public void timeStep(Operation operation) {
-            long startMs = System.currentTimeMillis();
 
             switch (operation) {
                 case PREDICATE_BUILDER:
@@ -162,25 +161,6 @@ public class MapPredicateTest {
                     throw new UnsupportedOperationException();
             }
 
-            long nowMs = System.currentTimeMillis();
-            long durationMs = nowMs - startMs;
-            maxLastMinute = Math.max(durationMs, maxLastMinute);
-            minLastMinute = Math.min(durationMs, minLastMinute);
-            iterationsLastMinute++;
-            spendTimeMs += durationMs;
-
-            if (lastUpdateMs + SECONDS.toMillis(60) < nowMs) {
-                double avg = spendTimeMs / (double) iterationsLastMinute;
-                double perf = (iterationsLastMinute * 1000d) / (double) spendTimeMs;
-
-                LOGGER.info(format("last minute: iterations=%d, min=%d ms, max=%d ms, avg=%.2f ms, perf=%.2f predicates/second",
-                        iterationsLastMinute, minLastMinute, maxLastMinute, avg, perf));
-
-                maxLastMinute = Long.MIN_VALUE;
-                minLastMinute = Long.MAX_VALUE;
-                iterationsLastMinute = 0;
-                lastUpdateMs = nowMs;
-            }
         }
 
         @Override

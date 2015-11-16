@@ -79,17 +79,10 @@ public class ExpiryICacheTest {
         public void timeStep() {
             double usedPercentage = heapUsedPercentage();
             if (usedPercentage >= maxHeapUsagePercentage) {
-                LOGGER.info("heap used: " + usedPercentage + "% cache size: " + cache.size());
                 sleepSeconds(10);
             } else {
-                for (int i = 0; i < 1000; i++) {
-                    if (getIteration() % 100000 == 0) {
-                        LOGGER.info("At " + getIteration() + " heap used: " + usedPercentage + "% cache size: " + cache.size());
-                    }
-
-                    long key = getRandom().nextLong();
-                    cache.put(key, 0L, expiryPolicy);
-                }
+                long key = getRandom().nextLong();
+                cache.put(key, 0L, expiryPolicy);
             }
         }
 
