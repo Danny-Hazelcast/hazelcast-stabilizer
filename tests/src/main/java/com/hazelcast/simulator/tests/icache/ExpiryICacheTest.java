@@ -33,6 +33,7 @@ import javax.cache.expiry.Duration;
 import javax.cache.expiry.ExpiryPolicy;
 
 import static com.hazelcast.simulator.tests.icache.helpers.CacheUtils.createCacheManager;
+import static com.hazelcast.simulator.utils.CommonUtils.sleepMillis;
 import static com.hazelcast.simulator.utils.CommonUtils.sleepSeconds;
 import static com.hazelcast.simulator.utils.FormatUtils.humanReadableByteCount;
 import static com.hazelcast.simulator.utils.TestUtils.assertTrueEventually;
@@ -71,6 +72,8 @@ public class ExpiryICacheTest {
         @Override
         public void timeStep() {
             long key = getRandom().nextInt(keyCount);
+
+            //containsKey provokes ttl expiry of key
             if ( ! cache.containsKey(key) ) {
                 cache.put(key, 0, expiryPolicy);
             }
@@ -80,8 +83,15 @@ public class ExpiryICacheTest {
         protected void afterRun() { }
     }
 
-    @Verify(global = false)
+    @Verify(global = true)
     public void globalVerify() {
+
+        sleepMillis(1000 * 61);
+
+        //provokes ttl expiry of key
+        for(int i=0; i<keyCount; i++){
+            cache.containsKey(i);
+        }
 
         assertTrueEventually(new AssertTask() {
             @Override
